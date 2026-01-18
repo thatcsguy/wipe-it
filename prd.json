@@ -109,7 +109,7 @@
         "Check renderChariot uses orange-yellow color with transparency",
         "Check inner circle radius is calculated as progress * outerRadius where progress = (now - startTime) / (endTime - startTime)"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "id": "RENDER-002",

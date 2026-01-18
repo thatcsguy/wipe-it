@@ -62,3 +62,12 @@
 - Creates ChariotMechanic with provided params, adds to mechanicManager
 - Imported ChariotMechanic and Effect types in game.ts
 - Files: src/server/game.ts
+
+## RENDER-001: Client mechanic rendering
+- Created src/client/mechanics.ts
+- renderMechanics(ctx, mechanics[], serverTime) - iterates mechanics, dispatches by type
+- renderChariot(ctx, mechanic, serverTime) - orange-yellow (#ff9f40) transparent circle
+- Inner circle expands based on progress = (serverTime - startTime) / (endTime - startTime)
+- Outer circle alpha 0.3, inner alpha 0.5
+- Exposed __mechanicsTest for testing
+- Files: src/client/mechanics.ts
