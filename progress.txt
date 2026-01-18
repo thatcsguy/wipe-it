@@ -13,3 +13,12 @@ STATUS-002: COMPLETE
 - onExpire() applies expiration effects
 - toState() returns StatusEffectState w/ iconPath from STATUS_ICONS lookup
 Files: src/server/statusEffect.ts
+
+STATUS-003: COMPLETE
+- Created StatusEffectManager class w/ Map<string, StatusEffect> storage
+- add(status) stores StatusEffect by id
+- tick(now, players) iterates statuses, applies ongoing effects, removes expired (calls onExpire first)
+- getStates() returns StatusEffectState[] for broadcast
+- remove(id) deletes status by id
+- Added helper getStatusesForPlayer(playerId) for STATUS-005 vulnerability check
+Files: src/server/statusEffectManager.ts

@@ -70,7 +70,7 @@
                 "Verify getStates() returns StatusEffectState[]",
                 "Verify remove() can remove status by id or criteria"
             ],
-            "passes": false
+            "passes": true
         },
         {
             "id": "STATUS-004",
