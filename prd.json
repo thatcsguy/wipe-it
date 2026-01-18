@@ -274,7 +274,7 @@
         "Wait 1 second for disconnect to propagate",
         "Verify Tab 1 now shows only 1 player (Alice)"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "id": "e2e-006",

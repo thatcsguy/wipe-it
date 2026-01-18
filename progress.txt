@@ -215,3 +215,14 @@ Files: (no code changes, validation only)
 - MAX_PLAYERS=4 limit enforced correctly
 
 Files: (no code changes, validation only)
+
+## e2e-005 - Player Disconnect Removes Them Complete
+
+- Verified w/ Playwright: two tabs, Alice and Bob joined
+- Both tabs showed 2 players initially
+- Closed Bob's tab (Tab 1) to simulate disconnect
+- Waited 1s for disconnect propagation
+- Alice's tab now shows only 1 player (Alice)
+- Socket disconnect event handled correctly on server
+
+Files: (no code changes, validation only)
