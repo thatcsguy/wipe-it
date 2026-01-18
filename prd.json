@@ -130,7 +130,7 @@
         "Take screenshot and verify admin panel is visible to the right of game canvas",
         "Verify 'Spawn Chariot' button is present in admin panel"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "id": "ADMIN-002",

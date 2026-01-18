@@ -79,3 +79,10 @@
 - game.ts: pass currentGameState.mechanics and currentGameState.timestamp to render()
 - Verified via Playwright: mechanics array + timestamp available, __mechanicsTest.renderMechanics exists
 - Files: src/client/renderer.ts, src/client/game.ts
+
+## ADMIN-001: Admin panel HTML structure
+- Added game-wrapper div to hold game-container + admin-panel side-by-side via flexbox
+- Admin panel: div#admin-panel with h3 "Admin" heading + button#spawn-chariot-btn
+- CSS: .game-wrapper flex layout, .admin-panel dark bg (#0f0f1a), styled button
+- Verified via Playwright: panel visible to right of canvas with Spawn Chariot button
+- Files: public/index.html, public/css/style.css
