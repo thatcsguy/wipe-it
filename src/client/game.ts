@@ -1,7 +1,14 @@
 import { Socket } from 'socket.io-client';
 import { GameState, PlayerState } from '../shared/types';
 import { hasInput, createInput } from './input';
-import { applyInput, getLocalPosition, reconcile, initLocalPosition } from './network';
+import {
+  applyInput,
+  getLocalPosition,
+  reconcile,
+  initLocalPosition,
+  updatePlayerBuffer,
+  getInterpolatedPosition,
+} from './network';
 import { render, initRenderer } from './renderer';
 
 // Game state
@@ -34,6 +41,12 @@ export function startGame(
   // Set up state listener
   socket.on('state', (state: GameState) => {
     currentGameState = state;
+
+    // Buffer positions for all players (used for interpolation)
+    const timestamp = performance.now();
+    for (const player of state.players) {
+      updatePlayerBuffer(player.id, player.x, player.y, timestamp);
+    }
 
     // Initialize local position from first state if not set
     const myPlayer = state.players.find((p) => p.id === localPlayerId);
@@ -74,9 +87,19 @@ function gameLoop(currentTime: number): void {
   // Render frame
   const localPos = getLocalPosition();
 
-  // Build player list for rendering
-  // Local player drawn at predicted position, others at server position
-  render(currentGameState.players, localPlayerId, localPos);
+  // Build interpolated positions for other players
+  const interpolatedPositions = new Map<string, { x: number; y: number }>();
+  for (const player of currentGameState.players) {
+    if (player.id !== localPlayerId) {
+      const interpolated = getInterpolatedPosition(player.id, currentTime);
+      if (interpolated) {
+        interpolatedPositions.set(player.id, interpolated);
+      }
+    }
+  }
+
+  // Render with local player at predicted position, others at interpolated positions
+  render(currentGameState.players, localPlayerId, localPos, interpolatedPositions);
 
   // Schedule next frame
   requestAnimationFrame(gameLoop);

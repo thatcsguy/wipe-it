@@ -3546,6 +3546,68 @@ function reconcile(state, localPlayerId3) {
     pending.predictedY = localY;
   }
 }
+var playerBuffers = /* @__PURE__ */ new Map();
+var INTERPOLATION_DELAY = 100;
+var MAX_BUFFER_SIZE = 20;
+function updatePlayerBuffer(playerId, x, y, timestamp) {
+  let buffer = playerBuffers.get(playerId);
+  if (!buffer) {
+    buffer = [];
+    playerBuffers.set(playerId, buffer);
+  }
+  buffer.push({ x, y, timestamp });
+  if (buffer.length > MAX_BUFFER_SIZE) {
+    buffer.shift();
+  }
+}
+function removePlayerBuffer(playerId) {
+  playerBuffers.delete(playerId);
+}
+function clearPlayerBuffers() {
+  playerBuffers.clear();
+}
+function getInterpolatedPosition(playerId, currentTime) {
+  const buffer = playerBuffers.get(playerId);
+  if (!buffer || buffer.length === 0) {
+    return null;
+  }
+  const renderTime = currentTime - INTERPOLATION_DELAY;
+  let before = null;
+  let after = null;
+  for (let i = 0; i < buffer.length; i++) {
+    if (buffer[i].timestamp <= renderTime) {
+      before = buffer[i];
+    } else {
+      after = buffer[i];
+      break;
+    }
+  }
+  if (!before && after) {
+    return { x: after.x, y: after.y };
+  }
+  if (before && !after) {
+    return { x: before.x, y: before.y };
+  }
+  if (before && after) {
+    const totalTime = after.timestamp - before.timestamp;
+    if (totalTime === 0) {
+      return { x: before.x, y: before.y };
+    }
+    const t = (renderTime - before.timestamp) / totalTime;
+    return {
+      x: before.x + (after.x - before.x) * t,
+      y: before.y + (after.y - before.y) * t
+    };
+  }
+  return null;
+}
+function getPlayerBufferSize(playerId) {
+  const buffer = playerBuffers.get(playerId);
+  return buffer ? buffer.length : 0;
+}
+function getBufferedPlayerIds() {
+  return Array.from(playerBuffers.keys());
+}
 window.__networkTest = {
   getLocalPosition,
   getPendingInputs,
@@ -3553,7 +3615,13 @@ window.__networkTest = {
   applyInput,
   initLocalPosition,
   clearPendingInputs,
-  reconcile
+  reconcile,
+  updatePlayerBuffer,
+  removePlayerBuffer,
+  clearPlayerBuffers,
+  getInterpolatedPosition,
+  getPlayerBufferSize,
+  getBufferedPlayerIds
 };
 
 // dist/client/client/renderer.js
@@ -3612,7 +3680,7 @@ function drawPlayerAt(x, y, color, name) {
   ctx.textBaseline = "bottom";
   ctx.fillText(name, x, y - PLAYER_RADIUS - 5);
 }
-function render(players, localPlayerId3, localPosition) {
+function render(players, localPlayerId3, localPosition, interpolatedPositions) {
   if (!ctx) {
     initRenderer();
   }
@@ -3624,7 +3692,12 @@ function render(players, localPlayerId3, localPosition) {
     if (localPlayerId3 && player.id === localPlayerId3 && localPosition) {
       drawPlayerAt(localPosition.x, localPosition.y, player.color, player.name);
     } else {
-      drawPlayer(player);
+      const interpolated = interpolatedPositions?.get(player.id);
+      if (interpolated) {
+        drawPlayerAt(interpolated.x, interpolated.y, player.color, player.name);
+      } else {
+        drawPlayer(player);
+      }
     }
   }
 }
@@ -3650,6 +3723,10 @@ function startGame(socketInstance, playerId, playerName) {
   initRenderer();
   socket.on("state", (state) => {
     currentGameState = state;
+    const timestamp = performance.now();
+    for (const player of state.players) {
+      updatePlayerBuffer(player.id, player.x, player.y, timestamp);
+    }
     const myPlayer = state.players.find((p) => p.id === localPlayerId);
     if (myPlayer) {
       localPlayerColor = myPlayer.color;
@@ -3672,7 +3749,16 @@ function gameLoop(currentTime) {
     }
   }
   const localPos = getLocalPosition();
-  render(currentGameState.players, localPlayerId, localPos);
+  const interpolatedPositions = /* @__PURE__ */ new Map();
+  for (const player of currentGameState.players) {
+    if (player.id !== localPlayerId) {
+      const interpolated = getInterpolatedPosition(player.id, currentTime);
+      if (interpolated) {
+        interpolatedPositions.set(player.id, interpolated);
+      }
+    }
+  }
+  render(currentGameState.players, localPlayerId, localPos, interpolatedPositions);
   requestAnimationFrame(gameLoop);
 }
 function stopGame() {

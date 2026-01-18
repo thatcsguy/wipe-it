@@ -157,3 +157,17 @@ Files: src/client/renderer.ts, src/client/main.ts
 - Verified w/ Playwright: all WASD movements work, game loop running, state received
 
 Files: src/client/game.ts, src/client/main.ts
+
+## client-007 - Entity Interpolation Complete
+
+- Added PositionSnapshot interface w/ x, y, timestamp
+- playerBuffers Map stores position history per player ID
+- updatePlayerBuffer() adds snapshots, keeps last 20 (MAX_BUFFER_SIZE)
+- getInterpolatedPosition() interpolates between two buffered states
+- INTERPOLATION_DELAY = 100ms renders other players in the past
+- game.ts buffers all player positions on 'state' event
+- game.ts builds interpolatedPositions Map for other players each frame
+- renderer.ts updated to draw other players at interpolated positions
+- Verified w/ Playwright: 2 players, buffer size 20, interpolation returns valid positions
+
+Files: src/client/network.ts, src/client/game.ts, src/client/renderer.ts

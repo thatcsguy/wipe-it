@@ -177,7 +177,7 @@
         "getInterpolatedPosition() returns position interpolated between two buffered states",
         "Interpolation renders other players ~100ms in the past for smoothness"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "id": "client-008",

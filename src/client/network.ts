@@ -152,6 +152,121 @@ export function reconcile(state: GameState, localPlayerId: string): void {
   }
 }
 
+// ====== Entity Interpolation for Other Players ======
+
+// Position snapshot with timestamp
+interface PositionSnapshot {
+  x: number;
+  y: number;
+  timestamp: number;
+}
+
+// Buffer of position history per player (keyed by player ID)
+const playerBuffers: Map<string, PositionSnapshot[]> = new Map();
+
+// How far in the past to render other players (ms)
+const INTERPOLATION_DELAY = 100;
+
+// Max buffer size per player
+const MAX_BUFFER_SIZE = 20;
+
+// Update position buffer for a player
+export function updatePlayerBuffer(
+  playerId: string,
+  x: number,
+  y: number,
+  timestamp: number
+): void {
+  let buffer = playerBuffers.get(playerId);
+  if (!buffer) {
+    buffer = [];
+    playerBuffers.set(playerId, buffer);
+  }
+
+  // Add new snapshot
+  buffer.push({ x, y, timestamp });
+
+  // Keep only last MAX_BUFFER_SIZE entries
+  if (buffer.length > MAX_BUFFER_SIZE) {
+    buffer.shift();
+  }
+}
+
+// Remove player from buffer (on disconnect)
+export function removePlayerBuffer(playerId: string): void {
+  playerBuffers.delete(playerId);
+}
+
+// Clear all player buffers
+export function clearPlayerBuffers(): void {
+  playerBuffers.clear();
+}
+
+// Get interpolated position for a player (renders ~100ms in the past)
+export function getInterpolatedPosition(
+  playerId: string,
+  currentTime: number
+): { x: number; y: number } | null {
+  const buffer = playerBuffers.get(playerId);
+  if (!buffer || buffer.length === 0) {
+    return null;
+  }
+
+  // Target render time is current time minus interpolation delay
+  const renderTime = currentTime - INTERPOLATION_DELAY;
+
+  // Find the two snapshots to interpolate between
+  // We need one before renderTime and one after (or at) renderTime
+  let before: PositionSnapshot | null = null;
+  let after: PositionSnapshot | null = null;
+
+  for (let i = 0; i < buffer.length; i++) {
+    if (buffer[i].timestamp <= renderTime) {
+      before = buffer[i];
+    } else {
+      after = buffer[i];
+      break;
+    }
+  }
+
+  // If we only have snapshots in the future, use the oldest one
+  if (!before && after) {
+    return { x: after.x, y: after.y };
+  }
+
+  // If we only have snapshots in the past, use the newest one
+  if (before && !after) {
+    return { x: before.x, y: before.y };
+  }
+
+  // If we have both, interpolate between them
+  if (before && after) {
+    const totalTime = after.timestamp - before.timestamp;
+    if (totalTime === 0) {
+      return { x: before.x, y: before.y };
+    }
+
+    const t = (renderTime - before.timestamp) / totalTime;
+    return {
+      x: before.x + (after.x - before.x) * t,
+      y: before.y + (after.y - before.y) * t,
+    };
+  }
+
+  return null;
+}
+
+// Get buffer size for a player (for testing)
+export function getPlayerBufferSize(playerId: string): number {
+  const buffer = playerBuffers.get(playerId);
+  return buffer ? buffer.length : 0;
+}
+
+// Get all buffered player IDs (for testing)
+export function getBufferedPlayerIds(): string[] {
+  return Array.from(playerBuffers.keys());
+}
+
 // Expose for testing
 (window as any).__networkTest = {
   getLocalPosition,
@@ -161,4 +276,10 @@ export function reconcile(state: GameState, localPlayerId: string): void {
   initLocalPosition,
   clearPendingInputs,
   reconcile,
+  updatePlayerBuffer,
+  removePlayerBuffer,
+  clearPlayerBuffers,
+  getInterpolatedPosition,
+  getPlayerBufferSize,
+  getBufferedPlayerIds,
 };

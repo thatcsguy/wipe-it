@@ -81,7 +81,8 @@ export function drawPlayerAt(
 export function render(
   players: PlayerState[],
   localPlayerId: string | null,
-  localPosition: { x: number; y: number } | null
+  localPosition: { x: number; y: number } | null,
+  interpolatedPositions?: Map<string, { x: number; y: number }>
 ): void {
   // Initialize if not already done
   if (!ctx) {
@@ -101,8 +102,13 @@ export function render(
       // Draw local player at predicted position
       drawPlayerAt(localPosition.x, localPosition.y, player.color, player.name);
     } else {
-      // Draw other players at server position (or interpolated - client-007)
-      drawPlayer(player);
+      // Draw other players at interpolated position if available, else server position
+      const interpolated = interpolatedPositions?.get(player.id);
+      if (interpolated) {
+        drawPlayerAt(interpolated.x, interpolated.y, player.color, player.name);
+      } else {
+        drawPlayer(player);
+      }
     }
   }
 }
