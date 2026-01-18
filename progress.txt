@@ -86,3 +86,11 @@
 - CSS: .game-wrapper flex layout, .admin-panel dark bg (#0f0f1a), styled button
 - Verified via Playwright: panel visible to right of canvas with Spawn Chariot button
 - Files: public/index.html, public/css/style.css
+
+## ADMIN-002: Admin click handler
+- Created src/client/admin.ts with initAdmin(socket) function
+- Click handler on #spawn-chariot-btn emits 'admin:spawnMechanic' with { type: 'chariot' }
+- Imported and called initAdmin from main.ts after socket creation
+- Exposed __adminTest for testing (getSocket, emitSpawnChariot)
+- Verified via Playwright: __adminTest exists, socket bound, button clickable
+- Files: src/client/admin.ts, src/client/main.ts

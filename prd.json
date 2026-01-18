@@ -140,7 +140,7 @@
         "Check src/client/admin.ts exists",
         "Check button click emits admin:spawnMechanic event with type chariot"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "id": "ADMIN-003",

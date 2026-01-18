@@ -3841,12 +3841,35 @@ window.__gameTest = {
   isGameRunning
 };
 
+// dist/client/client/admin.js
+var adminSocket = null;
+function initAdmin(socket3) {
+  adminSocket = socket3;
+  const spawnChariotBtn = document.getElementById("spawn-chariot-btn");
+  if (spawnChariotBtn) {
+    spawnChariotBtn.addEventListener("click", () => {
+      if (adminSocket) {
+        adminSocket.emit("admin:spawnMechanic", { type: "chariot" });
+      }
+    });
+  }
+}
+window.__adminTest = {
+  getSocket: () => adminSocket,
+  emitSpawnChariot: () => {
+    if (adminSocket) {
+      adminSocket.emit("admin:spawnMechanic", { type: "chariot" });
+    }
+  }
+};
+
 // dist/client/client/main.js
 var modal = document.getElementById("modal");
 var nameInput = document.getElementById("name-input");
 var joinBtn = document.getElementById("join-btn");
 var errorMessage = document.getElementById("error-message");
 var socket2 = lookup2();
+initAdmin(socket2);
 var localPlayerId2 = null;
 joinBtn.addEventListener("click", () => {
   const name = nameInput.value.trim();

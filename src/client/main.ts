@@ -1,6 +1,7 @@
 import { io, Socket } from 'socket.io-client';
 import { getInputState, createInput, getSequenceNumber, hasInput } from './input';
 import { startGame } from './game';
+import { initAdmin } from './admin';
 
 // DOM elements
 const modal = document.getElementById('modal') as HTMLDivElement;
@@ -10,6 +11,9 @@ const errorMessage = document.getElementById('error-message') as HTMLParagraphEl
 
 // Socket connection
 const socket: Socket = io();
+
+// Initialize admin panel
+initAdmin(socket);
 
 // Local player ID (assigned on successful join)
 let localPlayerId: string | null = null;
