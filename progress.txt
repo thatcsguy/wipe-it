@@ -106,3 +106,15 @@ Files: src/client/main.ts, package.json
 - Verified: key press/release, seq incrementing, PlayerInput structure
 
 Files: src/client/input.ts, src/client/main.ts
+
+## client-005 - Client-Side Prediction Complete
+
+- Created network.ts w/ pendingInputs array for unacknowledged inputs
+- applyInput() mirrors server physics: WASD velocity, diagonal normalization, bounds clamping
+- Each input stored w/ predicted position (x,y) after applying
+- initLocalPosition() for setting initial position on join
+- getLocalPosition() returns current predicted position
+- Exposed __networkTest on window for Playwright verification
+- Verified: position updates, diagonal normalization, bounds clamping, pending input storage
+
+Files: src/client/network.ts, src/client/main.ts

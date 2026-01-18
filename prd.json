@@ -153,7 +153,7 @@
         "applyInput() updates local player position immediately using same physics as server",
         "Each input is stored with predicted position for later reconciliation"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "id": "client-006",

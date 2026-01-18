@@ -1,5 +1,6 @@
 import { io, Socket } from 'socket.io-client';
 import { getInputState, createInput, getSequenceNumber, hasInput } from './input';
+import './network'; // Import to bundle network module
 
 // DOM elements
 const modal = document.getElementById('modal') as HTMLDivElement;

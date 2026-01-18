@@ -3451,6 +3451,68 @@ function getSequenceNumber() {
 }
 setupInputListeners();
 
+// dist/client/shared/types.js
+var PLAYER_SPEED = 200;
+var PLAYER_RADIUS = 20;
+var ARENA_WIDTH = 800;
+var ARENA_HEIGHT = 600;
+
+// dist/client/client/network.js
+var pendingInputs = [];
+var localX = ARENA_WIDTH / 2;
+var localY = ARENA_HEIGHT / 2;
+function initLocalPosition(x, y) {
+  localX = x;
+  localY = y;
+}
+function getLocalPosition() {
+  return { x: localX, y: localY };
+}
+function applyInput(input) {
+  const { keys, dt } = input;
+  let dx = 0;
+  let dy = 0;
+  if (keys.w)
+    dy -= 1;
+  if (keys.s)
+    dy += 1;
+  if (keys.a)
+    dx -= 1;
+  if (keys.d)
+    dx += 1;
+  if (dx !== 0 && dy !== 0) {
+    const len = Math.sqrt(dx * dx + dy * dy);
+    dx /= len;
+    dy /= len;
+  }
+  localX += dx * PLAYER_SPEED * dt;
+  localY += dy * PLAYER_SPEED * dt;
+  localX = Math.max(PLAYER_RADIUS, Math.min(ARENA_WIDTH - PLAYER_RADIUS, localX));
+  localY = Math.max(PLAYER_RADIUS, Math.min(ARENA_HEIGHT - PLAYER_RADIUS, localY));
+  pendingInputs.push({
+    input,
+    predictedX: localX,
+    predictedY: localY
+  });
+}
+function getPendingInputs() {
+  return [...pendingInputs];
+}
+function getPendingInputCount() {
+  return pendingInputs.length;
+}
+function clearPendingInputs() {
+  pendingInputs.length = 0;
+}
+window.__networkTest = {
+  getLocalPosition,
+  getPendingInputs,
+  getPendingInputCount,
+  applyInput,
+  initLocalPosition,
+  clearPendingInputs
+};
+
 // dist/client/client/main.js
 var modal = document.getElementById("modal");
 var nameInput = document.getElementById("name-input");
