@@ -46,3 +46,13 @@
 - broadcast() uses mechanicManager.getStates() instead of empty array
 - Verified via Playwright: client receives mechanics array in GameState
 - Files: src/server/game.ts
+
+## CHARIOT-001: ChariotMechanic class
+- Created src/server/mechanics/chariot.ts
+- ChariotMechanic implements BaseMechanic interface
+- Constructor: x, y, radius, duration, effects[] - generates unique id, calculates endTime
+- tick(): no-op (chariot just waits for expiration)
+- isExpired(now): returns true when now >= endTime
+- resolve(players): iterates all players, calculates distance from center, applies damage effects if within radius
+- toState(): returns MechanicState with type='chariot'
+- Files: src/server/mechanics/chariot.ts

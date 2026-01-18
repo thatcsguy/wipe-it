@@ -86,7 +86,7 @@
         "Check ChariotMechanic implements BaseMechanic interface",
         "Check resolve method calculates distance from mechanic center to each player and applies damage if within radius"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "id": "CHARIOT-002",
