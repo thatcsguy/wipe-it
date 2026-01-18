@@ -94,6 +94,7 @@ export class Game {
   private broadcast(): void {
     const state: GameState = {
       players: Array.from(this.players.values()).map(p => p.toState()),
+      mechanics: [],
       timestamp: Date.now(),
     };
     this.io.emit('state', state);

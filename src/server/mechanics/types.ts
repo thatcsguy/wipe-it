@@ -1,4 +1,5 @@
 import { Player } from '../player';
+import { MechanicState } from '../../shared/types';
 
 // Effect applied when mechanic resolves
 export interface Effect {
@@ -6,16 +7,8 @@ export interface Effect {
   amount: number;
 }
 
-// State sent to clients for rendering
-export interface MechanicState {
-  id: string;
-  type: string;
-  startTime: number;
-  endTime: number;
-  x: number;
-  y: number;
-  radius: number;
-}
+// Re-export for convenience
+export { MechanicState };
 
 // Base interface all mechanics implement
 export interface BaseMechanic {

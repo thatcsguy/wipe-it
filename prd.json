@@ -64,7 +64,7 @@
         "Check src/shared/types.ts has MechanicState interface with all required fields",
         "Check GameState interface includes mechanics array field"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "id": "MECH-004",

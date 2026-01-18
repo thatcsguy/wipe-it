@@ -34,8 +34,20 @@ export interface PlayerState {
   lastProcessedInput: number;
 }
 
+// Mechanic state sent to clients for rendering
+export interface MechanicState {
+  id: string;
+  type: string;
+  startTime: number;
+  endTime: number;
+  x: number;
+  y: number;
+  radius: number;
+}
+
 // Game state broadcast from server to clients
 export interface GameState {
   players: PlayerState[];
+  mechanics: MechanicState[];
   timestamp: number;
 }

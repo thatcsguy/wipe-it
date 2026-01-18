@@ -29,3 +29,12 @@
 - tick(now, players) - calls tick on all, resolves + removes expired
 - getStates() - returns MechanicState[] for broadcast
 - Files: src/server/mechanics/manager.ts
+
+## MECH-003: MechanicState in shared types
+- Moved MechanicState interface from server/mechanics/types.ts to shared/types.ts
+- Updated GameState to include mechanics: MechanicState[] array
+- Server mechanics/types.ts now imports + re-exports MechanicState from shared
+- Updated server/game.ts broadcast() to include empty mechanics array
+- Updated client/game.ts initial state to include empty mechanics array
+- Verified via Playwright: GameState.mechanics exists and is empty array
+- Files: src/shared/types.ts, src/server/mechanics/types.ts, src/server/game.ts, src/client/game.ts

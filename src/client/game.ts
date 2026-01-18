@@ -19,7 +19,7 @@ let localPlayerColor: string = '';
 let gameRunning = false;
 
 // Current game state from server
-let currentGameState: GameState = { players: [], timestamp: 0 };
+let currentGameState: GameState = { players: [], mechanics: [], timestamp: 0 };
 
 // Timing
 let lastFrameTime = 0;
