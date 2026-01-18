@@ -102,3 +102,11 @@
 - Imported ARENA_WIDTH, ARENA_HEIGHT from shared/types.ts
 - Verified via Playwright: clicked button, player HP went 100 → 75 → 50, health bar color changed green → yellow
 - Files: src/server/index.ts
+
+## E2E-001: Full integration test
+- Verified via Playwright: join game, click Spawn Chariot, orange AOE visible with expanding inner circle
+- Mechanic state correctly includes id, type, startTime, endTime, x, y, radius
+- Player outside AOE (distance 236 > radius 120) did not take damage
+- Player inside AOE took 25 damage per hit (100 → 75 → 50 in earlier tests)
+- Health bar color transitions: green (>50%) → yellow (25-50%) → red (<25%)
+- All PRD items now pass

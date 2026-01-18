@@ -164,7 +164,7 @@
         "If player was inside AOE radius, verify health bar shows reduced hp (75/100)",
         "If player was outside AOE radius, verify health bar shows full hp (100/100)"
       ],
-      "passes": false
+      "passes": true
     }
   ]
 }
