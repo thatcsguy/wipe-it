@@ -226,3 +226,14 @@ Files: (no code changes, validation only)
 - Socket disconnect event handled correctly on server
 
 Files: (no code changes, validation only)
+
+## e2e-006 - Player Cannot Move Outside Arena Bounds Complete
+
+- Verified w/ Playwright: joined as Player1
+- W key 5s: y clamped to 20 (PLAYER_RADIUS) - top bound ✓
+- A key 5s: x clamped to 20 (PLAYER_RADIUS) - left bound ✓
+- S key 5s: y clamped to 580 (ARENA_HEIGHT - PLAYER_RADIUS) - bottom bound ✓
+- D key 5s: x clamped to 780 (ARENA_WIDTH - PLAYER_RADIUS) - right bound ✓
+- Position clamping works on both client prediction and server authoritative state
+
+Files: (no code changes, validation only)

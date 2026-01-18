@@ -291,7 +291,7 @@
         "Hold D key for 5 seconds (attempt to move past right)",
         "Verify player circle x position is <= ARENA_WIDTH - PLAYER_RADIUS"
       ],
-      "passes": false
+      "passes": true
     }
   ]
 }
