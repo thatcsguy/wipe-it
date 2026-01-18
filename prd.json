@@ -54,7 +54,7 @@
         "Check MechanicManager class has add, tick, and getStates methods",
         "Verify tick method calls resolve on expired mechanics and removes them"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "id": "MECH-003",

@@ -21,3 +21,11 @@
 - BaseMechanic interface: id, tick(now), isExpired(now), resolve(players), toState()
 - Also included MechanicState interface (needed by toState return type)
 - Files: src/server/mechanics/types.ts
+
+## MECH-002: MechanicManager class
+- Created src/server/mechanics/manager.ts
+- MechanicManager class with private mechanics Map<string, BaseMechanic>
+- add(mechanic) - registers mechanic by id
+- tick(now, players) - calls tick on all, resolves + removes expired
+- getStates() - returns MechanicState[] for broadcast
+- Files: src/server/mechanics/manager.ts
