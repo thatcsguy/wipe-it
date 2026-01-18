@@ -261,7 +261,7 @@
         "Verify Tab 5 shows error message indicating game is full",
         "Verify Tab 5 modal remains visible (not dismissed)"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "id": "e2e-005",

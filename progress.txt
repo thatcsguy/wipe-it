@@ -204,3 +204,14 @@ Files: (no code changes, validation only)
 - Entity interpolation and state broadcast working correctly
 
 Files: (no code changes, validation only)
+
+## e2e-004 - Game Rejects 5th Player Complete
+
+- Verified w/ Playwright: opened 5 browser tabs
+- Tabs 0-3: Player1-Player4 joined successfully
+- Tab 3 shows all 4 players in game state
+- Tab 4: Player5 attempted join, got "Game is full" error
+- Modal remains visible (not dismissed) on rejection
+- MAX_PLAYERS=4 limit enforced correctly
+
+Files: (no code changes, validation only)
