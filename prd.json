@@ -40,7 +40,7 @@
         "File exports constants: TICK_RATE=60, BROADCAST_RATE=20, PLAYER_SPEED=200, PLAYER_RADIUS=20, ARENA_WIDTH=800, ARENA_HEIGHT=600, MAX_PLAYERS=4",
         "Run: npm run build compiles without errors"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "id": "server-001",
