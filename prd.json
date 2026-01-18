@@ -1,170 +1,186 @@
 {
-  "name": "Hitpoints + Mechanics System",
-  "items": [
-    {
-      "id": "HP-001",
-      "category": "Hitpoints",
-      "description": "Add MAX_HP constant (100) and hp field to PlayerState interface in shared/types.ts",
-      "verify": [
-        "Check src/shared/types.ts contains MAX_HP = 100 constant",
-        "Check PlayerState interface includes hp: number field"
-      ],
-      "passes": true
-    },
-    {
-      "id": "HP-002",
-      "category": "Hitpoints",
-      "description": "Add hp property to server Player class with initial value 100, add takeDamage(amount) method that clamps hp to minimum 0, update toState() to include hp",
-      "verify": [
-        "Check src/server/player.ts has hp = 100 property",
-        "Check takeDamage method exists and clamps to 0",
-        "Check toState() returns object with hp field"
-      ],
-      "passes": true
-    },
-    {
-      "id": "HP-003",
-      "category": "Hitpoints",
-      "description": "Render health bar for each player - colored bar positioned above player circle, below name text. Bar should show current hp out of max hp with color indicating health level",
-      "verify": [
-        "Use playwright to navigate to localhost:3000",
-        "Join the game with a test name",
-        "Take a screenshot and verify health bar is visible above player circle but below name",
-        "Health bar should be colored (green/yellow/red based on hp level)"
-      ],
-      "passes": true
-    },
-    {
-      "id": "MECH-001",
-      "category": "Mechanics System",
-      "description": "Create mechanics type definitions in src/server/mechanics/types.ts with Effect interface (type: 'damage', amount: number) and BaseMechanic interface (id, tick, isExpired, resolve, toState methods)",
-      "verify": [
-        "Check src/server/mechanics/types.ts exists",
-        "Check Effect interface has type and amount fields",
-        "Check BaseMechanic interface has required methods: tick, isExpired, resolve, toState"
-      ],
-      "passes": true
-    },
-    {
-      "id": "MECH-002",
-      "category": "Mechanics System",
-      "description": "Create MechanicManager class in src/server/mechanics/manager.ts with: mechanics Map, add() method to register mechanics, tick(now, players) to update all and resolve expired ones, getStates() to return array of MechanicState for broadcast",
-      "verify": [
-        "Check src/server/mechanics/manager.ts exists",
-        "Check MechanicManager class has add, tick, and getStates methods",
-        "Verify tick method calls resolve on expired mechanics and removes them"
-      ],
-      "passes": true
-    },
-    {
-      "id": "MECH-003",
-      "category": "Mechanics System",
-      "description": "Add MechanicState interface to shared/types.ts with fields: id, type, startTime, endTime, x, y, radius. Update GameState interface to include mechanics: MechanicState[] array",
-      "verify": [
-        "Check src/shared/types.ts has MechanicState interface with all required fields",
-        "Check GameState interface includes mechanics array field"
-      ],
-      "passes": true
-    },
-    {
-      "id": "MECH-004",
-      "category": "Mechanics System",
-      "description": "Integrate MechanicManager into Game class: instantiate manager, call tick in game loop, include mechanics in state broadcast",
-      "verify": [
-        "Check src/server/game.ts creates MechanicManager instance",
-        "Check tick loop calls mechanicManager.tick()",
-        "Check broadcast includes mechanics from getStates()"
-      ],
-      "passes": true
-    },
-    {
-      "id": "CHARIOT-001",
-      "category": "Chariot Mechanic",
-      "description": "Create ChariotMechanic class in src/server/mechanics/chariot.ts implementing BaseMechanic. Constructor takes x, y, radius, duration, effects[]. isExpired returns true when current time >= endTime. resolve() damages all players within radius using their takeDamage method",
-      "verify": [
-        "Check src/server/mechanics/chariot.ts exists",
-        "Check ChariotMechanic implements BaseMechanic interface",
-        "Check resolve method calculates distance from mechanic center to each player and applies damage if within radius"
-      ],
-      "passes": true
-    },
-    {
-      "id": "CHARIOT-002",
-      "category": "Chariot Mechanic",
-      "description": "Add spawnChariot(x, y, radius, duration, effects) method to Game class that creates a ChariotMechanic and adds it to the manager",
-      "verify": [
-        "Check src/server/game.ts has spawnChariot method",
-        "Check method creates ChariotMechanic with provided parameters",
-        "Check method adds mechanic to mechanicManager"
-      ],
-      "passes": true
-    },
-    {
-      "id": "RENDER-001",
-      "category": "Client Rendering",
-      "description": "Create src/client/mechanics.ts with renderMechanics(ctx, mechanics[], serverTime) function and renderChariot(ctx, mechanic, serverTime) function. Chariot renders as orange-yellow (#ff9f40) transparent circle with expanding inner circle showing progress toward resolution",
-      "verify": [
-        "Check src/client/mechanics.ts exists",
-        "Check renderMechanics and renderChariot functions exist",
-        "Check renderChariot uses orange-yellow color with transparency",
-        "Check inner circle radius is calculated as progress * outerRadius where progress = (now - startTime) / (endTime - startTime)"
-      ],
-      "passes": true
-    },
-    {
-      "id": "RENDER-002",
-      "category": "Client Rendering",
-      "description": "Integrate mechanic rendering into client game loop - pass mechanics array and server timestamp to renderer, render mechanics before players so they appear below",
-      "verify": [
-        "Check src/client/game.ts passes mechanics to render function",
-        "Check src/client/renderer.ts calls renderMechanics before drawing players"
-      ],
-      "passes": true
-    },
-    {
-      "id": "ADMIN-001",
-      "category": "Admin Panel",
-      "description": "Add admin panel HTML structure to index.html - div positioned to the right of game canvas containing heading and 'Spawn Chariot' button. Style with dark background",
-      "verify": [
-        "Use playwright to navigate to localhost:3000",
-        "Take screenshot and verify admin panel is visible to the right of game canvas",
-        "Verify 'Spawn Chariot' button is present in admin panel"
-      ],
-      "passes": true
-    },
-    {
-      "id": "ADMIN-002",
-      "category": "Admin Panel",
-      "description": "Create src/client/admin.ts that attaches click handler to Spawn Chariot button. On click, emit 'admin:spawnMechanic' socket event with { type: 'chariot' }",
-      "verify": [
-        "Check src/client/admin.ts exists",
-        "Check button click emits admin:spawnMechanic event with type chariot"
-      ],
-      "passes": true
-    },
-    {
-      "id": "ADMIN-003",
-      "category": "Admin Panel",
-      "description": "Handle admin:spawnMechanic socket event on server in index.ts. For type 'chariot': spawn with random x,y (padded from edges), radius = ARENA_HEIGHT * 0.2, duration = 3000ms, effect = damage 25",
-      "verify": [
-        "Check src/server/index.ts handles admin:spawnMechanic event",
-        "Check handler calls game.spawnChariot with correct test parameters"
-      ],
-      "passes": true
-    },
-    {
-      "id": "E2E-001",
-      "category": "End-to-End",
-      "description": "Full integration test: spawn chariot via admin button, verify visual appears and expands, verify damage is applied when mechanic resolves",
-      "verify": [
-        "Use playwright to navigate to localhost:3000 and join game",
-        "Click Spawn Chariot button in admin panel",
-        "Take screenshot immediately - verify orange circle AOE is visible",
-        "Wait 3 seconds for mechanic to resolve",
-        "If player was inside AOE radius, verify health bar shows reduced hp (75/100)",
-        "If player was outside AOE radius, verify health bar shows full hp (100/100)"
-      ],
-      "passes": true
-    }
-  ]
+    "name": "Status Effects & Spread AOEs",
+    "items": [
+        {
+            "id": "HEAL-001",
+            "category": "Admin Heal All Button",
+            "description": "Add heal button HTML to admin panel. Add `<button id=\"heal-all-btn\">Heal All</button>` after the spawn button in public/index.html.",
+            "stepsToVerify": [
+                "Open public/index.html and verify a button with id 'heal-all-btn' and text 'Heal All' exists",
+                "Use Playwright to navigate to localhost:3000, verify button is visible in admin panel"
+            ],
+            "passes": false
+        },
+        {
+            "id": "HEAL-002",
+            "category": "Admin Heal All Button",
+            "description": "Add client click handler in src/client/admin.ts that emits 'admin:healAll' socket event when heal button is clicked.",
+            "stepsToVerify": [
+                "Read src/client/admin.ts and verify it adds click listener to 'heal-all-btn'",
+                "Verify the click handler emits socket event 'admin:healAll'"
+            ],
+            "passes": false
+        },
+        {
+            "id": "HEAL-003",
+            "category": "Admin Heal All Button",
+            "description": "Add server handler for 'admin:healAll' event. In src/server/index.ts listen for 'admin:healAll' and call game.healAllPlayers(). In src/server/game.ts add healAllPlayers() method that sets all players to MAX_HP.",
+            "stepsToVerify": [
+                "Read src/server/index.ts and verify it listens for 'admin:healAll' event",
+                "Read src/server/game.ts and verify healAllPlayers() method exists and sets all player hp to MAX_HP",
+                "Use Playwright: join game, take damage (if possible), click Heal All button, verify player health restored"
+            ],
+            "passes": false
+        },
+        {
+            "id": "STATUS-001",
+            "category": "Status Effect System",
+            "description": "Define status effect types in src/shared/types.ts. Add StatusEffectType union starting with 'vulnerability'. Add StatusEffectState interface with type, iconPath, startTime, duration, playerId. Add statusEffects: StatusEffectState[] to PlayerState. Add statusEffects: StatusEffectState[] to GameState. Add Effect type variant for status effects: { type: 'status', statusType, duration }.",
+            "stepsToVerify": [
+                "Read src/shared/types.ts and verify StatusEffectType type exists with 'vulnerability'",
+                "Verify StatusEffectState interface has: type, iconPath, startTime, duration, playerId",
+                "Verify PlayerState has statusEffects array",
+                "Verify GameState has statusEffects array",
+                "Verify Effect type includes status variant with statusType and duration"
+            ],
+            "passes": false
+        },
+        {
+            "id": "STATUS-002",
+            "category": "Status Effect System",
+            "description": "Create StatusEffect class in src/server/statusEffect.ts. Properties: type, playerId, startTime, duration, ongoingEffects, expirationEffects. Methods: tick(player) applies ongoing effects, isExpired(now) checks duration, onExpire(player) applies expiration effects, toState() serializes for client.",
+            "stepsToVerify": [
+                "Verify src/server/statusEffect.ts exists",
+                "Verify StatusEffect class has properties: type, playerId, startTime, duration, ongoingEffects, expirationEffects",
+                "Verify tick() method exists and applies ongoing effects",
+                "Verify isExpired() method checks if now >= startTime + duration",
+                "Verify onExpire() method applies expiration effects",
+                "Verify toState() returns StatusEffectState object"
+            ],
+            "passes": false
+        },
+        {
+            "id": "STATUS-003",
+            "category": "Status Effect System",
+            "description": "Create StatusEffectManager in src/server/statusEffectManager.ts. Methods: add(status) adds new status, tick(now, players) iterates statuses applying ongoing and removing expired, getStates() returns array of serialized states, remove(id) removes specific status.",
+            "stepsToVerify": [
+                "Verify src/server/statusEffectManager.ts exists",
+                "Verify add() method accepts and stores StatusEffect",
+                "Verify tick() iterates statuses, calls tick on each, removes expired",
+                "Verify getStates() returns StatusEffectState[]",
+                "Verify remove() can remove status by id or criteria"
+            ],
+            "passes": false
+        },
+        {
+            "id": "STATUS-004",
+            "category": "Status Effect System",
+            "description": "Integrate StatusEffectManager into Game class. Add statusEffectManager property to src/server/game.ts. Call statusEffectManager.tick() during game tick. Include statusEffectManager.getStates() in game state broadcast.",
+            "stepsToVerify": [
+                "Read src/server/game.ts and verify statusEffectManager property exists",
+                "Verify game tick calls statusEffectManager.tick()",
+                "Verify getState() or broadcast includes statusEffects from statusEffectManager.getStates()"
+            ],
+            "passes": false
+        },
+        {
+            "id": "STATUS-005",
+            "category": "Status Effect System",
+            "description": "Implement vulnerability status behavior in src/server/player.ts. When player has vulnerability status, takeDamage() multiplies incoming damage by 10.",
+            "stepsToVerify": [
+                "Read src/server/player.ts",
+                "Verify takeDamage() checks for vulnerability status",
+                "Verify damage is multiplied by 10 when vulnerability is active"
+            ],
+            "passes": false
+        },
+        {
+            "id": "STATUS-006",
+            "category": "Status Effect System",
+            "description": "Add client-side status effect rendering. Create src/client/statusEffects.ts with renderStatusEffects(ctx, player, statuses) that draws status icons centered on player. Call status renderer in src/client/renderer.ts drawPlayerAt() after drawing the player circle. Add vulnerability icon to public/images/ (simple skull or down-arrow shape).",
+            "stepsToVerify": [
+                "Verify src/client/statusEffects.ts exists with renderStatusEffects function",
+                "Verify src/client/renderer.ts imports and calls renderStatusEffects",
+                "Verify vulnerability icon exists in public/images/",
+                "Use Playwright: apply vulnerability to player, verify icon renders above player"
+            ],
+            "passes": false
+        },
+        {
+            "id": "SPREAD-001",
+            "category": "Spread AOE Mechanic",
+            "description": "Define spread mechanic types in src/shared/types.ts. Add 'spread' to MechanicType union. Add SpreadMechanicState interface with: type: 'spread', id, targetPlayerId, radius, startTime, endTime. Note: no x/y since position comes from player.",
+            "stepsToVerify": [
+                "Read src/shared/types.ts",
+                "Verify MechanicType includes 'spread'",
+                "Verify SpreadMechanicState interface exists with type, id, targetPlayerId, radius, startTime, endTime",
+                "Verify SpreadMechanicState does NOT have x/y position fields"
+            ],
+            "passes": false
+        },
+        {
+            "id": "SPREAD-002",
+            "category": "Spread AOE Mechanic",
+            "description": "Create SpreadMechanic class in src/server/mechanics/spread.ts. Properties: id, targetPlayerId, radius, startTime, endTime, effects. Methods: tick(now) is no-op since position comes from player, isExpired(now) returns now >= endTime, resolve(players, statusManager) gets target player position and damages all players within radius then applies vulnerability status (1000ms duration), toState() returns SpreadMechanicState with targetPlayerId.",
+            "stepsToVerify": [
+                "Verify src/server/mechanics/spread.ts exists",
+                "Verify SpreadMechanic has properties: id, targetPlayerId, radius, startTime, endTime, effects",
+                "Verify resolve() finds all players within radius of target player",
+                "Verify resolve() applies damage to players in range",
+                "Verify resolve() applies vulnerability status with 1000ms duration",
+                "Verify toState() returns SpreadMechanicState with targetPlayerId"
+            ],
+            "passes": false
+        },
+        {
+            "id": "SPREAD-003",
+            "category": "Spread AOE Mechanic",
+            "description": "Update MechanicManager in src/server/mechanics/manager.ts to pass statusEffectManager to resolve() calls so SpreadMechanic can apply status effects.",
+            "stepsToVerify": [
+                "Read src/server/mechanics/manager.ts",
+                "Verify resolve() method receives or has access to statusEffectManager",
+                "Verify statusEffectManager is passed when calling mechanic.resolve()"
+            ],
+            "passes": false
+        },
+        {
+            "id": "SPREAD-004",
+            "category": "Spread AOE Mechanic",
+            "description": "Add spawnSpread method to Game class in src/server/game.ts. Method signature: spawnSpread(playerId, radius, duration, effects) creates a SpreadMechanic attached to the specified player.",
+            "stepsToVerify": [
+                "Read src/server/game.ts",
+                "Verify spawnSpread() method exists",
+                "Verify it accepts playerId, radius, duration, effects parameters",
+                "Verify it creates and adds a SpreadMechanic to mechanicManager"
+            ],
+            "passes": false
+        },
+        {
+            "id": "SPREAD-005",
+            "category": "Spread AOE Mechanic",
+            "description": "Add admin button to spawn spread mechanic. In public/index.html add <button id=\"spawn-spread-btn\">Spawn Spread</button>. In src/client/admin.ts emit 'admin:spawnMechanic' with type: 'spread' on click. In src/server/index.ts handle type === 'spread' by picking a random player and spawning spread on them.",
+            "stepsToVerify": [
+                "Verify public/index.html has button with id 'spawn-spread-btn'",
+                "Verify src/client/admin.ts adds click handler emitting admin:spawnMechanic with type 'spread'",
+                "Verify src/server/index.ts handles spread type in spawnMechanic handler",
+                "Verify server picks random player when spawning spread",
+                "Use Playwright: join game, click Spawn Spread, verify spread mechanic appears on a player"
+            ],
+            "passes": false
+        },
+        {
+            "id": "SPREAD-006",
+            "category": "Spread AOE Mechanic",
+            "description": "Add client spread rendering in src/client/mechanics.ts. Add renderSpread() function that gets player position from game state and draws FFXIV-style pink/purple gradient circle. Use light pink/purple outer ring (rgba(255, 128, 255, 0.3)), radial gradient pink/purple fill, pulsing glow effect based on progress toward expiration, clearly defined edge border.",
+            "stepsToVerify": [
+                "Verify src/client/mechanics.ts has renderSpread() function",
+                "Verify it retrieves target player position from game state using targetPlayerId",
+                "Verify it draws a circle with pink/purple gradient fill",
+                "Verify outer ring has light pink/purple color",
+                "Verify pulsing/glow effect based on mechanic progress",
+                "Use Playwright: spawn spread, take screenshot, verify pink/purple AOE circle renders on player"
+            ],
+            "passes": false
+        }
+    ]
 }

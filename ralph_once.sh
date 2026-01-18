@@ -8,7 +8,7 @@ claude --permission-mode acceptEdits "$(cat <<'EOF'
 
 1. Decide which task from the PRD to work on next. This should be the one YOU decide has the highest priority - not necessarily the first in the list. ONLY WORK ON A SINGLE TASK.
 
-2. Validate your work using the playwright plugin. Don't save any screenshots to the repo.
+2. If your change likely affects the client, validate your work using the playwright plugin. Don't save any screenshots to the repo.
 
 3. After completing the task, append to progress.txt:
    - Task completed and PRD item reference
@@ -22,6 +22,8 @@ claude --permission-mode acceptEdits "$(cat <<'EOF'
      - One logical change per commit
      - If a task feels too large, break it into subtasks
      - Prefer multiple small commits over one large commit
+
+If you started a playwright server, ensure it is cleaned up before ending.
 
 If, while implementing the feature, you notice that all work in the PRD is complete, output <promise>COMPLETE</promise>.
 EOF
