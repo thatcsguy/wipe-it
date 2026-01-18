@@ -71,3 +71,14 @@ Files: src/server/index.ts
 - Verified w/ Playwright: all elements present, input visible
 
 Files: public/index.html
+
+## client-002 - CSS Styling Complete
+
+- Created style.css w/ flexbox centering for body
+- Canvas: block display, 2px solid border (#4a4a6a)
+- Modal: absolute position overlaying canvas, rgba(0,0,0,0.7) bg
+- .hidden class sets display:none for modal hide on join
+- Dark theme: #1a1a2e bg, #16213e canvas, #e0e0e0 text
+- Verified w/ Playwright: all computed styles match requirements
+
+Files: public/css/style.css

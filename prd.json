@@ -115,7 +115,7 @@
         "Modal overlays the canvas, centered, with semi-transparent background",
         "Modal hides when game starts (via JS adding hidden class)"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "id": "client-003",
