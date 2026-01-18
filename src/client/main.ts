@@ -1,7 +1,6 @@
 import { io, Socket } from 'socket.io-client';
 import { getInputState, createInput, getSequenceNumber, hasInput } from './input';
-import './network'; // Import to bundle network module
-import './renderer'; // Import to bundle renderer module
+import { startGame } from './game';
 
 // DOM elements
 const modal = document.getElementById('modal') as HTMLDivElement;
@@ -44,7 +43,8 @@ socket.on('joinResponse', (response: { success: boolean; playerId?: string; erro
     localPlayerId = response.playerId;
     modal.classList.add('hidden');
     console.log('Joined game with ID:', localPlayerId);
-    // TODO: Initialize game (client-009)
+    // Start the game loop
+    startGame(socket, localPlayerId, nameInput.value.trim());
   } else {
     // Failed - show error
     showError(response.error || 'Failed to join');

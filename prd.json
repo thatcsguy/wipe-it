@@ -203,7 +203,7 @@
         "Each frame: renders self at predicted position, others at interpolated positions",
         "Calculates delta time between frames for smooth movement"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "id": "e2e-001",

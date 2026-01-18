@@ -145,3 +145,15 @@ Files: src/client/network.ts
 - Verified: arena border, player circle, white stroke, name text all render
 
 Files: src/client/renderer.ts, src/client/main.ts
+
+## client-009 - Game Loop Complete
+
+- Created game.ts w/ requestAnimationFrame-based game loop
+- startGame() called from main.ts after successful join
+- Each frame: checks hasInput(), creates input, applies locally (prediction), sends to server
+- Receives 'state' events from server, calls reconcile() for authoritative correction
+- Delta time calculated via performance.now() diff for smooth movement
+- render() draws local player at predicted pos, others at server pos
+- Verified w/ Playwright: all WASD movements work, game loop running, state received
+
+Files: src/client/game.ts, src/client/main.ts

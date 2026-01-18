@@ -3117,11 +3117,11 @@ var Manager = class extends Emitter {
     if (~this._readyState.indexOf("open"))
       return this;
     this.engine = new Socket(this.uri, this.opts);
-    const socket2 = this.engine;
+    const socket3 = this.engine;
     const self2 = this;
     this._readyState = "opening";
     this.skipReconnect = false;
-    const openSubDestroy = on(socket2, "open", function() {
+    const openSubDestroy = on(socket3, "open", function() {
       self2.onopen();
       fn && fn();
     });
@@ -3135,13 +3135,13 @@ var Manager = class extends Emitter {
         this.maybeReconnectOnOpen();
       }
     };
-    const errorSub = on(socket2, "error", onError);
+    const errorSub = on(socket3, "error", onError);
     if (false !== this._timeout) {
       const timeout = this._timeout;
       const timer = this.setTimeoutFn(() => {
         openSubDestroy();
         onError(new Error("timeout"));
-        socket2.close();
+        socket3.close();
       }, timeout);
       if (this.opts.autoUnref) {
         timer.unref();
@@ -3172,12 +3172,12 @@ var Manager = class extends Emitter {
     this.cleanup();
     this._readyState = "open";
     this.emitReserved("open");
-    const socket2 = this.engine;
+    const socket3 = this.engine;
     this.subs.push(
-      on(socket2, "ping", this.onping.bind(this)),
-      on(socket2, "data", this.ondata.bind(this)),
-      on(socket2, "error", this.onerror.bind(this)),
-      on(socket2, "close", this.onclose.bind(this)),
+      on(socket3, "ping", this.onping.bind(this)),
+      on(socket3, "data", this.ondata.bind(this)),
+      on(socket3, "error", this.onerror.bind(this)),
+      on(socket3, "close", this.onclose.bind(this)),
       // @ts-ignore
       on(this.decoder, "decoded", this.ondecoded.bind(this))
     );
@@ -3227,14 +3227,14 @@ var Manager = class extends Emitter {
    * @public
    */
   socket(nsp, opts) {
-    let socket2 = this.nsps[nsp];
-    if (!socket2) {
-      socket2 = new Socket2(this, nsp, opts);
-      this.nsps[nsp] = socket2;
-    } else if (this._autoConnect && !socket2.active) {
-      socket2.connect();
+    let socket3 = this.nsps[nsp];
+    if (!socket3) {
+      socket3 = new Socket2(this, nsp, opts);
+      this.nsps[nsp] = socket3;
+    } else if (this._autoConnect && !socket3.active) {
+      socket3.connect();
     }
-    return socket2;
+    return socket3;
   }
   /**
    * Called upon a socket close.
@@ -3242,11 +3242,11 @@ var Manager = class extends Emitter {
    * @param socket
    * @private
    */
-  _destroy(socket2) {
+  _destroy(socket3) {
     const nsps = Object.keys(this.nsps);
     for (const nsp of nsps) {
-      const socket3 = this.nsps[nsp];
-      if (socket3.active) {
+      const socket4 = this.nsps[nsp];
+      if (socket4.active) {
         return;
       }
     }
@@ -3527,8 +3527,8 @@ function applyPhysicsToPosition(x, y, input) {
   y = Math.max(PLAYER_RADIUS, Math.min(ARENA_HEIGHT - PLAYER_RADIUS, y));
   return { x, y };
 }
-function reconcile(state, localPlayerId2) {
-  const serverPlayer = state.players.find((p) => p.id === localPlayerId2);
+function reconcile(state, localPlayerId3) {
+  const serverPlayer = state.players.find((p) => p.id === localPlayerId3);
   if (!serverPlayer) {
     return;
   }
@@ -3612,7 +3612,7 @@ function drawPlayerAt(x, y, color, name) {
   ctx.textBaseline = "bottom";
   ctx.fillText(name, x, y - PLAYER_RADIUS - 5);
 }
-function render(players, localPlayerId2, localPosition) {
+function render(players, localPlayerId3, localPosition) {
   if (!ctx) {
     initRenderer();
   }
@@ -3621,7 +3621,7 @@ function render(players, localPlayerId2, localPosition) {
   clear();
   drawArena();
   for (const player of players) {
-    if (localPlayerId2 && player.id === localPlayerId2 && localPosition) {
+    if (localPlayerId3 && player.id === localPlayerId3 && localPosition) {
       drawPlayerAt(localPosition.x, localPosition.y, player.color, player.name);
     } else {
       drawPlayer(player);
@@ -3634,13 +3634,70 @@ window.__rendererTest = {
   drawPlayerAt
 };
 
+// dist/client/client/game.js
+var socket = null;
+var localPlayerId = null;
+var localPlayerName = "";
+var localPlayerColor = "";
+var gameRunning = false;
+var currentGameState = { players: [], timestamp: 0 };
+var lastFrameTime = 0;
+function startGame(socketInstance, playerId, playerName) {
+  socket = socketInstance;
+  localPlayerId = playerId;
+  localPlayerName = playerName;
+  gameRunning = true;
+  initRenderer();
+  socket.on("state", (state) => {
+    currentGameState = state;
+    const myPlayer = state.players.find((p) => p.id === localPlayerId);
+    if (myPlayer) {
+      localPlayerColor = myPlayer.color;
+      reconcile(state, localPlayerId);
+    }
+  });
+  lastFrameTime = performance.now();
+  requestAnimationFrame(gameLoop);
+}
+function gameLoop(currentTime) {
+  if (!gameRunning)
+    return;
+  const dt = (currentTime - lastFrameTime) / 1e3;
+  lastFrameTime = currentTime;
+  if (hasInput()) {
+    const input = createInput(dt);
+    applyInput(input);
+    if (socket) {
+      socket.emit("input", input);
+    }
+  }
+  const localPos = getLocalPosition();
+  render(currentGameState.players, localPlayerId, localPos);
+  requestAnimationFrame(gameLoop);
+}
+function stopGame() {
+  gameRunning = false;
+}
+function getGameState() {
+  return currentGameState;
+}
+function isGameRunning() {
+  return gameRunning;
+}
+window.__gameTest = {
+  startGame,
+  stopGame,
+  getGameState,
+  isGameRunning
+};
+
 // dist/client/client/main.js
 var modal = document.getElementById("modal");
 var nameInput = document.getElementById("name-input");
 var joinBtn = document.getElementById("join-btn");
 var errorMessage = document.getElementById("error-message");
-var socket = lookup2();
-var localPlayerId = null;
+var socket2 = lookup2();
+var localPlayerId2 = null;
 joinBtn.addEventListener("click", () => {
   const name = nameInput.value.trim();
   if (!name) {
@@ -3649,18 +3706,19 @@ joinBtn.addEventListener("click", () => {
   }
   joinBtn.disabled = true;
   errorMessage.classList.add("hidden");
-  socket.emit("join", { name });
+  socket2.emit("join", { name });
 });
 nameInput.addEventListener("keydown", (e) => {
   if (e.key === "Enter") {
     joinBtn.click();
   }
 });
-socket.on("joinResponse", (response) => {
+socket2.on("joinResponse", (response) => {
   if (response.success && response.playerId) {
-    localPlayerId = response.playerId;
+    localPlayerId2 = response.playerId;
     modal.classList.add("hidden");
-    console.log("Joined game with ID:", localPlayerId);
+    console.log("Joined game with ID:", localPlayerId2);
+    startGame(socket2, localPlayerId2, nameInput.value.trim());
   } else {
     showError(response.error || "Failed to join");
     joinBtn.disabled = false;
@@ -3671,7 +3729,7 @@ function showError(message) {
   errorMessage.classList.remove("hidden");
 }
 function getLocalPlayerId() {
-  return localPlayerId;
+  return localPlayerId2;
 }
 window.__inputTest = {
   getInputState,
@@ -3681,7 +3739,7 @@ window.__inputTest = {
 };
 export {
   getLocalPlayerId,
-  localPlayerId,
-  socket
+  localPlayerId2 as localPlayerId,
+  socket2 as socket
 };
 //# sourceMappingURL=main.js.map
