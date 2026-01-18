@@ -193,3 +193,14 @@ Files: (no code changes, validation only)
 - State broadcast working correctly between clients
 
 Files: (no code changes, validation only)
+
+## e2e-003 - Movement Syncs Between Clients Complete
+
+- Verified w/ Playwright: two tabs, Alice and Bob joined
+- Alice held W key 500ms: moved up (y: 300→20, hit top bound)
+- Bob's tab shows Alice at y=20 - sync confirmed
+- Bob held D key 500ms: moved right (x: 400→500)
+- Alice's tab shows Bob at x=500 - sync confirmed
+- Entity interpolation and state broadcast working correctly
+
+Files: (no code changes, validation only)

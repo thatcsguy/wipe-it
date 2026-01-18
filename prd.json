@@ -247,7 +247,7 @@
         "In Tab 2 (Bob): hold D key for 500ms",
         "Verify in Tab 1: Bob's circle has moved rightward"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "id": "e2e-004",
