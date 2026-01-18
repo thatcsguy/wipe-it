@@ -37,3 +37,16 @@ Files: src/server/index.ts, public/index.html
 - Build verified: npm run build passes
 
 Files: src/server/player.ts
+
+## server-003 - Game Class Complete
+
+- Game class manages players in Map<socketId, Player>
+- Color pool: 4 colors, assigned on join, returned on leave
+- addPlayer() returns null if >=4 players (MAX_PLAYERS check)
+- removePlayer() returns color to pool
+- Physics loop at 60Hz via setInterval, processes queued inputs
+- Broadcast loop at 20Hz emits 'state' event w/ GameState
+- inputQueues stores per-player input buffers for tick processing
+- Build verified, server starts correctly
+
+Files: src/server/game.ts

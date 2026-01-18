@@ -78,7 +78,7 @@
         "Game runs physics loop at 60Hz using setInterval",
         "Game broadcasts state to all clients at 20Hz"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "id": "server-004",
