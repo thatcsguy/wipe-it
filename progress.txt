@@ -1,0 +1,10 @@
+## setup-001 - Project Setup Complete
+
+- Created package.json w/ express, socket.io, typescript, esbuild, ts-node-dev
+- tsconfig.json: target ES2020, module commonjs, server+shared
+- tsconfig.client.json: target ES2020, module ESNext, client+shared
+- esbuild.config.js bundles client to public/js/main.js
+- Created placeholder files in src/server, src/client, src/shared
+- Also created directory structure (setup-002 prereq)
+
+Files: package.json, tsconfig.json, tsconfig.client.json, esbuild.config.js, src/*/

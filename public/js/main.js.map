@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../dist/client/client/main.js"],
+  "sourcesContent": ["\"use strict\";\n// Placeholder - will be implemented in client-003\nconsole.log('Client placeholder');\n"],
+  "mappings": ";AAEA,QAAQ,IAAI,oBAAoB;",
+  "names": []
+}

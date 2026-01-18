@@ -13,7 +13,7 @@
         "Run: npm install completes without errors",
         "Run: npm run build compiles without TypeScript errors"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "id": "setup-002",
@@ -26,7 +26,7 @@
         "Directory public exists",
         "Directory public/css exists"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "id": "shared-001",
