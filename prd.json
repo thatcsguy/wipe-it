@@ -150,7 +150,7 @@
         "Check src/server/index.ts handles admin:spawnMechanic event",
         "Check handler calls game.spawnChariot with correct test parameters"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "id": "E2E-001",

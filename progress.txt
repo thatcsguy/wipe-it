@@ -94,3 +94,11 @@
 - Exposed __adminTest for testing (getSocket, emitSpawnChariot)
 - Verified via Playwright: __adminTest exists, socket bound, button clickable
 - Files: src/client/admin.ts, src/client/main.ts
+
+## ADMIN-003: Server admin:spawnMechanic handler
+- Added socket handler for 'admin:spawnMechanic' event in index.ts
+- For type 'chariot': radius = ARENA_HEIGHT * 0.2 (120px), duration = 3000ms, damage = 25
+- Random x,y with padding = radius + 20 to keep AOE within arena bounds
+- Imported ARENA_WIDTH, ARENA_HEIGHT from shared/types.ts
+- Verified via Playwright: clicked button, player HP went 100 → 75 → 50, health bar color changed green → yellow
+- Files: src/server/index.ts
