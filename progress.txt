@@ -1,0 +1,7 @@
+## HP-001 + HP-002: Hitpoints foundation
+- Added MAX_HP=100 constant to shared/types.ts
+- Added hp:number field to PlayerState interface
+- Server Player class: hp property (init 100), takeDamage(amount) clamps to 0, toState() includes hp
+- Verified via Playwright: player state shows hp:100
+- Files: src/shared/types.ts, src/server/player.ts
+- Note: HP-001 and HP-002 done together - toState() requires hp field so both needed for compilation

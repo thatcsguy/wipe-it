@@ -9,7 +9,7 @@
         "Check src/shared/types.ts contains MAX_HP = 100 constant",
         "Check PlayerState interface includes hp: number field"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "id": "HP-002",
@@ -20,7 +20,7 @@
         "Check takeDamage method exists and clamps to 0",
         "Check toState() returns object with hp field"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "id": "HP-003",

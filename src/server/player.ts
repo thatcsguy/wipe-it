@@ -6,6 +6,7 @@ import {
   PLAYER_RADIUS,
   ARENA_WIDTH,
   ARENA_HEIGHT,
+  MAX_HP,
 } from '../shared/types';
 
 export class Player {
@@ -14,12 +15,14 @@ export class Player {
   x: number;
   y: number;
   color: string;
+  hp: number;
   lastProcessedInput: number;
 
   constructor(id: string, name: string, color: string) {
     this.id = id;
     this.name = name;
     this.color = color;
+    this.hp = MAX_HP;
     // Start in center of arena
     this.x = ARENA_WIDTH / 2;
     this.y = ARENA_HEIGHT / 2;
@@ -57,6 +60,10 @@ export class Player {
     this.lastProcessedInput = seq;
   }
 
+  takeDamage(amount: number): void {
+    this.hp = Math.max(0, this.hp - amount);
+  }
+
   toState(): PlayerState {
     return {
       id: this.id,
@@ -64,6 +71,7 @@ export class Player {
       x: this.x,
       y: this.y,
       color: this.color,
+      hp: this.hp,
       lastProcessedInput: this.lastProcessedInput,
     };
   }

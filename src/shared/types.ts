@@ -6,6 +6,7 @@ export const PLAYER_RADIUS = 20;
 export const ARENA_WIDTH = 800;
 export const ARENA_HEIGHT = 600;
 export const MAX_PLAYERS = 4;
+export const MAX_HP = 100;
 
 // Input keys state
 export interface InputKeys {
@@ -29,6 +30,7 @@ export interface PlayerState {
   x: number;
   y: number;
   color: string;
+  hp: number;
   lastProcessedInput: number;
 }
 
