@@ -82,3 +82,14 @@ Files: public/index.html
 - Verified w/ Playwright: all computed styles match requirements
 
 Files: public/css/style.css
+
+## client-003 - Main.ts Entry Point Complete
+
+- Socket.IO client connects on page load via io()
+- Join button click: validates name input, emits 'join' w/ name
+- joinResponse handler: success hides modal + stores playerId, failure shows error
+- Enter key triggers join button click
+- Added socket.io-client dependency to package.json
+- Verified w/ Playwright: join works, modal hides on success, 5th player shows "Game is full" error
+
+Files: src/client/main.ts, package.json

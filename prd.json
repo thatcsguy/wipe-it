@@ -128,7 +128,7 @@
         "On successful join response: hides modal, initializes game with assigned playerId",
         "On failed join (game full): shows error message in modal"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "id": "client-004",
