@@ -103,7 +103,7 @@
         "Contains script tag loading /js/main.js as module",
         "Use playwright: navigate to localhost:3000, verify canvas element exists, verify name input visible"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "id": "client-002",

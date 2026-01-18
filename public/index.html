@@ -4,9 +4,22 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Wipe It</title>
+  <link rel="stylesheet" href="/css/style.css">
 </head>
 <body>
-  <h1>Wipe It</h1>
-  <p>Server is running.</p>
+  <div class="game-container">
+    <canvas id="game" width="800" height="600"></canvas>
+
+    <div id="modal" class="modal">
+      <div class="modal-content">
+        <h2>Join Game</h2>
+        <input type="text" id="name-input" placeholder="Enter your name" maxlength="20">
+        <button id="join-btn">Join</button>
+        <p id="error-message" class="error hidden"></p>
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="/js/main.js"></script>
 </body>
 </html>

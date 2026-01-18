@@ -61,3 +61,13 @@ Files: src/server/game.ts
 - Verified w/ Playwright: join works, 5th player rejected, input processed (seq=42), disconnect removes player
 
 Files: src/server/index.ts
+
+## client-001 - HTML Canvas & Modal Complete
+
+- Created index.html w/ canvas#game 800x600
+- Modal overlay w/ name input, join button, error message area
+- Script tag loads /js/main.js as ES module
+- Linked /css/style.css (file to be created in client-002)
+- Verified w/ Playwright: all elements present, input visible
+
+Files: public/index.html
