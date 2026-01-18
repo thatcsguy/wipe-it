@@ -234,7 +234,7 @@
         "Verify Tab 2 shows two circles with names 'Alice' and 'Bob'",
         "Verify circles have different colors"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "id": "e2e-003",

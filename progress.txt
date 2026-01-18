@@ -183,3 +183,13 @@ Files: src/client/network.ts, src/client/game.ts, src/client/renderer.ts
 - All WASD controls function correctly
 
 Files: (no code changes, validation only)
+
+## e2e-002 - Multiple Players Join & See Each Other Complete
+
+- Verified w/ Playwright: opened two tabs to localhost:3000
+- Tab 1: joined as 'Alice', Tab 2: joined as 'Bob'
+- Both tabs show 2 players in game state
+- Alice: #e74c3c (red), Bob: #3498db (blue) - different colors confirmed
+- State broadcast working correctly between clients
+
+Files: (no code changes, validation only)
