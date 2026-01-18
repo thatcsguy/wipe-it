@@ -4,6 +4,7 @@ import { GameState, PlayerInput, TICK_RATE, BROADCAST_RATE, MAX_PLAYERS } from '
 import { MechanicManager } from './mechanics/manager';
 import { ChariotMechanic } from './mechanics/chariot';
 import { Effect } from './mechanics/types';
+import { StatusEffectManager } from './statusEffectManager';
 
 // Color pool for players
 const COLOR_POOL = ['#e74c3c', '#3498db', '#2ecc71', '#f39c12'];
@@ -16,6 +17,7 @@ export class Game {
   private tickInterval: ReturnType<typeof setInterval> | null = null;
   private broadcastInterval: ReturnType<typeof setInterval> | null = null;
   private mechanicManager: MechanicManager = new MechanicManager();
+  private statusEffectManager: StatusEffectManager = new StatusEffectManager();
 
   constructor(io: Server) {
     this.io = io;
@@ -98,13 +100,16 @@ export class Game {
 
     // Update mechanics (tick + resolve expired)
     this.mechanicManager.tick(now, this.players);
+
+    // Update status effects
+    this.statusEffectManager.tick(now, this.players);
   }
 
   private broadcast(): void {
     const state: GameState = {
       players: Array.from(this.players.values()).map(p => p.toState()),
       mechanics: this.mechanicManager.getStates(),
-      statusEffects: [], // Populated by StatusEffectManager when added
+      statusEffects: this.statusEffectManager.getStates(),
       timestamp: Date.now(),
     };
     this.io.emit('state', state);

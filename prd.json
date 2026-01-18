@@ -81,7 +81,7 @@
                 "Verify game tick calls statusEffectManager.tick()",
                 "Verify getState() or broadcast includes statusEffects from statusEffectManager.getStates()"
             ],
-            "passes": false
+            "passes": true
         },
         {
             "id": "STATUS-005",

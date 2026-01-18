@@ -22,3 +22,10 @@ STATUS-003: COMPLETE
 - remove(id) deletes status by id
 - Added helper getStatusesForPlayer(playerId) for STATUS-005 vulnerability check
 Files: src/server/statusEffectManager.ts
+
+STATUS-004: COMPLETE
+- Added statusEffectManager property to Game class
+- tick() now calls statusEffectManager.tick(now, this.players)
+- broadcast() includes statusEffectManager.getStates() in state
+- Verified w/ Playwright: game state has statusEffects array
+Files: src/server/game.ts
