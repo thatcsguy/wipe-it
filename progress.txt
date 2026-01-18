@@ -118,3 +118,15 @@ Files: src/client/input.ts, src/client/main.ts
 - Verified: position updates, diagonal normalization, bounds clamping, pending input storage
 
 Files: src/client/network.ts, src/client/main.ts
+
+## client-006 - Server Reconciliation Complete
+
+- reconcile(state, localPlayerId) handles authoritative server state
+- Finds own player by ID in GameState.players
+- Removes pending inputs w/ seq <= lastProcessedInput
+- Resets position to server's authoritative x,y
+- Re-applies remaining pending inputs using applyPhysicsToPosition() helper
+- Graceful no-op if player not in state (disconnected edge case)
+- Verified w/ Playwright: input removal, position correction, input replay
+
+Files: src/client/network.ts

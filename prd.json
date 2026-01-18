@@ -165,7 +165,7 @@
         "Sets local position to server's authoritative position",
         "Re-applies all remaining pending inputs to get corrected predicted position"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "id": "client-007",

@@ -3504,13 +3504,56 @@ function getPendingInputCount() {
 function clearPendingInputs() {
   pendingInputs.length = 0;
 }
+function applyPhysicsToPosition(x, y, input) {
+  const { keys, dt } = input;
+  let dx = 0;
+  let dy = 0;
+  if (keys.w)
+    dy -= 1;
+  if (keys.s)
+    dy += 1;
+  if (keys.a)
+    dx -= 1;
+  if (keys.d)
+    dx += 1;
+  if (dx !== 0 && dy !== 0) {
+    const len = Math.sqrt(dx * dx + dy * dy);
+    dx /= len;
+    dy /= len;
+  }
+  x += dx * PLAYER_SPEED * dt;
+  y += dy * PLAYER_SPEED * dt;
+  x = Math.max(PLAYER_RADIUS, Math.min(ARENA_WIDTH - PLAYER_RADIUS, x));
+  y = Math.max(PLAYER_RADIUS, Math.min(ARENA_HEIGHT - PLAYER_RADIUS, y));
+  return { x, y };
+}
+function reconcile(state, localPlayerId2) {
+  const serverPlayer = state.players.find((p) => p.id === localPlayerId2);
+  if (!serverPlayer) {
+    return;
+  }
+  const lastProcessedInput = serverPlayer.lastProcessedInput;
+  while (pendingInputs.length > 0 && pendingInputs[0].input.seq <= lastProcessedInput) {
+    pendingInputs.shift();
+  }
+  localX = serverPlayer.x;
+  localY = serverPlayer.y;
+  for (const pending of pendingInputs) {
+    const newPos = applyPhysicsToPosition(localX, localY, pending.input);
+    localX = newPos.x;
+    localY = newPos.y;
+    pending.predictedX = localX;
+    pending.predictedY = localY;
+  }
+}
 window.__networkTest = {
   getLocalPosition,
   getPendingInputs,
   getPendingInputCount,
   applyInput,
   initLocalPosition,
-  clearPendingInputs
+  clearPendingInputs,
+  reconcile
 };
 
 // dist/client/client/main.js
