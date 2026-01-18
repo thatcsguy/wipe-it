@@ -141,7 +141,7 @@
         "Exports function to create PlayerInput with incrementing sequence number",
         "Sequence numbers start at 1 and increment each input"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "id": "client-005",

@@ -93,3 +93,16 @@ Files: public/css/style.css
 - Verified w/ Playwright: join works, modal hides on success, 5th player shows "Game is full" error
 
 Files: src/client/main.ts, package.json
+
+## client-004 - Input Capture Complete
+
+- Created input.ts w/ WASD keydown/keyup tracking
+- keyState object tracks w/a/s/d booleans, case-insensitive
+- getInputState() returns copy of current key state
+- createInput(dt) returns PlayerInput w/ seq, keys, dt
+- Sequence starts at 0, increments on each createInput() call (first input is seq=1)
+- hasInput() helper returns true if any movement key pressed
+- Exposed __inputTest on window for Playwright verification
+- Verified: key press/release, seq incrementing, PlayerInput structure
+
+Files: src/client/input.ts, src/client/main.ts

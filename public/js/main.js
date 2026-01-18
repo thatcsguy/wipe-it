@@ -3400,6 +3400,57 @@ Object.assign(lookup2, {
   connect: lookup2
 });
 
+// dist/client/client/input.js
+var keyState = {
+  w: false,
+  a: false,
+  s: false,
+  d: false
+};
+var sequenceNumber = 0;
+function setupInputListeners() {
+  document.addEventListener("keydown", (e) => {
+    const key = e.key.toLowerCase();
+    if (key === "w")
+      keyState.w = true;
+    else if (key === "a")
+      keyState.a = true;
+    else if (key === "s")
+      keyState.s = true;
+    else if (key === "d")
+      keyState.d = true;
+  });
+  document.addEventListener("keyup", (e) => {
+    const key = e.key.toLowerCase();
+    if (key === "w")
+      keyState.w = false;
+    else if (key === "a")
+      keyState.a = false;
+    else if (key === "s")
+      keyState.s = false;
+    else if (key === "d")
+      keyState.d = false;
+  });
+}
+function getInputState() {
+  return { ...keyState };
+}
+function hasInput() {
+  return keyState.w || keyState.a || keyState.s || keyState.d;
+}
+function createInput(dt) {
+  sequenceNumber++;
+  return {
+    seq: sequenceNumber,
+    keys: getInputState(),
+    dt
+  };
+}
+function getSequenceNumber() {
+  return sequenceNumber;
+}
+setupInputListeners();
+
 // dist/client/client/main.js
 var modal = document.getElementById("modal");
 var nameInput = document.getElementById("name-input");
@@ -3439,6 +3490,12 @@ function showError(message) {
 function getLocalPlayerId() {
   return localPlayerId;
 }
+window.__inputTest = {
+  getInputState,
+  createInput,
+  getSequenceNumber,
+  hasInput
+};
 export {
   getLocalPlayerId,
   localPlayerId,

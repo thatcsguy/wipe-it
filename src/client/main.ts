@@ -1,4 +1,5 @@
 import { io, Socket } from 'socket.io-client';
+import { getInputState, createInput, getSequenceNumber, hasInput } from './input';
 
 // DOM elements
 const modal = document.getElementById('modal') as HTMLDivElement;
@@ -59,3 +60,11 @@ export { socket, localPlayerId };
 export function getLocalPlayerId(): string | null {
   return localPlayerId;
 }
+
+// Expose input functions for testing/debugging
+(window as any).__inputTest = {
+  getInputState,
+  createInput,
+  getSequenceNumber,
+  hasInput,
+};
