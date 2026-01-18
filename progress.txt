@@ -171,3 +171,15 @@ Files: src/client/game.ts, src/client/main.ts
 - Verified w/ Playwright: 2 players, buffer size 20, interpolation returns valid positions
 
 Files: src/client/network.ts, src/client/game.ts, src/client/renderer.ts
+
+## e2e-001 - Single Player Join & Movement Complete
+
+- Verified w/ Playwright: navigate localhost:3000, enter 'Player1', click join
+- Modal hides on successful join, canvas shows player at (400, 300)
+- W key: y decreased 300→240 (moved up) ✓
+- S key: y increased 240→300 (moved down) ✓
+- A key: x decreased 400→340 (moved left) ✓
+- D key: x increased 340→400 (moved right) ✓
+- All WASD controls function correctly
+
+Files: (no code changes, validation only)

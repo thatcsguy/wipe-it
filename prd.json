@@ -220,7 +220,7 @@
         "Press A key, verify circle moves left",
         "Press D key, verify circle moves right"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "id": "e2e-002",
