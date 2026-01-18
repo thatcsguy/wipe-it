@@ -43,7 +43,7 @@
                 "Verify GameState has statusEffects array",
                 "Verify Effect type includes status variant with statusType and duration"
             ],
-            "passes": false
+            "passes": true
         },
         {
             "id": "STATUS-002",

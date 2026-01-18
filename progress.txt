@@ -1,0 +1,7 @@
+STATUS-001: COMPLETE
+- Added StatusEffectType union w/ 'vulnerability'
+- Added StatusEffectState interface (type, iconPath, startTime, duration, playerId)
+- Added statusEffects[] to PlayerState, GameState
+- Added Effect type w/ damage and status variants
+- Updated player.ts toState(), game.ts broadcast(), client/game.ts default state
+Files: src/shared/types.ts, src/server/player.ts, src/server/game.ts, src/client/game.ts

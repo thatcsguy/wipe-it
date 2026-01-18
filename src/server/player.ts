@@ -73,6 +73,7 @@ export class Player {
       color: this.color,
       hp: this.hp,
       lastProcessedInput: this.lastProcessedInput,
+      statusEffects: [], // Populated by StatusEffectManager
     };
   }
 }

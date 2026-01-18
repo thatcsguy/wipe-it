@@ -3777,7 +3777,7 @@ var localPlayerId = null;
 var localPlayerName = "";
 var localPlayerColor = "";
 var gameRunning = false;
-var currentGameState = { players: [], mechanics: [], timestamp: 0 };
+var currentGameState = { players: [], mechanics: [], statusEffects: [], timestamp: 0 };
 var lastFrameTime = 0;
 function startGame(socketInstance, playerId, playerName) {
   socket = socketInstance;

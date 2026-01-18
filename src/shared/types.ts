@@ -23,6 +23,22 @@ export interface PlayerInput {
   dt: number;
 }
 
+// Status effect types
+export type StatusEffectType = 'vulnerability';
+
+export interface StatusEffectState {
+  type: StatusEffectType;
+  iconPath: string;
+  startTime: number;
+  duration: number;
+  playerId: string;
+}
+
+// Effect type for mechanics to apply
+export type Effect =
+  | { type: 'damage'; amount: number }
+  | { type: 'status'; statusType: StatusEffectType; duration: number };
+
 // Player state
 export interface PlayerState {
   id: string;
@@ -32,6 +48,7 @@ export interface PlayerState {
   color: string;
   hp: number;
   lastProcessedInput: number;
+  statusEffects: StatusEffectState[];
 }
 
 // Mechanic state sent to clients for rendering
@@ -49,5 +66,6 @@ export interface MechanicState {
 export interface GameState {
   players: PlayerState[];
   mechanics: MechanicState[];
+  statusEffects: StatusEffectState[];
   timestamp: number;
 }

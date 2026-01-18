@@ -104,6 +104,7 @@ export class Game {
     const state: GameState = {
       players: Array.from(this.players.values()).map(p => p.toState()),
       mechanics: this.mechanicManager.getStates(),
+      statusEffects: [], // Populated by StatusEffectManager when added
       timestamp: Date.now(),
     };
     this.io.emit('state', state);
