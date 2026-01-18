@@ -52,7 +52,7 @@
         "Run: npm run dev starts server without errors",
         "Use playwright: navigate to http://localhost:3000, verify page loads (status 200)"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "id": "server-002",

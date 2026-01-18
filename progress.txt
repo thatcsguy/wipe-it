@@ -16,3 +16,14 @@ Files: package.json, tsconfig.json, tsconfig.client.json, esbuild.config.js, src
 - Build verified: npm run build passes
 
 Files: src/shared/types.ts
+
+## server-001 - Express Server Complete
+
+- Express + Socket.IO server w/ http.createServer
+- Serves static files from public/
+- Listens on PORT env or 3000
+- Basic socket connection logging (placeholder for server-004)
+- Created minimal index.html for testing
+- Verified: npm run dev starts, Playwright confirms 200 response
+
+Files: src/server/index.ts, public/index.html
