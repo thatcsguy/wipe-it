@@ -57,6 +57,7 @@ export class Game {
     }
 
     const player = new Player(socketId, name, color);
+    player.setStatusEffectManager(this.statusEffectManager);
     this.players.set(socketId, player);
     this.inputQueues.set(socketId, []);
 
@@ -118,5 +119,13 @@ export class Game {
   spawnChariot(x: number, y: number, radius: number, duration: number, effects: Effect[]): void {
     const mechanic = new ChariotMechanic(x, y, radius, duration, effects);
     this.mechanicManager.add(mechanic);
+  }
+
+  getStatusEffectManager(): StatusEffectManager {
+    return this.statusEffectManager;
+  }
+
+  getPlayers(): Map<string, Player> {
+    return this.players;
   }
 }

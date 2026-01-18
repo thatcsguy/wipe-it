@@ -8,6 +8,7 @@ import {
   ARENA_HEIGHT,
   MAX_HP,
 } from '../shared/types';
+import { StatusEffectManager } from './statusEffectManager';
 
 export class Player {
   id: string;
@@ -17,6 +18,7 @@ export class Player {
   color: string;
   hp: number;
   lastProcessedInput: number;
+  private statusEffectManager: StatusEffectManager | null = null;
 
   constructor(id: string, name: string, color: string) {
     this.id = id;
@@ -27,6 +29,10 @@ export class Player {
     this.x = ARENA_WIDTH / 2;
     this.y = ARENA_HEIGHT / 2;
     this.lastProcessedInput = 0;
+  }
+
+  setStatusEffectManager(manager: StatusEffectManager): void {
+    this.statusEffectManager = manager;
   }
 
   processInput(input: PlayerInput): void {
@@ -61,7 +67,18 @@ export class Player {
   }
 
   takeDamage(amount: number): void {
-    this.hp = Math.max(0, this.hp - amount);
+    let finalAmount = amount;
+
+    // Check for vulnerability status - multiplies damage by 10
+    if (this.statusEffectManager) {
+      const statuses = this.statusEffectManager.getStatusesForPlayer(this.id);
+      const hasVulnerability = statuses.some((s) => s.type === 'vulnerability');
+      if (hasVulnerability) {
+        finalAmount = amount * 10;
+      }
+    }
+
+    this.hp = Math.max(0, this.hp - finalAmount);
   }
 
   toState(): PlayerState {

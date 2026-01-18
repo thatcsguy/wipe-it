@@ -29,3 +29,12 @@ STATUS-004: COMPLETE
 - broadcast() includes statusEffectManager.getStates() in state
 - Verified w/ Playwright: game state has statusEffects array
 Files: src/server/game.ts
+
+STATUS-005: COMPLETE
+- Player.takeDamage() checks for vulnerability via statusEffectManager.getStatusesForPlayer()
+- Damage multiplied by 10 when vulnerability active
+- Player has setStatusEffectManager() method, called in Game.addPlayer()
+- Added getStatusEffectManager() and getPlayers() to Game for testing/future use
+- Added admin:applyVulnerability socket event for testing
+- Verified w/ Playwright: player took 250 dmg (25*10) with vuln vs 25 without
+Files: src/server/player.ts, src/server/game.ts, src/server/index.ts

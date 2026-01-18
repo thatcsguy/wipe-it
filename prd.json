@@ -92,7 +92,7 @@
                 "Verify takeDamage() checks for vulnerability status",
                 "Verify damage is multiplied by 10 when vulnerability is active"
             ],
-            "passes": false
+            "passes": true
         },
         {
             "id": "STATUS-006",

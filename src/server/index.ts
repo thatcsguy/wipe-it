@@ -4,6 +4,7 @@ import { Server } from 'socket.io';
 import path from 'path';
 import { Game } from './game';
 import { PlayerInput, ARENA_WIDTH, ARENA_HEIGHT } from '../shared/types';
+import { StatusEffect } from './statusEffect';
 
 const app = express();
 const httpServer = createServer(app);
@@ -63,6 +64,17 @@ io.on('connection', (socket) => {
       const effects = [{ type: 'damage' as const, amount: 25 }];
       game.spawnChariot(x, y, radius, duration, effects);
       console.log(`Admin spawned chariot at (${x.toFixed(0)}, ${y.toFixed(0)})`);
+    }
+  });
+
+  // Apply vulnerability to a random player (for testing)
+  socket.on('admin:applyVulnerability', () => {
+    const players = Array.from(game.getPlayers().keys());
+    if (players.length > 0) {
+      const targetId = players[Math.floor(Math.random() * players.length)];
+      const status = new StatusEffect('vulnerability', targetId, 5000, [], []);
+      game.getStatusEffectManager().add(status);
+      console.log(`Admin applied vulnerability to player ${targetId}`);
     }
   });
 });
