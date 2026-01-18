@@ -1,297 +1,170 @@
 {
-  "project": "wipe-it",
-  "description": "Browser-based 1-4 player raiding game with client-side prediction",
+  "name": "Hitpoints + Mechanics System",
   "items": [
     {
-      "id": "setup-001",
-      "category": "Project Setup",
-      "description": "Initialize Node.js project with TypeScript, Express, Socket.IO, and esbuild",
-      "steps_to_verify": [
-        "package.json exists with dependencies: express, socket.io, typescript, esbuild, ts-node-dev",
-        "tsconfig.json exists with target ES2020, module commonjs",
-        "tsconfig.client.json exists with target ES2020, module ESNext",
-        "Run: npm install completes without errors",
-        "Run: npm run build compiles without TypeScript errors"
+      "id": "HP-001",
+      "category": "Hitpoints",
+      "description": "Add MAX_HP constant (100) and hp field to PlayerState interface in shared/types.ts",
+      "verify": [
+        "Check src/shared/types.ts contains MAX_HP = 100 constant",
+        "Check PlayerState interface includes hp: number field"
       ],
-      "passes": true
+      "passes": false
     },
     {
-      "id": "setup-002",
-      "category": "Project Setup",
-      "description": "Create directory structure: src/server, src/client, src/shared, public/css",
-      "steps_to_verify": [
-        "Directory src/server exists",
-        "Directory src/client exists",
-        "Directory src/shared exists",
-        "Directory public exists",
-        "Directory public/css exists"
+      "id": "HP-002",
+      "category": "Hitpoints",
+      "description": "Add hp property to server Player class with initial value 100, add takeDamage(amount) method that clamps hp to minimum 0, update toState() to include hp",
+      "verify": [
+        "Check src/server/player.ts has hp = 100 property",
+        "Check takeDamage method exists and clamps to 0",
+        "Check toState() returns object with hp field"
       ],
-      "passes": true
+      "passes": false
     },
     {
-      "id": "shared-001",
-      "category": "Shared Types",
-      "description": "Define shared TypeScript interfaces and constants in src/shared/types.ts",
-      "steps_to_verify": [
-        "File src/shared/types.ts exports PlayerState interface with: id, name, x, y, color, lastProcessedInput",
-        "File exports GameState interface with: players array, timestamp",
-        "File exports PlayerInput interface with: seq, keys, dt",
-        "File exports InputKeys interface with: w, a, s, d booleans",
-        "File exports constants: TICK_RATE=60, BROADCAST_RATE=20, PLAYER_SPEED=200, PLAYER_RADIUS=20, ARENA_WIDTH=800, ARENA_HEIGHT=600, MAX_PLAYERS=4",
-        "Run: npm run build compiles without errors"
+      "id": "HP-003",
+      "category": "Hitpoints",
+      "description": "Render health bar for each player - colored bar positioned above player circle, below name text. Bar should show current hp out of max hp with color indicating health level",
+      "verify": [
+        "Use playwright to navigate to localhost:3000",
+        "Join the game with a test name",
+        "Take a screenshot and verify health bar is visible above player circle but below name",
+        "Health bar should be colored (green/yellow/red based on hp level)"
       ],
-      "passes": true
+      "passes": false
     },
     {
-      "id": "server-001",
-      "category": "Server",
-      "description": "Create Express server with Socket.IO that serves static files from public/",
-      "steps_to_verify": [
-        "File src/server/index.ts exists",
-        "Server listens on port 3000 (or PORT env)",
-        "Run: npm run dev starts server without errors",
-        "Use playwright: navigate to http://localhost:3000, verify page loads (status 200)"
+      "id": "MECH-001",
+      "category": "Mechanics System",
+      "description": "Create mechanics type definitions in src/server/mechanics/types.ts with Effect interface (type: 'damage', amount: number) and BaseMechanic interface (id, tick, isExpired, resolve, toState methods)",
+      "verify": [
+        "Check src/server/mechanics/types.ts exists",
+        "Check Effect interface has type and amount fields",
+        "Check BaseMechanic interface has required methods: tick, isExpired, resolve, toState"
       ],
-      "passes": true
+      "passes": false
     },
     {
-      "id": "server-002",
-      "category": "Server",
-      "description": "Implement Player class with position, color, and input processing",
-      "steps_to_verify": [
-        "File src/server/player.ts exports Player class",
-        "Player has properties: id, name, x, y, color, lastProcessedInput",
-        "Player has method to process input and update position based on keys and delta time",
-        "Player position is clamped to arena bounds (0 to ARENA_WIDTH/HEIGHT minus PLAYER_RADIUS)"
+      "id": "MECH-002",
+      "category": "Mechanics System",
+      "description": "Create MechanicManager class in src/server/mechanics/manager.ts with: mechanics Map, add() method to register mechanics, tick(now, players) to update all and resolve expired ones, getStates() to return array of MechanicState for broadcast",
+      "verify": [
+        "Check src/server/mechanics/manager.ts exists",
+        "Check MechanicManager class has add, tick, and getStates methods",
+        "Verify tick method calls resolve on expired mechanics and removes them"
       ],
-      "passes": true
+      "passes": false
     },
     {
-      "id": "server-003",
-      "category": "Server",
-      "description": "Implement Game class with player management, fixed-timestep loop, and state broadcast",
-      "steps_to_verify": [
-        "File src/server/game.ts exports Game class",
-        "Game tracks players in a Map by socket ID",
-        "Game.addPlayer() assigns unique color from pool, returns false if 4 players exist",
-        "Game.removePlayer() removes player and returns color to pool",
-        "Game runs physics loop at 60Hz using setInterval",
-        "Game broadcasts state to all clients at 20Hz"
+      "id": "MECH-003",
+      "category": "Mechanics System",
+      "description": "Add MechanicState interface to shared/types.ts with fields: id, type, startTime, endTime, x, y, radius. Update GameState interface to include mechanics: MechanicState[] array",
+      "verify": [
+        "Check src/shared/types.ts has MechanicState interface with all required fields",
+        "Check GameState interface includes mechanics array field"
       ],
-      "passes": true
+      "passes": false
     },
     {
-      "id": "server-004",
-      "category": "Server",
-      "description": "Handle Socket.IO events: join, input, disconnect",
-      "steps_to_verify": [
-        "On 'join' event with name: creates player if <4 players, emits join response with success/playerId or error",
-        "On 'input' event: queues input for processing in game loop",
-        "On 'disconnect': removes player from game",
-        "State broadcast includes each player's lastProcessedInput for reconciliation"
+      "id": "MECH-004",
+      "category": "Mechanics System",
+      "description": "Integrate MechanicManager into Game class: instantiate manager, call tick in game loop, include mechanics in state broadcast",
+      "verify": [
+        "Check src/server/game.ts creates MechanicManager instance",
+        "Check tick loop calls mechanicManager.tick()",
+        "Check broadcast includes mechanics from getStates()"
       ],
-      "passes": true
+      "passes": false
     },
     {
-      "id": "client-001",
-      "category": "Client HTML/CSS",
-      "description": "Create index.html with name entry modal and canvas element",
-      "steps_to_verify": [
-        "File public/index.html exists",
-        "Contains canvas element with id 'game' and size 800x600",
-        "Contains modal/overlay div with text input for name and join button",
-        "Contains script tag loading /js/main.js as module",
-        "Use playwright: navigate to localhost:3000, verify canvas element exists, verify name input visible"
+      "id": "CHARIOT-001",
+      "category": "Chariot Mechanic",
+      "description": "Create ChariotMechanic class in src/server/mechanics/chariot.ts implementing BaseMechanic. Constructor takes x, y, radius, duration, effects[]. isExpired returns true when current time >= endTime. resolve() damages all players within radius using their takeDamage method",
+      "verify": [
+        "Check src/server/mechanics/chariot.ts exists",
+        "Check ChariotMechanic implements BaseMechanic interface",
+        "Check resolve method calculates distance from mechanic center to each player and applies damage if within radius"
       ],
-      "passes": true
+      "passes": false
     },
     {
-      "id": "client-002",
-      "category": "Client HTML/CSS",
-      "description": "Style the game page with centered canvas and modal overlay",
-      "steps_to_verify": [
-        "File public/css/style.css exists",
-        "Canvas is centered on page with visible border",
-        "Modal overlays the canvas, centered, with semi-transparent background",
-        "Modal hides when game starts (via JS adding hidden class)"
+      "id": "CHARIOT-002",
+      "category": "Chariot Mechanic",
+      "description": "Add spawnChariot(x, y, radius, duration, effects) method to Game class that creates a ChariotMechanic and adds it to the manager",
+      "verify": [
+        "Check src/server/game.ts has spawnChariot method",
+        "Check method creates ChariotMechanic with provided parameters",
+        "Check method adds mechanic to mechanicManager"
       ],
-      "passes": true
+      "passes": false
     },
     {
-      "id": "client-003",
-      "category": "Client Core",
-      "description": "Create main.ts entry point that connects to server and handles join flow",
-      "steps_to_verify": [
-        "File src/client/main.ts exists",
-        "Connects to Socket.IO server on page load",
-        "On join button click: emits 'join' with entered name",
-        "On successful join response: hides modal, initializes game with assigned playerId",
-        "On failed join (game full): shows error message in modal"
+      "id": "RENDER-001",
+      "category": "Client Rendering",
+      "description": "Create src/client/mechanics.ts with renderMechanics(ctx, mechanics[], serverTime) function and renderChariot(ctx, mechanic, serverTime) function. Chariot renders as orange-yellow (#ff9f40) transparent circle with expanding inner circle showing progress toward resolution",
+      "verify": [
+        "Check src/client/mechanics.ts exists",
+        "Check renderMechanics and renderChariot functions exist",
+        "Check renderChariot uses orange-yellow color with transparency",
+        "Check inner circle radius is calculated as progress * outerRadius where progress = (now - startTime) / (endTime - startTime)"
       ],
-      "passes": true
+      "passes": false
     },
     {
-      "id": "client-004",
-      "category": "Client Input",
-      "description": "Create input.ts that captures WASD keys and generates sequenced inputs",
-      "steps_to_verify": [
-        "File src/client/input.ts exists",
-        "Tracks keydown/keyup for W, A, S, D keys",
-        "Exports function to get current input state as InputKeys",
-        "Exports function to create PlayerInput with incrementing sequence number",
-        "Sequence numbers start at 1 and increment each input"
+      "id": "RENDER-002",
+      "category": "Client Rendering",
+      "description": "Integrate mechanic rendering into client game loop - pass mechanics array and server timestamp to renderer, render mechanics before players so they appear below",
+      "verify": [
+        "Check src/client/game.ts passes mechanics to render function",
+        "Check src/client/renderer.ts calls renderMechanics before drawing players"
       ],
-      "passes": true
+      "passes": false
     },
     {
-      "id": "client-005",
-      "category": "Client Network",
-      "description": "Implement client-side prediction in network.ts",
-      "steps_to_verify": [
-        "File src/client/network.ts exists",
-        "Stores pending inputs array (sent but not yet acknowledged)",
-        "applyInput() updates local player position immediately using same physics as server",
-        "Each input is stored with predicted position for later reconciliation"
+      "id": "ADMIN-001",
+      "category": "Admin Panel",
+      "description": "Add admin panel HTML structure to index.html - div positioned to the right of game canvas containing heading and 'Spawn Chariot' button. Style with dark background",
+      "verify": [
+        "Use playwright to navigate to localhost:3000",
+        "Take screenshot and verify admin panel is visible to the right of game canvas",
+        "Verify 'Spawn Chariot' button is present in admin panel"
       ],
-      "passes": true
+      "passes": false
     },
     {
-      "id": "client-006",
-      "category": "Client Network",
-      "description": "Implement server reconciliation in network.ts",
-      "steps_to_verify": [
-        "On receiving game state: finds own player by ID",
-        "Removes all pending inputs with seq <= lastProcessedInput from server",
-        "Sets local position to server's authoritative position",
-        "Re-applies all remaining pending inputs to get corrected predicted position"
+      "id": "ADMIN-002",
+      "category": "Admin Panel",
+      "description": "Create src/client/admin.ts that attaches click handler to Spawn Chariot button. On click, emit 'admin:spawnMechanic' socket event with { type: 'chariot' }",
+      "verify": [
+        "Check src/client/admin.ts exists",
+        "Check button click emits admin:spawnMechanic event with type chariot"
       ],
-      "passes": true
+      "passes": false
     },
     {
-      "id": "client-007",
-      "category": "Client Network",
-      "description": "Implement entity interpolation for other players in network.ts",
-      "steps_to_verify": [
-        "Maintains position buffer for each other player (stores {x, y, timestamp})",
-        "Buffers last 10+ state updates per player",
-        "getInterpolatedPosition() returns position interpolated between two buffered states",
-        "Interpolation renders other players ~100ms in the past for smoothness"
+      "id": "ADMIN-003",
+      "category": "Admin Panel",
+      "description": "Handle admin:spawnMechanic socket event on server in index.ts. For type 'chariot': spawn with random x,y (padded from edges), radius = ARENA_HEIGHT * 0.2, duration = 3000ms, effect = damage 25",
+      "verify": [
+        "Check src/server/index.ts handles admin:spawnMechanic event",
+        "Check handler calls game.spawnChariot with correct test parameters"
       ],
-      "passes": true
+      "passes": false
     },
     {
-      "id": "client-008",
-      "category": "Client Renderer",
-      "description": "Create renderer.ts that draws arena and players on canvas",
-      "steps_to_verify": [
-        "File src/client/renderer.ts exists",
-        "Clears canvas each frame",
-        "Draws arena border (800x600 rectangle)",
-        "Draws each player as colored circle with PLAYER_RADIUS",
-        "Draws player name above each circle, centered"
-      ],
-      "passes": true
-    },
-    {
-      "id": "client-009",
-      "category": "Client Core",
-      "description": "Create game.ts with requestAnimationFrame loop coordinating input, network, and rendering",
-      "steps_to_verify": [
-        "File src/client/game.ts exists",
-        "Runs game loop via requestAnimationFrame",
-        "Each frame: captures input, sends to server, applies prediction",
-        "Each frame: renders self at predicted position, others at interpolated positions",
-        "Calculates delta time between frames for smooth movement"
-      ],
-      "passes": true
-    },
-    {
-      "id": "e2e-001",
+      "id": "E2E-001",
       "category": "End-to-End",
-      "description": "Single player can join, see themselves, and move with WASD",
-      "steps_to_verify": [
-        "Use playwright: navigate to localhost:3000",
-        "Enter name 'Player1' in input, click join button",
-        "Verify modal disappears",
-        "Verify colored circle appears on canvas",
-        "Verify name 'Player1' appears above circle",
-        "Press W key, verify circle moves up",
-        "Press S key, verify circle moves down",
-        "Press A key, verify circle moves left",
-        "Press D key, verify circle moves right"
+      "description": "Full integration test: spawn chariot via admin button, verify visual appears and expands, verify damage is applied when mechanic resolves",
+      "verify": [
+        "Use playwright to navigate to localhost:3000 and join game",
+        "Click Spawn Chariot button in admin panel",
+        "Take screenshot immediately - verify orange circle AOE is visible",
+        "Wait 3 seconds for mechanic to resolve",
+        "If player was inside AOE radius, verify health bar shows reduced hp (75/100)",
+        "If player was outside AOE radius, verify health bar shows full hp (100/100)"
       ],
-      "passes": true
-    },
-    {
-      "id": "e2e-002",
-      "category": "End-to-End",
-      "description": "Multiple players can join and see each other",
-      "steps_to_verify": [
-        "Use playwright: open two browser tabs to localhost:3000",
-        "Tab 1: join as 'Alice'",
-        "Tab 2: join as 'Bob'",
-        "Verify Tab 1 shows two circles with names 'Alice' and 'Bob'",
-        "Verify Tab 2 shows two circles with names 'Alice' and 'Bob'",
-        "Verify circles have different colors"
-      ],
-      "passes": true
-    },
-    {
-      "id": "e2e-003",
-      "category": "End-to-End",
-      "description": "Movement syncs between clients",
-      "steps_to_verify": [
-        "Use playwright: open two browser tabs, join as Alice and Bob",
-        "In Tab 1 (Alice): hold W key for 500ms",
-        "Verify in Tab 2: Alice's circle has moved upward",
-        "In Tab 2 (Bob): hold D key for 500ms",
-        "Verify in Tab 1: Bob's circle has moved rightward"
-      ],
-      "passes": true
-    },
-    {
-      "id": "e2e-004",
-      "category": "End-to-End",
-      "description": "Game rejects 5th player with error message",
-      "steps_to_verify": [
-        "Use playwright: open 5 browser tabs to localhost:3000",
-        "Tabs 1-4: join with names Player1 through Player4",
-        "Verify all 4 tabs show 4 players",
-        "Tab 5: attempt to join as Player5",
-        "Verify Tab 5 shows error message indicating game is full",
-        "Verify Tab 5 modal remains visible (not dismissed)"
-      ],
-      "passes": true
-    },
-    {
-      "id": "e2e-005",
-      "category": "End-to-End",
-      "description": "Player disconnect removes them from other clients",
-      "steps_to_verify": [
-        "Use playwright: open two browser tabs, join as Alice and Bob",
-        "Verify both tabs show 2 players",
-        "Close Tab 2 (Bob)",
-        "Wait 1 second for disconnect to propagate",
-        "Verify Tab 1 now shows only 1 player (Alice)"
-      ],
-      "passes": true
-    },
-    {
-      "id": "e2e-006",
-      "category": "End-to-End",
-      "description": "Player cannot move outside arena bounds",
-      "steps_to_verify": [
-        "Use playwright: join as Player1",
-        "Hold W key for 5 seconds (attempt to move past top)",
-        "Verify player circle y position is >= PLAYER_RADIUS (not negative)",
-        "Hold A key for 5 seconds (attempt to move past left)",
-        "Verify player circle x position is >= PLAYER_RADIUS",
-        "Hold S key for 5 seconds (attempt to move past bottom)",
-        "Verify player circle y position is <= ARENA_HEIGHT - PLAYER_RADIUS",
-        "Hold D key for 5 seconds (attempt to move past right)",
-        "Verify player circle x position is <= ARENA_WIDTH - PLAYER_RADIUS"
-      ],
-      "passes": true
+      "passes": false
     }
   ]
 }

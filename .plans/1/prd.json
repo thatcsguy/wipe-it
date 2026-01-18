@@ -1,0 +1,297 @@
+{
+    "project": "wipe-it",
+    "description": "Browser-based 1-4 player raiding game with client-side prediction",
+    "items": [
+        {
+            "id": "setup-001",
+            "category": "Project Setup",
+            "description": "Initialize Node.js project with TypeScript, Express, Socket.IO, and esbuild",
+            "steps_to_verify": [
+                "package.json exists with dependencies: express, socket.io, typescript, esbuild, ts-node-dev",
+                "tsconfig.json exists with target ES2020, module commonjs",
+                "tsconfig.client.json exists with target ES2020, module ESNext",
+                "Run: npm install completes without errors",
+                "Run: npm run build compiles without TypeScript errors"
+            ],
+            "passes": true
+        },
+        {
+            "id": "setup-002",
+            "category": "Project Setup",
+            "description": "Create directory structure: src/server, src/client, src/shared, public/css",
+            "steps_to_verify": [
+                "Directory src/server exists",
+                "Directory src/client exists",
+                "Directory src/shared exists",
+                "Directory public exists",
+                "Directory public/css exists"
+            ],
+            "passes": true
+        },
+        {
+            "id": "shared-001",
+            "category": "Shared Types",
+            "description": "Define shared TypeScript interfaces and constants in src/shared/types.ts",
+            "steps_to_verify": [
+                "File src/shared/types.ts exports PlayerState interface with: id, name, x, y, color, lastProcessedInput",
+                "File exports GameState interface with: players array, timestamp",
+                "File exports PlayerInput interface with: seq, keys, dt",
+                "File exports InputKeys interface with: w, a, s, d booleans",
+                "File exports constants: TICK_RATE=60, BROADCAST_RATE=20, PLAYER_SPEED=200, PLAYER_RADIUS=20, ARENA_WIDTH=800, ARENA_HEIGHT=600, MAX_PLAYERS=4",
+                "Run: npm run build compiles without errors"
+            ],
+            "passes": true
+        },
+        {
+            "id": "server-001",
+            "category": "Server",
+            "description": "Create Express server with Socket.IO that serves static files from public/",
+            "steps_to_verify": [
+                "File src/server/index.ts exists",
+                "Server listens on port 3000 (or PORT env)",
+                "Run: npm run dev starts server without errors",
+                "Use playwright: navigate to http://localhost:3000, verify page loads (status 200)"
+            ],
+            "passes": true
+        },
+        {
+            "id": "server-002",
+            "category": "Server",
+            "description": "Implement Player class with position, color, and input processing",
+            "steps_to_verify": [
+                "File src/server/player.ts exports Player class",
+                "Player has properties: id, name, x, y, color, lastProcessedInput",
+                "Player has method to process input and update position based on keys and delta time",
+                "Player position is clamped to arena bounds (0 to ARENA_WIDTH/HEIGHT minus PLAYER_RADIUS)"
+            ],
+            "passes": true
+        },
+        {
+            "id": "server-003",
+            "category": "Server",
+            "description": "Implement Game class with player management, fixed-timestep loop, and state broadcast",
+            "steps_to_verify": [
+                "File src/server/game.ts exports Game class",
+                "Game tracks players in a Map by socket ID",
+                "Game.addPlayer() assigns unique color from pool, returns false if 4 players exist",
+                "Game.removePlayer() removes player and returns color to pool",
+                "Game runs physics loop at 60Hz using setInterval",
+                "Game broadcasts state to all clients at 20Hz"
+            ],
+            "passes": true
+        },
+        {
+            "id": "server-004",
+            "category": "Server",
+            "description": "Handle Socket.IO events: join, input, disconnect",
+            "steps_to_verify": [
+                "On 'join' event with name: creates player if <4 players, emits join response with success/playerId or error",
+                "On 'input' event: queues input for processing in game loop",
+                "On 'disconnect': removes player from game",
+                "State broadcast includes each player's lastProcessedInput for reconciliation"
+            ],
+            "passes": true
+        },
+        {
+            "id": "client-001",
+            "category": "Client HTML/CSS",
+            "description": "Create index.html with name entry modal and canvas element",
+            "steps_to_verify": [
+                "File public/index.html exists",
+                "Contains canvas element with id 'game' and size 800x600",
+                "Contains modal/overlay div with text input for name and join button",
+                "Contains script tag loading /js/main.js as module",
+                "Use playwright: navigate to localhost:3000, verify canvas element exists, verify name input visible"
+            ],
+            "passes": true
+        },
+        {
+            "id": "client-002",
+            "category": "Client HTML/CSS",
+            "description": "Style the game page with centered canvas and modal overlay",
+            "steps_to_verify": [
+                "File public/css/style.css exists",
+                "Canvas is centered on page with visible border",
+                "Modal overlays the canvas, centered, with semi-transparent background",
+                "Modal hides when game starts (via JS adding hidden class)"
+            ],
+            "passes": true
+        },
+        {
+            "id": "client-003",
+            "category": "Client Core",
+            "description": "Create main.ts entry point that connects to server and handles join flow",
+            "steps_to_verify": [
+                "File src/client/main.ts exists",
+                "Connects to Socket.IO server on page load",
+                "On join button click: emits 'join' with entered name",
+                "On successful join response: hides modal, initializes game with assigned playerId",
+                "On failed join (game full): shows error message in modal"
+            ],
+            "passes": true
+        },
+        {
+            "id": "client-004",
+            "category": "Client Input",
+            "description": "Create input.ts that captures WASD keys and generates sequenced inputs",
+            "steps_to_verify": [
+                "File src/client/input.ts exists",
+                "Tracks keydown/keyup for W, A, S, D keys",
+                "Exports function to get current input state as InputKeys",
+                "Exports function to create PlayerInput with incrementing sequence number",
+                "Sequence numbers start at 1 and increment each input"
+            ],
+            "passes": true
+        },
+        {
+            "id": "client-005",
+            "category": "Client Network",
+            "description": "Implement client-side prediction in network.ts",
+            "steps_to_verify": [
+                "File src/client/network.ts exists",
+                "Stores pending inputs array (sent but not yet acknowledged)",
+                "applyInput() updates local player position immediately using same physics as server",
+                "Each input is stored with predicted position for later reconciliation"
+            ],
+            "passes": true
+        },
+        {
+            "id": "client-006",
+            "category": "Client Network",
+            "description": "Implement server reconciliation in network.ts",
+            "steps_to_verify": [
+                "On receiving game state: finds own player by ID",
+                "Removes all pending inputs with seq <= lastProcessedInput from server",
+                "Sets local position to server's authoritative position",
+                "Re-applies all remaining pending inputs to get corrected predicted position"
+            ],
+            "passes": true
+        },
+        {
+            "id": "client-007",
+            "category": "Client Network",
+            "description": "Implement entity interpolation for other players in network.ts",
+            "steps_to_verify": [
+                "Maintains position buffer for each other player (stores {x, y, timestamp})",
+                "Buffers last 10+ state updates per player",
+                "getInterpolatedPosition() returns position interpolated between two buffered states",
+                "Interpolation renders other players ~100ms in the past for smoothness"
+            ],
+            "passes": true
+        },
+        {
+            "id": "client-008",
+            "category": "Client Renderer",
+            "description": "Create renderer.ts that draws arena and players on canvas",
+            "steps_to_verify": [
+                "File src/client/renderer.ts exists",
+                "Clears canvas each frame",
+                "Draws arena border (800x600 rectangle)",
+                "Draws each player as colored circle with PLAYER_RADIUS",
+                "Draws player name above each circle, centered"
+            ],
+            "passes": true
+        },
+        {
+            "id": "client-009",
+            "category": "Client Core",
+            "description": "Create game.ts with requestAnimationFrame loop coordinating input, network, and rendering",
+            "steps_to_verify": [
+                "File src/client/game.ts exists",
+                "Runs game loop via requestAnimationFrame",
+                "Each frame: captures input, sends to server, applies prediction",
+                "Each frame: renders self at predicted position, others at interpolated positions",
+                "Calculates delta time between frames for smooth movement"
+            ],
+            "passes": true
+        },
+        {
+            "id": "e2e-001",
+            "category": "End-to-End",
+            "description": "Single player can join, see themselves, and move with WASD",
+            "steps_to_verify": [
+                "Use playwright: navigate to localhost:3000",
+                "Enter name 'Player1' in input, click join button",
+                "Verify modal disappears",
+                "Verify colored circle appears on canvas",
+                "Verify name 'Player1' appears above circle",
+                "Press W key, verify circle moves up",
+                "Press S key, verify circle moves down",
+                "Press A key, verify circle moves left",
+                "Press D key, verify circle moves right"
+            ],
+            "passes": true
+        },
+        {
+            "id": "e2e-002",
+            "category": "End-to-End",
+            "description": "Multiple players can join and see each other",
+            "steps_to_verify": [
+                "Use playwright: open two browser tabs to localhost:3000",
+                "Tab 1: join as 'Alice'",
+                "Tab 2: join as 'Bob'",
+                "Verify Tab 1 shows two circles with names 'Alice' and 'Bob'",
+                "Verify Tab 2 shows two circles with names 'Alice' and 'Bob'",
+                "Verify circles have different colors"
+            ],
+            "passes": true
+        },
+        {
+            "id": "e2e-003",
+            "category": "End-to-End",
+            "description": "Movement syncs between clients",
+            "steps_to_verify": [
+                "Use playwright: open two browser tabs, join as Alice and Bob",
+                "In Tab 1 (Alice): hold W key for 500ms",
+                "Verify in Tab 2: Alice's circle has moved upward",
+                "In Tab 2 (Bob): hold D key for 500ms",
+                "Verify in Tab 1: Bob's circle has moved rightward"
+            ],
+            "passes": true
+        },
+        {
+            "id": "e2e-004",
+            "category": "End-to-End",
+            "description": "Game rejects 5th player with error message",
+            "steps_to_verify": [
+                "Use playwright: open 5 browser tabs to localhost:3000",
+                "Tabs 1-4: join with names Player1 through Player4",
+                "Verify all 4 tabs show 4 players",
+                "Tab 5: attempt to join as Player5",
+                "Verify Tab 5 shows error message indicating game is full",
+                "Verify Tab 5 modal remains visible (not dismissed)"
+            ],
+            "passes": true
+        },
+        {
+            "id": "e2e-005",
+            "category": "End-to-End",
+            "description": "Player disconnect removes them from other clients",
+            "steps_to_verify": [
+                "Use playwright: open two browser tabs, join as Alice and Bob",
+                "Verify both tabs show 2 players",
+                "Close Tab 2 (Bob)",
+                "Wait 1 second for disconnect to propagate",
+                "Verify Tab 1 now shows only 1 player (Alice)"
+            ],
+            "passes": true
+        },
+        {
+            "id": "e2e-006",
+            "category": "End-to-End",
+            "description": "Player cannot move outside arena bounds",
+            "steps_to_verify": [
+                "Use playwright: join as Player1",
+                "Hold W key for 5 seconds (attempt to move past top)",
+                "Verify player circle y position is >= PLAYER_RADIUS (not negative)",
+                "Hold A key for 5 seconds (attempt to move past left)",
+                "Verify player circle x position is >= PLAYER_RADIUS",
+                "Hold S key for 5 seconds (attempt to move past bottom)",
+                "Verify player circle y position is <= ARENA_HEIGHT - PLAYER_RADIUS",
+                "Hold D key for 5 seconds (attempt to move past right)",
+                "Verify player circle x position is <= ARENA_WIDTH - PLAYER_RADIUS"
+            ],
+            "passes": true
+        }
+    ]
+}
