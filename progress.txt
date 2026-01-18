@@ -5,3 +5,12 @@
 - Verified via Playwright: player state shows hp:100
 - Files: src/shared/types.ts, src/server/player.ts
 - Note: HP-001 and HP-002 done together - toState() requires hp field so both needed for compilation
+
+## HP-003: Health bar rendering
+- Added getHealthColor(hpPercent) helper - green >50%, yellow 25-50%, red <25%
+- Added drawHealthBar(x, y, hp) - 40px wide, 6px tall, positioned above circle
+- Updated drawPlayer and drawPlayerAt to include health bar rendering
+- Updated drawPlayerAt signature to accept hp param
+- Name text moved up (y - PLAYER_RADIUS - 10) to accommodate health bar
+- Verified via Playwright: green bar visible above circle, below name
+- Files: src/client/renderer.ts

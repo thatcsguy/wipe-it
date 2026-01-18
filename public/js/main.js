@@ -3456,6 +3456,7 @@ var PLAYER_SPEED = 200;
 var PLAYER_RADIUS = 20;
 var ARENA_WIDTH = 800;
 var ARENA_HEIGHT = 600;
+var MAX_HP = 100;
 
 // dist/client/client/network.js
 var pendingInputs = [];
@@ -3647,10 +3648,33 @@ function drawArena() {
   ctx.lineWidth = 2;
   ctx.strokeRect(0, 0, ARENA_WIDTH, ARENA_HEIGHT);
 }
+function getHealthColor(hpPercent) {
+  if (hpPercent > 0.5)
+    return "#4ade80";
+  if (hpPercent > 0.25)
+    return "#facc15";
+  return "#ef4444";
+}
+function drawHealthBar(x, y, hp) {
+  if (!ctx)
+    return;
+  const barWidth = PLAYER_RADIUS * 2;
+  const barHeight = 6;
+  const hpPercent = hp / MAX_HP;
+  const barX = x - PLAYER_RADIUS;
+  const barY = y - PLAYER_RADIUS - barHeight - 2;
+  ctx.fillStyle = "#1f2937";
+  ctx.fillRect(barX, barY, barWidth, barHeight);
+  ctx.fillStyle = getHealthColor(hpPercent);
+  ctx.fillRect(barX, barY, barWidth * hpPercent, barHeight);
+  ctx.strokeStyle = "#374151";
+  ctx.lineWidth = 1;
+  ctx.strokeRect(barX, barY, barWidth, barHeight);
+}
 function drawPlayer(player) {
   if (!ctx)
     return;
-  const { x, y, color, name } = player;
+  const { x, y, color, name, hp } = player;
   ctx.beginPath();
   ctx.arc(x, y, PLAYER_RADIUS, 0, Math.PI * 2);
   ctx.fillStyle = color;
@@ -3658,13 +3682,14 @@ function drawPlayer(player) {
   ctx.strokeStyle = "#ffffff";
   ctx.lineWidth = 2;
   ctx.stroke();
+  drawHealthBar(x, y, hp);
   ctx.fillStyle = "#ffffff";
   ctx.font = "14px Arial";
   ctx.textAlign = "center";
   ctx.textBaseline = "bottom";
-  ctx.fillText(name, x, y - PLAYER_RADIUS - 5);
+  ctx.fillText(name, x, y - PLAYER_RADIUS - 10);
 }
-function drawPlayerAt(x, y, color, name) {
+function drawPlayerAt(x, y, color, name, hp) {
   if (!ctx)
     return;
   ctx.beginPath();
@@ -3674,11 +3699,12 @@ function drawPlayerAt(x, y, color, name) {
   ctx.strokeStyle = "#ffffff";
   ctx.lineWidth = 2;
   ctx.stroke();
+  drawHealthBar(x, y, hp);
   ctx.fillStyle = "#ffffff";
   ctx.font = "14px Arial";
   ctx.textAlign = "center";
   ctx.textBaseline = "bottom";
-  ctx.fillText(name, x, y - PLAYER_RADIUS - 5);
+  ctx.fillText(name, x, y - PLAYER_RADIUS - 10);
 }
 function render(players, localPlayerId3, localPosition, interpolatedPositions) {
   if (!ctx) {
@@ -3690,11 +3716,11 @@ function render(players, localPlayerId3, localPosition, interpolatedPositions) {
   drawArena();
   for (const player of players) {
     if (localPlayerId3 && player.id === localPlayerId3 && localPosition) {
-      drawPlayerAt(localPosition.x, localPosition.y, player.color, player.name);
+      drawPlayerAt(localPosition.x, localPosition.y, player.color, player.name, player.hp);
     } else {
       const interpolated = interpolatedPositions?.get(player.id);
       if (interpolated) {
-        drawPlayerAt(interpolated.x, interpolated.y, player.color, player.name);
+        drawPlayerAt(interpolated.x, interpolated.y, player.color, player.name, player.hp);
       } else {
         drawPlayer(player);
       }

@@ -1,4 +1,4 @@
-import { PlayerState, ARENA_WIDTH, ARENA_HEIGHT, PLAYER_RADIUS } from '../shared/types';
+import { PlayerState, ARENA_WIDTH, ARENA_HEIGHT, PLAYER_RADIUS, MAX_HP } from '../shared/types';
 
 // Canvas and context (initialized on first render call)
 let canvas: HTMLCanvasElement | null = null;
@@ -28,11 +28,44 @@ function drawArena(): void {
   ctx.strokeRect(0, 0, ARENA_WIDTH, ARENA_HEIGHT);
 }
 
-// Draw a single player (circle with name above)
+// Get health bar color based on hp percentage
+function getHealthColor(hpPercent: number): string {
+  if (hpPercent > 0.5) return '#4ade80'; // green
+  if (hpPercent > 0.25) return '#facc15'; // yellow
+  return '#ef4444'; // red
+}
+
+// Draw health bar at position
+function drawHealthBar(x: number, y: number, hp: number): void {
+  if (!ctx) return;
+
+  const barWidth = PLAYER_RADIUS * 2;
+  const barHeight = 6;
+  const hpPercent = hp / MAX_HP;
+
+  // Bar position: above circle, below name
+  const barX = x - PLAYER_RADIUS;
+  const barY = y - PLAYER_RADIUS - barHeight - 2;
+
+  // Background (dark)
+  ctx.fillStyle = '#1f2937';
+  ctx.fillRect(barX, barY, barWidth, barHeight);
+
+  // Health fill
+  ctx.fillStyle = getHealthColor(hpPercent);
+  ctx.fillRect(barX, barY, barWidth * hpPercent, barHeight);
+
+  // Border
+  ctx.strokeStyle = '#374151';
+  ctx.lineWidth = 1;
+  ctx.strokeRect(barX, barY, barWidth, barHeight);
+}
+
+// Draw a single player (circle with name and health bar above)
 function drawPlayer(player: PlayerState): void {
   if (!ctx) return;
 
-  const { x, y, color, name } = player;
+  const { x, y, color, name, hp } = player;
 
   // Draw circle
   ctx.beginPath();
@@ -43,12 +76,15 @@ function drawPlayer(player: PlayerState): void {
   ctx.lineWidth = 2;
   ctx.stroke();
 
-  // Draw name above circle
+  // Draw health bar above circle
+  drawHealthBar(x, y, hp);
+
+  // Draw name above health bar
   ctx.fillStyle = '#ffffff';
   ctx.font = '14px Arial';
   ctx.textAlign = 'center';
   ctx.textBaseline = 'bottom';
-  ctx.fillText(name, x, y - PLAYER_RADIUS - 5);
+  ctx.fillText(name, x, y - PLAYER_RADIUS - 10);
 }
 
 // Draw a player at specific position (for local player with predicted position)
@@ -56,7 +92,8 @@ export function drawPlayerAt(
   x: number,
   y: number,
   color: string,
-  name: string
+  name: string,
+  hp: number
 ): void {
   if (!ctx) return;
 
@@ -69,12 +106,15 @@ export function drawPlayerAt(
   ctx.lineWidth = 2;
   ctx.stroke();
 
-  // Draw name above circle
+  // Draw health bar above circle
+  drawHealthBar(x, y, hp);
+
+  // Draw name above health bar
   ctx.fillStyle = '#ffffff';
   ctx.font = '14px Arial';
   ctx.textAlign = 'center';
   ctx.textBaseline = 'bottom';
-  ctx.fillText(name, x, y - PLAYER_RADIUS - 5);
+  ctx.fillText(name, x, y - PLAYER_RADIUS - 10);
 }
 
 // Main render function - draws entire frame
@@ -100,12 +140,12 @@ export function render(
   for (const player of players) {
     if (localPlayerId && player.id === localPlayerId && localPosition) {
       // Draw local player at predicted position
-      drawPlayerAt(localPosition.x, localPosition.y, player.color, player.name);
+      drawPlayerAt(localPosition.x, localPosition.y, player.color, player.name, player.hp);
     } else {
       // Draw other players at interpolated position if available, else server position
       const interpolated = interpolatedPositions?.get(player.id);
       if (interpolated) {
-        drawPlayerAt(interpolated.x, interpolated.y, player.color, player.name);
+        drawPlayerAt(interpolated.x, interpolated.y, player.color, player.name, player.hp);
       } else {
         drawPlayer(player);
       }

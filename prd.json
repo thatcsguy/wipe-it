@@ -32,7 +32,7 @@
         "Take a screenshot and verify health bar is visible above player circle but below name",
         "Health bar should be colored (green/yellow/red based on hp level)"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "id": "MECH-001",
