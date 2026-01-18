@@ -90,7 +90,7 @@
         "On 'disconnect': removes player from game",
         "State broadcast includes each player's lastProcessedInput for reconciliation"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "id": "client-001",

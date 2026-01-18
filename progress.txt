@@ -50,3 +50,14 @@ Files: src/server/player.ts
 - Build verified, server starts correctly
 
 Files: src/server/game.ts
+
+## server-004 - Socket.IO Events Complete
+
+- Imported Game class into index.ts, created/started game instance
+- 'join' event: calls game.addPlayer(), emits joinResponse w/ success+playerId or error
+- 'input' event: calls game.queueInput() for processing in tick loop
+- 'disconnect' event: calls game.removePlayer()
+- State broadcast already includes lastProcessedInput (from server-003)
+- Verified w/ Playwright: join works, 5th player rejected, input processed (seq=42), disconnect removes player
+
+Files: src/server/index.ts
