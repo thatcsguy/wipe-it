@@ -64,7 +64,7 @@
         "Player has method to process input and update position based on keys and delta time",
         "Player position is clamped to arena bounds (0 to ARENA_WIDTH/HEIGHT minus PLAYER_RADIUS)"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "id": "server-003",
