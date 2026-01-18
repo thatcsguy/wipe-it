@@ -57,7 +57,7 @@
                 "Verify onExpire() method applies expiration effects",
                 "Verify toState() returns StatusEffectState object"
             ],
-            "passes": false
+            "passes": true
         },
         {
             "id": "STATUS-003",

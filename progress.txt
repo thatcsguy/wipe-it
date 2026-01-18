@@ -5,3 +5,11 @@ STATUS-001: COMPLETE
 - Added Effect type w/ damage and status variants
 - Updated player.ts toState(), game.ts broadcast(), client/game.ts default state
 Files: src/shared/types.ts, src/server/player.ts, src/server/game.ts, src/client/game.ts
+
+STATUS-002: COMPLETE
+- Created StatusEffect class w/ properties: id, type, playerId, startTime, duration, ongoingEffects, expirationEffects
+- tick() applies ongoing effects to player
+- isExpired() checks now >= startTime + duration
+- onExpire() applies expiration effects
+- toState() returns StatusEffectState w/ iconPath from STATUS_ICONS lookup
+Files: src/server/statusEffect.ts
