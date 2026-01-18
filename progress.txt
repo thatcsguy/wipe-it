@@ -14,3 +14,10 @@
 - Name text moved up (y - PLAYER_RADIUS - 10) to accommodate health bar
 - Verified via Playwright: green bar visible above circle, below name
 - Files: src/client/renderer.ts
+
+## MECH-001: Mechanics type definitions
+- Created src/server/mechanics/types.ts
+- Effect interface: type ('damage') + amount
+- BaseMechanic interface: id, tick(now), isExpired(now), resolve(players), toState()
+- Also included MechanicState interface (needed by toState return type)
+- Files: src/server/mechanics/types.ts

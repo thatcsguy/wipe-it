@@ -43,7 +43,7 @@
         "Check Effect interface has type and amount fields",
         "Check BaseMechanic interface has required methods: tick, isExpired, resolve, toState"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "id": "MECH-002",
