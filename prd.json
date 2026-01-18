@@ -97,7 +97,7 @@
         "Check method creates ChariotMechanic with provided parameters",
         "Check method adds mechanic to mechanicManager"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "id": "RENDER-001",

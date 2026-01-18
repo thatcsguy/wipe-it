@@ -2,6 +2,8 @@ import { Server } from 'socket.io';
 import { Player } from './player';
 import { GameState, PlayerInput, TICK_RATE, BROADCAST_RATE, MAX_PLAYERS } from '../shared/types';
 import { MechanicManager } from './mechanics/manager';
+import { ChariotMechanic } from './mechanics/chariot';
+import { Effect } from './mechanics/types';
 
 // Color pool for players
 const COLOR_POOL = ['#e74c3c', '#3498db', '#2ecc71', '#f39c12'];
@@ -105,5 +107,10 @@ export class Game {
       timestamp: Date.now(),
     };
     this.io.emit('state', state);
+  }
+
+  spawnChariot(x: number, y: number, radius: number, duration: number, effects: Effect[]): void {
+    const mechanic = new ChariotMechanic(x, y, radius, duration, effects);
+    this.mechanicManager.add(mechanic);
   }
 }

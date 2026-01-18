@@ -56,3 +56,9 @@
 - resolve(players): iterates all players, calculates distance from center, applies damage effects if within radius
 - toState(): returns MechanicState with type='chariot'
 - Files: src/server/mechanics/chariot.ts
+
+## CHARIOT-002: spawnChariot method
+- Added spawnChariot(x, y, radius, duration, effects) method to Game class
+- Creates ChariotMechanic with provided params, adds to mechanicManager
+- Imported ChariotMechanic and Effect types in game.ts
+- Files: src/server/game.ts
