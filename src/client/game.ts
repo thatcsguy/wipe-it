@@ -99,7 +99,15 @@ function gameLoop(currentTime: number): void {
   }
 
   // Render with local player at predicted position, others at interpolated positions
-  render(currentGameState.players, localPlayerId, localPos, interpolatedPositions);
+  // Pass mechanics and server timestamp for mechanic rendering
+  render(
+    currentGameState.players,
+    localPlayerId,
+    localPos,
+    interpolatedPositions,
+    currentGameState.mechanics,
+    currentGameState.timestamp
+  );
 
   // Schedule next frame
   requestAnimationFrame(gameLoop);

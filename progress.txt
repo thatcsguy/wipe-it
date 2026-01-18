@@ -71,3 +71,11 @@
 - Outer circle alpha 0.3, inner alpha 0.5
 - Exposed __mechanicsTest for testing
 - Files: src/client/mechanics.ts
+
+## RENDER-002: Mechanic rendering integration
+- renderer.ts: import renderMechanics from mechanics.ts, add MechanicState import
+- render() signature: added optional mechanics[] and serverTime params
+- Calls renderMechanics(ctx, mechanics, serverTime) before drawing players
+- game.ts: pass currentGameState.mechanics and currentGameState.timestamp to render()
+- Verified via Playwright: mechanics array + timestamp available, __mechanicsTest.renderMechanics exists
+- Files: src/client/renderer.ts, src/client/game.ts

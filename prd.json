@@ -119,7 +119,7 @@
         "Check src/client/game.ts passes mechanics to render function",
         "Check src/client/renderer.ts calls renderMechanics before drawing players"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "id": "ADMIN-001",

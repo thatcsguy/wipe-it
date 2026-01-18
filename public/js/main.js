@@ -3625,6 +3625,41 @@ window.__networkTest = {
   getBufferedPlayerIds
 };
 
+// dist/client/client/mechanics.js
+var CHARIOT_COLOR = "#ff9f40";
+var CHARIOT_FILL_ALPHA = 0.3;
+var CHARIOT_INNER_ALPHA = 0.5;
+function renderChariot(ctx2, mechanic, serverTime) {
+  const { x, y, radius, startTime, endTime } = mechanic;
+  const duration = endTime - startTime;
+  const elapsed = serverTime - startTime;
+  const progress = Math.max(0, Math.min(1, elapsed / duration));
+  ctx2.beginPath();
+  ctx2.arc(x, y, radius, 0, Math.PI * 2);
+  ctx2.fillStyle = `rgba(255, 159, 64, ${CHARIOT_FILL_ALPHA})`;
+  ctx2.fill();
+  ctx2.strokeStyle = CHARIOT_COLOR;
+  ctx2.lineWidth = 2;
+  ctx2.stroke();
+  const innerRadius = radius * progress;
+  if (innerRadius > 0) {
+    ctx2.beginPath();
+    ctx2.arc(x, y, innerRadius, 0, Math.PI * 2);
+    ctx2.fillStyle = `rgba(255, 159, 64, ${CHARIOT_INNER_ALPHA})`;
+    ctx2.fill();
+  }
+}
+function renderMechanics(ctx2, mechanics, serverTime) {
+  for (const mechanic of mechanics) {
+    if (mechanic.type === "chariot") {
+      renderChariot(ctx2, mechanic, serverTime);
+    }
+  }
+}
+window.__mechanicsTest = {
+  renderMechanics
+};
+
 // dist/client/client/renderer.js
 var canvas = null;
 var ctx = null;
@@ -3706,7 +3741,7 @@ function drawPlayerAt(x, y, color, name, hp) {
   ctx.textBaseline = "bottom";
   ctx.fillText(name, x, y - PLAYER_RADIUS - 10);
 }
-function render(players, localPlayerId3, localPosition, interpolatedPositions) {
+function render(players, localPlayerId3, localPosition, interpolatedPositions, mechanics, serverTime) {
   if (!ctx) {
     initRenderer();
   }
@@ -3714,6 +3749,9 @@ function render(players, localPlayerId3, localPosition, interpolatedPositions) {
     return;
   clear();
   drawArena();
+  if (mechanics && serverTime !== void 0) {
+    renderMechanics(ctx, mechanics, serverTime);
+  }
   for (const player of players) {
     if (localPlayerId3 && player.id === localPlayerId3 && localPosition) {
       drawPlayerAt(localPosition.x, localPosition.y, player.color, player.name, player.hp);
@@ -3784,7 +3822,7 @@ function gameLoop(currentTime) {
       }
     }
   }
-  render(currentGameState.players, localPlayerId, localPos, interpolatedPositions);
+  render(currentGameState.players, localPlayerId, localPos, interpolatedPositions, currentGameState.mechanics, currentGameState.timestamp);
   requestAnimationFrame(gameLoop);
 }
 function stopGame() {

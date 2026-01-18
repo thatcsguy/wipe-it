@@ -1,4 +1,5 @@
-import { PlayerState, ARENA_WIDTH, ARENA_HEIGHT, PLAYER_RADIUS, MAX_HP } from '../shared/types';
+import { PlayerState, MechanicState, ARENA_WIDTH, ARENA_HEIGHT, PLAYER_RADIUS, MAX_HP } from '../shared/types';
+import { renderMechanics } from './mechanics';
 
 // Canvas and context (initialized on first render call)
 let canvas: HTMLCanvasElement | null = null;
@@ -122,7 +123,9 @@ export function render(
   players: PlayerState[],
   localPlayerId: string | null,
   localPosition: { x: number; y: number } | null,
-  interpolatedPositions?: Map<string, { x: number; y: number }>
+  interpolatedPositions?: Map<string, { x: number; y: number }>,
+  mechanics?: MechanicState[],
+  serverTime?: number
 ): void {
   // Initialize if not already done
   if (!ctx) {
@@ -135,6 +138,11 @@ export function render(
 
   // Draw arena border
   drawArena();
+
+  // Draw mechanics before players (so they appear below)
+  if (mechanics && serverTime !== undefined) {
+    renderMechanics(ctx, mechanics, serverTime);
+  }
 
   // Draw all players
   for (const player of players) {
