@@ -75,7 +75,7 @@
         "Check tick loop calls mechanicManager.tick()",
         "Check broadcast includes mechanics from getStates()"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "id": "CHARIOT-001",

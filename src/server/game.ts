@@ -1,6 +1,7 @@
 import { Server } from 'socket.io';
 import { Player } from './player';
 import { GameState, PlayerInput, TICK_RATE, BROADCAST_RATE, MAX_PLAYERS } from '../shared/types';
+import { MechanicManager } from './mechanics/manager';
 
 // Color pool for players
 const COLOR_POOL = ['#e74c3c', '#3498db', '#2ecc71', '#f39c12'];
@@ -12,6 +13,7 @@ export class Game {
   private io: Server;
   private tickInterval: ReturnType<typeof setInterval> | null = null;
   private broadcastInterval: ReturnType<typeof setInterval> | null = null;
+  private mechanicManager: MechanicManager = new MechanicManager();
 
   constructor(io: Server) {
     this.io = io;
@@ -79,6 +81,8 @@ export class Game {
   }
 
   private tick(): void {
+    const now = Date.now();
+
     // Process all queued inputs for each player
     for (const [socketId, player] of this.players) {
       const queue = this.inputQueues.get(socketId);
@@ -89,12 +93,15 @@ export class Game {
         }
       }
     }
+
+    // Update mechanics (tick + resolve expired)
+    this.mechanicManager.tick(now, this.players);
   }
 
   private broadcast(): void {
     const state: GameState = {
       players: Array.from(this.players.values()).map(p => p.toState()),
-      mechanics: [],
+      mechanics: this.mechanicManager.getStates(),
       timestamp: Date.now(),
     };
     this.io.emit('state', state);

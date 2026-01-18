@@ -38,3 +38,11 @@
 - Updated client/game.ts initial state to include empty mechanics array
 - Verified via Playwright: GameState.mechanics exists and is empty array
 - Files: src/shared/types.ts, src/server/mechanics/types.ts, src/server/game.ts, src/client/game.ts
+
+## MECH-004: MechanicManager integration
+- Import MechanicManager in Game class
+- Added private mechanicManager property instantiated inline
+- tick() now gets Date.now() and calls mechanicManager.tick(now, this.players)
+- broadcast() uses mechanicManager.getStates() instead of empty array
+- Verified via Playwright: client receives mechanics array in GameState
+- Files: src/server/game.ts
