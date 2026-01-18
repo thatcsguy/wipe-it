@@ -190,7 +190,7 @@
         "Draws each player as colored circle with PLAYER_RADIUS",
         "Draws player name above each circle, centered"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "id": "client-009",

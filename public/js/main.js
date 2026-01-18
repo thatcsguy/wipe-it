@@ -3556,6 +3556,84 @@ window.__networkTest = {
   reconcile
 };
 
+// dist/client/client/renderer.js
+var canvas = null;
+var ctx = null;
+function initRenderer() {
+  canvas = document.getElementById("game");
+  if (!canvas) {
+    console.error("Canvas element #game not found");
+    return;
+  }
+  ctx = canvas.getContext("2d");
+}
+function clear() {
+  if (!ctx || !canvas)
+    return;
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+}
+function drawArena() {
+  if (!ctx)
+    return;
+  ctx.strokeStyle = "#4a4a6a";
+  ctx.lineWidth = 2;
+  ctx.strokeRect(0, 0, ARENA_WIDTH, ARENA_HEIGHT);
+}
+function drawPlayer(player) {
+  if (!ctx)
+    return;
+  const { x, y, color, name } = player;
+  ctx.beginPath();
+  ctx.arc(x, y, PLAYER_RADIUS, 0, Math.PI * 2);
+  ctx.fillStyle = color;
+  ctx.fill();
+  ctx.strokeStyle = "#ffffff";
+  ctx.lineWidth = 2;
+  ctx.stroke();
+  ctx.fillStyle = "#ffffff";
+  ctx.font = "14px Arial";
+  ctx.textAlign = "center";
+  ctx.textBaseline = "bottom";
+  ctx.fillText(name, x, y - PLAYER_RADIUS - 5);
+}
+function drawPlayerAt(x, y, color, name) {
+  if (!ctx)
+    return;
+  ctx.beginPath();
+  ctx.arc(x, y, PLAYER_RADIUS, 0, Math.PI * 2);
+  ctx.fillStyle = color;
+  ctx.fill();
+  ctx.strokeStyle = "#ffffff";
+  ctx.lineWidth = 2;
+  ctx.stroke();
+  ctx.fillStyle = "#ffffff";
+  ctx.font = "14px Arial";
+  ctx.textAlign = "center";
+  ctx.textBaseline = "bottom";
+  ctx.fillText(name, x, y - PLAYER_RADIUS - 5);
+}
+function render(players, localPlayerId2, localPosition) {
+  if (!ctx) {
+    initRenderer();
+  }
+  if (!ctx)
+    return;
+  clear();
+  drawArena();
+  for (const player of players) {
+    if (localPlayerId2 && player.id === localPlayerId2 && localPosition) {
+      drawPlayerAt(localPosition.x, localPosition.y, player.color, player.name);
+    } else {
+      drawPlayer(player);
+    }
+  }
+}
+window.__rendererTest = {
+  initRenderer,
+  render,
+  drawPlayerAt
+};
+
 // dist/client/client/main.js
 var modal = document.getElementById("modal");
 var nameInput = document.getElementById("name-input");

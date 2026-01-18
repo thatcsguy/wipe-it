@@ -130,3 +130,18 @@ Files: src/client/network.ts, src/client/main.ts
 - Verified w/ Playwright: input removal, position correction, input replay
 
 Files: src/client/network.ts
+
+## client-008 - Renderer Complete
+
+- Created renderer.ts w/ canvas drawing functions
+- initRenderer() gets canvas element and 2d context
+- clear() clears entire canvas each frame
+- drawArena() strokes 800x600 rect w/ #4a4a6a border
+- drawPlayer() draws colored circle w/ PLAYER_RADIUS, white stroke, name above
+- drawPlayerAt() same as drawPlayer but takes explicit x,y (for predicted pos)
+- render() orchestrates: clear, drawArena, draw all players
+- Local player drawn at predicted position, others at server position
+- Exposed __rendererTest on window for Playwright
+- Verified: arena border, player circle, white stroke, name text all render
+
+Files: src/client/renderer.ts, src/client/main.ts
