@@ -1,9 +1,19 @@
 import { Socket } from 'socket.io-client';
 
 let adminSocket: Socket | null = null;
+let onChangeName: (() => void) | null = null;
 
 export function initAdmin(socket: Socket): void {
   adminSocket = socket;
+
+  const changeNameBtn = document.getElementById('change-name-btn');
+  if (changeNameBtn) {
+    changeNameBtn.addEventListener('click', () => {
+      if (onChangeName) {
+        onChangeName();
+      }
+    });
+  }
 
   const spawnChariotBtn = document.getElementById('spawn-chariot-btn');
   if (spawnChariotBtn) {
@@ -31,6 +41,10 @@ export function initAdmin(socket: Socket): void {
       }
     });
   }
+}
+
+export function setChangeNameCallback(callback: () => void): void {
+  onChangeName = callback;
 }
 
 // Expose for testing

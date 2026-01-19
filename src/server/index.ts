@@ -24,14 +24,18 @@ io.on('connection', (socket) => {
   console.log('Client connected:', socket.id);
 
   // Handle join request
-  socket.on('join', (data: { name: string }) => {
-    const player = game.addPlayer(socket.id, data.name);
+  socket.on('join', (data: { name?: string }) => {
+    // Get player number first to generate default name if needed
+    const playerNumber = game.getNextPlayerNumber();
+    const name = data.name?.trim() || `Player ${playerNumber}`;
+    const result = game.addPlayer(socket.id, name);
 
-    if (player) {
-      console.log(`Player joined: ${data.name} (${socket.id})`);
+    if (result) {
+      console.log(`Player joined: ${name} (${socket.id}) as Player ${result.playerNumber}`);
       socket.emit('joinResponse', {
         success: true,
         playerId: socket.id,
+        playerNumber: result.playerNumber,
       });
     } else {
       console.log(`Join rejected for ${data.name}: game full`);
@@ -39,6 +43,14 @@ io.on('connection', (socket) => {
         success: false,
         error: 'Game is full',
       });
+    }
+  });
+
+  // Handle name change
+  socket.on('changeName', (data: { name: string }) => {
+    const success = game.updatePlayerName(socket.id, data.name);
+    if (success) {
+      console.log(`Player ${socket.id} changed name to: ${data.name}`);
     }
   });
 

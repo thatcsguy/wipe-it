@@ -19,9 +19,14 @@ export class Game {
   private broadcastInterval: ReturnType<typeof setInterval> | null = null;
   private mechanicManager: MechanicManager = new MechanicManager();
   private statusEffectManager: StatusEffectManager = new StatusEffectManager();
+  private playerCounter: number = 0;
 
   constructor(io: Server) {
     this.io = io;
+  }
+
+  getNextPlayerNumber(): number {
+    return this.playerCounter + 1;
   }
 
   start(): void {
@@ -45,7 +50,7 @@ export class Game {
     }
   }
 
-  addPlayer(socketId: string, name: string): Player | null {
+  addPlayer(socketId: string, name: string): { player: Player; playerNumber: number } | null {
     // Reject if game is full
     if (this.players.size >= MAX_PLAYERS) {
       return null;
@@ -57,12 +62,24 @@ export class Game {
       return null;
     }
 
+    this.playerCounter++;
+    const playerNumber = this.playerCounter;
+
     const player = new Player(socketId, name, color);
     player.setStatusEffectManager(this.statusEffectManager);
     this.players.set(socketId, player);
     this.inputQueues.set(socketId, []);
 
-    return player;
+    return { player, playerNumber };
+  }
+
+  updatePlayerName(socketId: string, name: string): boolean {
+    const player = this.players.get(socketId);
+    if (player) {
+      player.name = name;
+      return true;
+    }
+    return false;
   }
 
   removePlayer(socketId: string): void {
