@@ -5,3 +5,13 @@ TOWER-001 (types) - DONE
 - Added TowerMechanicState to MechanicState union
 - File: src/shared/types.ts
 - Build passes
+
+TOWER-002 (server) - DONE
+- Created src/server/mechanics/tower.ts implementing BaseMechanic
+- Constructor takes all params: id, x, y, radius, startTime, endTime, requiredPlayers, failureEffects, successEffects
+- tick() empty, isExpired() checks now >= endTime
+- resolve() counts players in radius, applies successEffects to inside players if met, failureEffects to ALL players if not
+- Returns TowerResolutionEvent with mechanicId, success, playersInside, required, x, y
+- Updated types.ts to include TowerResolutionEvent in MechanicResolutionResult union
+- Files: src/server/mechanics/tower.ts, src/server/mechanics/types.ts
+- Build passes

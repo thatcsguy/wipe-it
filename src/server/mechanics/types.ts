@@ -1,12 +1,12 @@
 import { Player } from '../player';
 import { StatusEffectManager } from '../statusEffectManager';
-import { MechanicState, Effect, TetherResolutionEvent } from '../../shared/types';
+import { MechanicState, Effect, TetherResolutionEvent, TowerResolutionEvent } from '../../shared/types';
 
 // Re-export for convenience
 export { MechanicState, Effect };
 
-// Resolution result - only tethers return this currently
-export type MechanicResolutionResult = TetherResolutionEvent | void;
+// Resolution result - tethers and towers return resolution events
+export type MechanicResolutionResult = TetherResolutionEvent | TowerResolutionEvent | void;
 
 // Base interface all mechanics implement
 export interface BaseMechanic {
