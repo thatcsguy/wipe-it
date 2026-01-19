@@ -54,7 +54,7 @@ export interface PlayerState {
 }
 
 // Mechanic types
-export type MechanicType = 'chariot' | 'spread' | 'tether';
+export type MechanicType = 'chariot' | 'spread' | 'tether' | 'tower';
 
 // Tether endpoint - either a player or a fixed point
 export type TetherEndpoint =
@@ -94,14 +94,38 @@ export interface TetherMechanicState {
   endTime: number;
 }
 
+// Tower mechanic - circle AOE requiring N players inside when it expires
+export interface TowerMechanicState {
+  type: 'tower';
+  id: string;
+  x: number;
+  y: number;
+  radius: number;
+  startTime: number;
+  endTime: number;
+  requiredPlayers: number;
+  failureEffects: Effect[];
+  successEffects: Effect[];
+}
+
 // Union of all mechanic states
-export type MechanicState = ChariotMechanicState | SpreadMechanicState | TetherMechanicState;
+export type MechanicState = ChariotMechanicState | SpreadMechanicState | TetherMechanicState | TowerMechanicState;
 
 // Tether resolution event - emitted when a tether mechanic resolves
 export interface TetherResolutionEvent {
   mechanicId: string;
   success: boolean; // true if stretched enough, false if snapped
   affectedPlayerIds: string[]; // players who took damage (empty if success=true)
+}
+
+// Tower resolution event - emitted when a tower mechanic resolves
+export interface TowerResolutionEvent {
+  mechanicId: string;
+  success: boolean; // true if enough players inside, false otherwise
+  playersInside: number;
+  required: number;
+  x: number; // tower position for explosion animation
+  y: number;
 }
 
 // Game state broadcast from server to clients

@@ -1,0 +1,7 @@
+TOWER-001 (types) - DONE
+- Added 'tower' to MechanicType union
+- Created TowerMechanicState interface with all required fields
+- Created TowerResolutionEvent interface with x,y for explosion positioning
+- Added TowerMechanicState to MechanicState union
+- File: src/shared/types.ts
+- Build passes
