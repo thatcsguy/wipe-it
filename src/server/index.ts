@@ -240,6 +240,19 @@ io.on('connection', (socket) => {
     console.log(`Admin spawned line AOE from (${startX}, ${startY}) to (${endX}, ${endY}) width=${width} duration=${duration}ms`);
   });
 
+  // Handle admin conal AOE spawn
+  socket.on('admin:spawnConalAoe', (params?: { duration?: number }) => {
+    const centerX = ARENA_WIDTH / 2;
+    const centerY = ARENA_HEIGHT / 2;
+    const endpointX = centerX + 200;
+    const endpointY = centerY;
+    const angle = Math.PI / 2;
+    const duration = params?.duration ?? 3000;
+    const effects = [{ type: 'damage' as const, amount: 25 }];
+    game.spawnConalAoe(centerX, centerY, endpointX, endpointY, angle, duration, effects);
+    console.log(`Admin spawned conal AOE at (${centerX}, ${centerY}) endpoint=(${endpointX}, ${endpointY}) angle=${angle} duration=${duration}ms`);
+  });
+
   // Handle admin tower spawn
   socket.on('admin:spawnTower', (params?: { duration?: number }) => {
     // Test values: center of arena, radius 80, duration 5000ms, requires 2 players

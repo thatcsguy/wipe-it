@@ -40,3 +40,11 @@ AOE-005 COMPLETE: Added admin:spawnLineAoe socket handler
 - Client: __adminTest.emitSpawnLineAoe({ duration?: number }) added
 - Verified with Playwright: mechanic appears with data-type='lineAoe', correct ID format, expiry countdown
 Files: src/server/index.ts, src/client/admin.ts
+
+AOE-006 COMPLETE: Added admin:spawnConalAoe socket handler
+- Server: socket.on('admin:spawnConalAoe') spawns 90-degree cone pointing right from arena center
+- Default: centerX/Y = ARENA_WIDTH/2, ARENA_HEIGHT/2; endpointX = centerX + 200, endpointY = centerY
+- Angle = Math.PI/2 (90 degrees), duration = 3000ms, effects = [{ type: 'damage', amount: 25 }]
+- Client: __adminTest.emitSpawnConalAoe({ duration?: number }) added
+- Verified with Playwright: data-type='conalAoe', ID format conalAoe-{ts}-{random}, correct expiry
+Files: src/server/index.ts, src/client/admin.ts

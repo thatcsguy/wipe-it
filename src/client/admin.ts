@@ -148,5 +148,10 @@ export function setChangeNameCallback(callback: () => void): void {
     if (adminSocket) {
       adminSocket.emit('admin:spawnLineAoe', params);
     }
+  },
+  emitSpawnConalAoe: (params?: { duration?: number }) => {
+    if (adminSocket) {
+      adminSocket.emit('admin:spawnConalAoe', params);
+    }
   }
 };

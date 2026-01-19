@@ -95,7 +95,7 @@
       "In console run: __adminTest.emitSpawnConalAoe({ duration: 10000 })",
       "Verify debug panel shows mechanic with data-type='conalAoe' and ~10000ms until expiry"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "id": "AOE-007",
