@@ -1,4 +1,4 @@
-import { GameState, PlayerState, MechanicState, TetherMechanicState, TetherEndpoint } from '../shared/types';
+import { GameState, PlayerState, MechanicState, TetherMechanicState, TetherEndpoint, TowerMechanicState } from '../shared/types';
 
 let debugPanelElement: HTMLDivElement | null = null;
 let playersSection: HTMLDivElement | null = null;
@@ -138,6 +138,9 @@ function updateMechanicsSection(mechanics: MechanicState[], serverTimestamp: num
       mechanicDiv.setAttribute('data-endpoint-a', formatEndpoint(tether.endpointA));
       mechanicDiv.setAttribute('data-endpoint-b', formatEndpoint(tether.endpointB));
       mechanicDiv.setAttribute('data-required-distance', String(tether.requiredDistance));
+    } else if (mechanic.type === 'tower') {
+      const tower = mechanic as TowerMechanicState;
+      mechanicDiv.setAttribute('data-required-players', String(tower.requiredPlayers));
     }
 
     // Calculate time remaining

@@ -85,3 +85,11 @@ TOWER-010 (admin panel) - DONE
 - Playwright verified: button exists, tower spawns, failure damage applied (100->50 HP)
 - Files: public/index.html, src/client/admin.ts, src/server/index.ts
 - Build passes
+
+TOWER-011 (debug panel) - DONE
+- Added TowerMechanicState import to debugPanel.ts
+- Added else-if branch for tower type in updateMechanicsSection
+- Sets data-required-players attribute with tower.requiredPlayers value
+- Playwright verified: .debug-mechanic[data-type="tower"] has data-required-players="2"
+- File: src/client/debugPanel.ts
+- Build passes
