@@ -1,0 +1,5 @@
+## TOAST-001 - Toast container in HTML
+- Added <div id="action-log" class="action-log"></div> to index.html
+- Added CSS: fixed position bottom-left, flex column, pointer-events:none so it won't block clicks
+- Verified #action-log exists in DOM via Playwright
+- Files: public/index.html, public/css/style.css

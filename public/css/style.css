@@ -135,3 +135,15 @@ body {
 .admin-panel button:hover {
   background: #5a5a7a;
 }
+
+/* Action Log / Toast Container */
+.action-log {
+  position: fixed;
+  bottom: 1rem;
+  left: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  pointer-events: none;
+  z-index: 1000;
+}
