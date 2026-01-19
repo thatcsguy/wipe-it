@@ -59,3 +59,12 @@
 - toState() returns RadialKnockbackMechanicState
 - Files: src/server/mechanics/radialKnockback.ts
 - Build passes
+
+=== KB-010 - LinearKnockbackMechanic Class ===
+- Created LinearKnockbackMechanic implementing BaseMechanic
+- Constructor: lineStartX/Y, lineEndX/Y, delay, knockbackDistance, knockbackDuration
+- resolve() uses isOnKnockbackSide to filter players (only right side of line)
+- Knockback direction perpendicular to line via getLinearKnockbackDirection (same for all affected)
+- toState() returns LinearKnockbackMechanicState
+- Files: src/server/mechanics/linearKnockback.ts
+- Build passes

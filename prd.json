@@ -123,7 +123,7 @@
         "Verify resolve() only applies knockback to players where isOnKnockbackSide returns true",
         "Verify knockback direction is perpendicular to line (same direction for all)"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "id": "KB-011",
