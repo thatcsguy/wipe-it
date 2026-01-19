@@ -1,12 +1,12 @@
 import { MechanicState } from '../../shared/types';
-import { renderChariot } from './chariot';
+import { renderChariot, cleanupChariotTracking } from './chariot';
 import { renderSpread } from './spread';
 import { renderTether } from './tether';
 import { renderTower } from './tower';
 import { renderRadialKnockback } from './radialKnockback';
 import { renderLinearKnockback } from './linearKnockback';
-import { renderLineAoe } from './lineAoe';
-import { renderConalAoe } from './conalAoe';
+import { renderLineAoe, cleanupLineAoeTracking } from './lineAoe';
+import { renderConalAoe, cleanupConalAoeTracking } from './conalAoe';
 export { PlayerPositionData } from './shared';
 import type { PlayerPositionData } from './shared';
 
@@ -17,8 +17,14 @@ export function renderMechanics(
   serverTime: number,
   posData?: PlayerPositionData
 ): void {
+  // Collect active mechanic IDs for cleanup
+  const activeChariotIds = new Set<string>();
+  const activeLineAoeIds = new Set<string>();
+  const activeConalAoeIds = new Set<string>();
+
   for (const mechanic of mechanics) {
     if (mechanic.type === 'chariot') {
+      activeChariotIds.add(mechanic.id);
       renderChariot(ctx, mechanic, serverTime);
     } else if (mechanic.type === 'spread' && posData) {
       renderSpread(ctx, mechanic, serverTime, posData);
@@ -31,11 +37,18 @@ export function renderMechanics(
     } else if (mechanic.type === 'linearKnockback') {
       renderLinearKnockback(ctx, mechanic, serverTime);
     } else if (mechanic.type === 'lineAoe') {
+      activeLineAoeIds.add(mechanic.id);
       renderLineAoe(ctx, mechanic);
     } else if (mechanic.type === 'conalAoe') {
+      activeConalAoeIds.add(mechanic.id);
       renderConalAoe(ctx, mechanic);
     }
   }
+
+  // Clean up tracking for removed mechanics
+  cleanupChariotTracking(activeChariotIds);
+  cleanupLineAoeTracking(activeLineAoeIds);
+  cleanupConalAoeTracking(activeConalAoeIds);
 }
 
 // Export for testing

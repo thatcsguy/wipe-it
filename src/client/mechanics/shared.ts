@@ -5,6 +5,11 @@ export const CHARIOT_COLOR = '#ff9f40';
 export const CHARIOT_FILL_ALPHA = 0.3;
 export const CHARIOT_INNER_ALPHA = 0.5;
 
+// Line/Conal AOE colors
+export const AOE_FILL_COLOR = 'rgba(255, 80, 40, 0.35)';      // Semi-transparent red-orange fill
+export const AOE_EDGE_GLOW_COLOR = 'rgba(255, 200, 50, 0.8)'; // Orange-yellow glow
+export const AOE_EDGE_CORE_COLOR = '#fffef8';                  // Very bright white-yellow core
+
 // Spread colors (FFXIV-style pink/purple)
 export const SPREAD_OUTER_COLOR = 'rgba(255, 128, 255, 0.3)';
 export const SPREAD_BORDER_COLOR = 'rgba(200, 100, 200, 0.8)';
