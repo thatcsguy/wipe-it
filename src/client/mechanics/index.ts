@@ -6,6 +6,7 @@ import { renderTower } from './tower';
 import { renderRadialKnockback } from './radialKnockback';
 import { renderLinearKnockback } from './linearKnockback';
 import { renderLineAoe } from './lineAoe';
+import { renderConalAoe } from './conalAoe';
 export { PlayerPositionData } from './shared';
 import type { PlayerPositionData } from './shared';
 
@@ -31,6 +32,8 @@ export function renderMechanics(
       renderLinearKnockback(ctx, mechanic, serverTime);
     } else if (mechanic.type === 'lineAoe') {
       renderLineAoe(ctx, mechanic);
+    } else if (mechanic.type === 'conalAoe') {
+      renderConalAoe(ctx, mechanic);
     }
   }
 }

@@ -131,7 +131,7 @@
       "Use Playwright browser_take_screenshot to capture the rendered conal AOE",
       "Verify screenshot shows orange semi-transparent 90-degree cone pointing right from arena center, radius ~200px"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "id": "AOE-009",
@@ -147,7 +147,7 @@
       "Spawn both mechanics: __adminTest.emitSpawnLineAoe({ duration: 10000 }); __adminTest.emitSpawnConalAoe({ duration: 10000 });",
       "Verify both mechanics render simultaneously on canvas"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "id": "AOE-010",

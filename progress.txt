@@ -58,3 +58,21 @@ AOE-007 COMPLETE: Created Line AOE renderer
 - Also added to dispatcher (index.ts) for testing
 - Verified with Playwright: orange vertical rectangle renders correctly
 Files: src/client/mechanics/lineAoe.ts, src/client/mechanics/index.ts
+
+AOE-008 COMPLETE: Created Conal AOE renderer
+- renderConalAoe() draws pie slice using ctx.arc()
+- Direction = atan2(endpointY-centerY, endpointX-centerX), startAngle = direction - angle/2, endAngle = direction + angle/2
+- Path: moveTo(center), arc(center, radius, startAngle, endAngle), closePath
+- Fill: chariot orange (255,159,64) at alpha 0.3
+- Inner glow: 70% radius inner sector at alpha 0.5
+- Border stroke: #ff9f40, 2px width
+- Added to dispatcher (index.ts) - case 'conalAoe' calls renderConalAoe
+- Verified with Playwright: orange 90-degree cone pointing right from arena center, radius ~200px
+Files: src/client/mechanics/conalAoe.ts, src/client/mechanics/index.ts
+
+AOE-009 COMPLETE: Updated mechanic dispatcher
+- Added import for renderConalAoe from './conalAoe'
+- Added else if case: mechanic.type === 'conalAoe' calls renderConalAoe(ctx, mechanic)
+- Build passes
+- Both lineAoe and conalAoe now render via dispatcher
+Files: src/client/mechanics/index.ts
