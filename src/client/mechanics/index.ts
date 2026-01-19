@@ -2,6 +2,7 @@ import { MechanicState } from '../../shared/types';
 import { renderChariot } from './chariot';
 import { renderSpread } from './spread';
 import { renderTether } from './tether';
+import { renderTower } from './tower';
 export { PlayerPositionData } from './shared';
 import type { PlayerPositionData } from './shared';
 
@@ -19,6 +20,8 @@ export function renderMechanics(
       renderSpread(ctx, mechanic, serverTime, posData);
     } else if (mechanic.type === 'tether' && posData) {
       renderTether(ctx, mechanic, posData);
+    } else if (mechanic.type === 'tower') {
+      renderTower(ctx, mechanic, serverTime);
     }
   }
 }

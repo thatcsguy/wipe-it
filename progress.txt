@@ -53,3 +53,9 @@ TOWER-006 (tower explosion) - DONE
 - clearExplosions() for cleanup
 - File: src/client/mechanics/towerExplosion.ts
 - Build passes
+
+TOWER-007 (client integration) - DONE
+- Imported renderTower from './tower'
+- Added 'tower' case to renderMechanics dispatcher
+- File: src/client/mechanics/index.ts
+- Build passes
