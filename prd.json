@@ -77,7 +77,7 @@
       "In console run: __adminTest.emitSpawnLineAoe({ duration: 10000 })",
       "Verify debug panel shows mechanic with data-type='lineAoe' and ~10000ms until expiry"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "id": "AOE-006",

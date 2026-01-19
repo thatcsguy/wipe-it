@@ -143,5 +143,10 @@ export function setChangeNameCallback(callback: () => void): void {
     if (adminSocket) {
       adminSocket.emit('admin:spawnLinearKnockback', params);
     }
+  },
+  emitSpawnLineAoe: (params?: { duration?: number }) => {
+    if (adminSocket) {
+      adminSocket.emit('admin:spawnLineAoe', params);
+    }
   }
 };

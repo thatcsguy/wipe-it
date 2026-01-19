@@ -227,6 +227,19 @@ io.on('connection', (socket) => {
     }
   });
 
+  // Handle admin line AOE spawn
+  socket.on('admin:spawnLineAoe', (params?: { duration?: number }) => {
+    const startX = ARENA_WIDTH / 2;
+    const startY = 0;
+    const endX = ARENA_WIDTH / 2;
+    const endY = ARENA_HEIGHT;
+    const width = 100;
+    const duration = params?.duration ?? 3000;
+    const effects = [{ type: 'damage' as const, amount: 25 }];
+    game.spawnLineAoe(startX, startY, endX, endY, width, duration, effects);
+    console.log(`Admin spawned line AOE from (${startX}, ${startY}) to (${endX}, ${endY}) width=${width} duration=${duration}ms`);
+  });
+
   // Handle admin tower spawn
   socket.on('admin:spawnTower', (params?: { duration?: number }) => {
     // Test values: center of arena, radius 80, duration 5000ms, requires 2 players
