@@ -54,3 +54,11 @@ TETHER-008 (Client - toast on resolution) - DONE
 - Shows "Tether stretched!" when success=true (player far enough)
 - Verified w/ Playwright: both toasts appear correctly based on player distance
 - Files: src/client/game.ts, src/client/main.ts
+
+TETHER-006 (Client - debug panel) - DONE
+- Added tether-specific data attributes to debug panel mechanic elements
+- data-type="tether", data-mechanic-id, data-endpoint-a, data-endpoint-b, data-required-distance
+- Endpoint format: "player:{playerId}" or "point:{x},{y}"
+- Added formatEndpoint() helper fn
+- Verified w/ Playwright: all attributes correctly populated
+- File: src/client/debugPanel.ts

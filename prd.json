@@ -69,7 +69,7 @@
                 "Using Playwright: navigate with ?debug=1, join player, spawn point tethers",
                 "Verify .debug-mechanic[data-type='tether'] element exists in debug panel"
             ],
-            "passes": false
+            "passes": true
         },
         {
             "id": "TETHER-007",
