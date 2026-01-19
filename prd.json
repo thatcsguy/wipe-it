@@ -1,365 +1,125 @@
-{
-  "feature": "Radial and Linear Knockback Mechanics",
-  "description": "First mechanic type that forcibly moves players. Includes radial knockbacks (away from origin point) and linear knockbacks (perpendicular to a line). Players cannot control movement during knockback duration. Uses ease-out cubic curve for smooth deceleration.",
-  "items": [
-    {
-      "id": "KB-001",
-      "category": "types",
-      "description": "Add RadialKnockbackMechanicState interface to shared/types.ts with fields: type='radialKnockback', id, originX, originY, startTime, endTime, knockbackDistance, knockbackDuration",
-      "stepsToVerify": [
-        "Open src/shared/types.ts",
-        "Verify RadialKnockbackMechanicState interface exists with all required fields",
-        "Verify type field is literal 'radialKnockback'",
-        "Verify interface is exported and added to MechanicState union type"
-      ],
-      "passes": true
-    },
-    {
-      "id": "KB-002",
-      "category": "types",
-      "description": "Add LinearKnockbackMechanicState interface to shared/types.ts with fields: type='linearKnockback', id, lineStartX, lineStartY, lineEndX, lineEndY, startTime, endTime, knockbackDistance, knockbackDuration",
-      "stepsToVerify": [
-        "Open src/shared/types.ts",
-        "Verify LinearKnockbackMechanicState interface exists with all required fields",
-        "Verify type field is literal 'linearKnockback'",
-        "Verify interface is exported and added to MechanicState union type"
-      ],
-      "passes": true
-    },
-    {
-      "id": "KB-003",
-      "category": "types",
-      "description": "Add optional knockback property to PlayerState interface with fields: startTime, startX, startY, endX, endY, duration. The endX/endY are pre-calculated endpoints accounting for wall collisions.",
-      "stepsToVerify": [
-        "Open src/shared/types.ts",
-        "Verify PlayerState has optional knockback property",
-        "Verify knockback object has all 6 required fields: startTime, startX, startY, endX, endY, duration"
-      ],
-      "passes": true
-    },
-    {
-      "id": "KB-004",
-      "category": "shared-physics",
-      "description": "Create src/shared/knockback.ts with easeOutCubic function implementing formula: 1 - Math.pow(1 - t, 3)",
-      "stepsToVerify": [
-        "Open src/shared/knockback.ts",
-        "Verify easeOutCubic function exists and is exported",
-        "Verify easeOutCubic(0) returns 0",
-        "Verify easeOutCubic(1) returns 1",
-        "Verify easeOutCubic(0.5) returns approximately 0.875 (fast start, slow end)"
-      ],
-      "passes": true
-    },
-    {
-      "id": "KB-005",
-      "category": "shared-physics",
-      "description": "Add getKnockbackPosition function to shared/knockback.ts that takes knockback state and current time, returns {x, y, active}. Uses easeOutCubic for interpolation between startX/Y and endX/Y.",
-      "stepsToVerify": [
-        "Open src/shared/knockback.ts",
-        "Verify getKnockbackPosition function exists and is exported",
-        "Verify it returns active=false when elapsed >= duration",
-        "Verify it returns endX/endY when knockback complete",
-        "Verify position interpolates using easeOutCubic curve"
-      ],
-      "passes": true
-    },
-    {
-      "id": "KB-006",
-      "category": "shared-physics",
-      "description": "Add getKnockbackDirection function that calculates normalized direction vector. For radial: direction from origin to player. For linear: perpendicular to line (righthand side when walking A to B, formula: dirX=lineY/len, dirY=-lineX/len).",
-      "stepsToVerify": [
-        "Open src/shared/knockback.ts",
-        "Verify getKnockbackDirection function exists and is exported",
-        "Verify radial returns normalized(playerPos - origin)",
-        "Verify linear returns perpendicular vector using (lineY/len, -lineX/len)"
-      ],
-      "passes": true
-    },
-    {
-      "id": "KB-007",
-      "category": "shared-physics",
-      "description": "Add isOnKnockbackSide function for linear knockbacks using cross product: (bx-ax)*(py-ay) - (by-ay)*(px-ax). Returns true when cross < 0 (right side walking A to B).",
-      "stepsToVerify": [
-        "Open src/shared/knockback.ts",
-        "Verify isOnKnockbackSide function exists and is exported",
-        "Verify uses cross product formula correctly",
-        "Verify returns true when cross product < 0 (right side)"
-      ],
-      "passes": true
-    },
-    {
-      "id": "KB-008",
-      "category": "shared-physics",
-      "description": "Add calculateKnockbackEndpoint function that computes final position accounting for arena walls. Calculate theoretical endpoint (start + direction * distance), then clamp to arena bounds.",
-      "stepsToVerify": [
-        "Open src/shared/knockback.ts",
-        "Verify calculateKnockbackEndpoint function exists and is exported",
-        "Verify it calculates theoretical endpoint: start + direction * distance",
-        "Verify it clamps result to arena bounds (PLAYER_RADIUS to ARENA_SIZE - PLAYER_RADIUS)"
-      ],
-      "passes": true
-    },
-    {
-      "id": "KB-009",
-      "category": "server-mechanics",
-      "description": "Create RadialKnockbackMechanic class in src/server/mechanics/ following existing mechanic patterns (see ChariotMechanic). On resolve(), apply knockback to ALL players. Direction is from origin toward each player (normalized). Call player.applyKnockback(dirX, dirY, distance, duration, now, bounds).",
-      "stepsToVerify": [
-        "Verify src/server/mechanics/RadialKnockbackMechanic.ts exists",
-        "Verify class follows same pattern as ChariotMechanic (implements BaseMechanic)",
-        "Verify resolve() iterates all players",
-        "Verify resolve() calculates direction from origin to each player",
-        "Verify resolve() calls player.applyKnockback with correct params"
-      ],
-      "passes": true
-    },
-    {
-      "id": "KB-010",
-      "category": "server-mechanics",
-      "description": "Create LinearKnockbackMechanic class in src/server/mechanics/. On resolve(), apply knockback only to players on the right side of the line (using isOnKnockbackSide). Knockback direction is perpendicular to line (same for all affected players).",
-      "stepsToVerify": [
-        "Verify src/server/mechanics/LinearKnockbackMechanic.ts exists",
-        "Verify class follows same pattern as ChariotMechanic",
-        "Verify resolve() checks isOnKnockbackSide for each player",
-        "Verify resolve() only applies knockback to players where isOnKnockbackSide returns true",
-        "Verify knockback direction is perpendicular to line (same direction for all)"
-      ],
-      "passes": true
-    },
-    {
-      "id": "KB-011",
-      "category": "server-mechanics",
-      "description": "Register both knockback mechanic types in MechanicManager so they can be spawned and ticked. Add spawnRadialKnockback and spawnLinearKnockback methods to Game class.",
-      "stepsToVerify": [
-        "Verify MechanicManager handles radialKnockback and linearKnockback types",
-        "Verify Game class has spawnRadialKnockback(originX, originY, startDelay, knockbackDistance, knockbackDuration) method",
-        "Verify Game class has spawnLinearKnockback(lineStartX, lineStartY, lineEndX, lineEndY, startDelay, knockbackDistance, knockbackDuration) method",
-        "Verify mechanic state is properly broadcast to clients"
-      ],
-      "passes": true
-    },
-    {
-      "id": "KB-012",
-      "category": "server-player",
-      "description": "Add applyKnockback method to Player class. Must check if already knocked back (return early if this.knockback exists). Pre-calculate endpoint using calculateKnockbackEndpoint. Set knockback state with startTime, startX/Y, endX/Y, duration.",
-      "stepsToVerify": [
-        "Open src/server/player.ts",
-        "Verify applyKnockback method exists with signature: applyKnockback(dirX, dirY, distance, duration, now, bounds)",
-        "Verify method returns early if this.knockback already exists (ignore new knockback)",
-        "Verify method calls calculateKnockbackEndpoint to get wall-clamped endpoint",
-        "Verify method sets this.knockback with all 6 fields"
-      ],
-      "passes": true
-    },
-    {
-      "id": "KB-013",
-      "category": "server-player",
-      "description": "Modify processInput() to ignore WASD movement during active knockback. MUST still update lastProcessedInput for reconciliation. During knockback: update position via getKnockbackPosition(), clear knockback when active=false, return early (skip normal movement).",
-      "stepsToVerify": [
-        "Open src/server/player.ts",
-        "Verify processInput checks for this.knockback at start",
-        "Verify lastProcessedInput = input.seq is ALWAYS set (even during knockback)",
-        "Verify during knockback: position updated via getKnockbackPosition()",
-        "Verify knockback cleared (set to undefined) when getKnockbackPosition returns active=false",
-        "Verify function returns early during knockback (no WASD processing)"
-      ],
-      "passes": true
-    },
-    {
-      "id": "KB-014",
-      "category": "server-game",
-      "description": "Update game.ts tick() to update knockback positions for all players each tick (60Hz). After input processing, iterate players with active knockback, update position via getKnockbackPosition, clamp to bounds, clear knockback when complete.",
-      "stepsToVerify": [
-        "Open src/server/game.ts",
-        "Verify tick() has loop that checks each player for active knockback",
-        "Verify position is updated using getKnockbackPosition(player.knockback, now)",
-        "Verify positions are clamped to arena bounds after knockback position update",
-        "Verify knockback state cleared when getKnockbackPosition returns active=false"
-      ],
-      "passes": true
-    },
-    {
-      "id": "KB-015",
-      "category": "client-prediction",
-      "description": "Modify client network.ts reconciliation to sync knockback state from server. When serverPlayer.knockback exists, copy it to localPlayer.knockback.",
-      "stepsToVerify": [
-        "Open src/client/network.ts",
-        "Verify reconciliation logic checks serverPlayer.knockback",
-        "Verify when serverPlayer.knockback exists, localPlayer.knockback is set to match",
-        "Verify knockback state is preserved across reconciliation cycles until server clears it"
-      ],
-      "passes": true
-    },
-    {
-      "id": "KB-016",
-      "category": "client-prediction",
-      "description": "Modify client position calculation to use getKnockbackPosition during active knockback instead of replaying pending inputs. When localPlayer.knockback exists: calculate position via getKnockbackPosition(knockback, now), skip input replay, clear knockback when active=false.",
-      "stepsToVerify": [
-        "Open src/client/network.ts",
-        "Verify position calculation checks for localPlayer.knockback first",
-        "Verify getKnockbackPosition is called with current client time during knockback",
-        "Verify pending inputs are NOT replayed during active knockback",
-        "Verify knockback cleared when getKnockbackPosition returns active=false"
-      ],
-      "passes": true
-    },
-    {
-      "id": "KB-017",
-      "category": "rendering",
-      "description": "Implement radial knockback visualization with animated double chevrons. 10 chevrons per ring (36 degrees apart), multiple rings fill arena. Rings spawn from origin and move outward. Chevrons grow larger and fade (more transparent) as they expand. Pattern is >> (gap) >> repeating. Animation visible from startTime to endTime only.",
-      "stepsToVerify": [
-        "Start dev server: npm run dev",
-        "Use Playwright to navigate to localhost:3000?debug=1",
-        "Click #spawn-radial-kb-btn to spawn radial knockback",
-        "Use browser_take_screenshot to capture the visualization",
-        "Verify chevron rings emanating from origin point",
-        "Verify approximately 10 chevrons visible per ring",
-        "Verify chevrons are larger near arena edge vs near center",
-        "Verify chevrons are more transparent near edge",
-        "Wait for endTime and verify animation disappears"
-      ],
-      "passes": true
-    },
-    {
-      "id": "KB-018",
-      "category": "rendering",
-      "description": "Implement linear knockback visualization with animated double chevrons. Chevrons ~100px wide along the line, moving perpendicular in knockback direction. Chevrons fade as they move away from line (no size change). Fill arena depth. Animation visible from startTime to endTime only.",
-      "stepsToVerify": [
-        "Start dev server: npm run dev",
-        "Use Playwright to navigate to localhost:3000?debug=1",
-        "Click #spawn-linear-kb-btn to spawn linear knockback",
-        "Use browser_take_screenshot to capture the visualization",
-        "Verify chevrons are arranged along the line",
-        "Verify chevrons move perpendicular to line (knockback direction)",
-        "Verify chevrons fade as they move away from line",
-        "Verify chevrons do NOT change size (unlike radial)",
-        "Wait for endTime and verify animation disappears"
-      ],
-      "passes": false
-    },
-    {
-      "id": "KB-019",
-      "category": "debug-panel",
-      "description": "Add debug data attributes for knockback mechanics. Radial: data-type='radialKnockback', data-origin-x, data-origin-y, data-kb-distance, data-kb-duration. Linear: data-type='linearKnockback', data-line-start-x, data-line-start-y, data-line-end-x, data-line-end-y, data-kb-distance, data-kb-duration.",
-      "stepsToVerify": [
-        "Start dev server: npm run dev",
-        "Use Playwright to navigate to localhost:3000?debug=1",
-        "Click #spawn-radial-kb-btn",
-        "Use browser_snapshot to verify .debug-mechanic[data-type='radialKnockback'] exists with data-origin-x, data-origin-y attributes",
-        "Click #spawn-linear-kb-btn",
-        "Use browser_snapshot to verify .debug-mechanic[data-type='linearKnockback'] exists with line coordinate attributes"
-      ],
-      "passes": true
-    },
-    {
-      "id": "KB-020",
-      "category": "debug-panel",
-      "description": "Add debug data attribute data-knockback-active='true' on .debug-player when player is being knocked back. Remove or set to 'false' when knockback ends.",
-      "stepsToVerify": [
-        "Start dev server: npm run dev",
-        "Use Playwright to navigate to localhost:3000?debug=1",
-        "Record initial state of .debug-player (no data-knockback-active)",
-        "Spawn knockback mechanic, wait for it to trigger (endTime)",
-        "Use browser_snapshot to verify .debug-player has data-knockback-active='true'",
-        "Wait for knockback duration to complete",
-        "Verify data-knockback-active is removed or set to 'false'"
-      ],
-      "passes": true
-    },
-    {
-      "id": "KB-021",
-      "category": "debug-panel",
-      "description": "Add admin buttons #spawn-radial-kb-btn and #spawn-linear-kb-btn to debug panel. Radial spawns at arena center. Linear spawns horizontal line through center, knockback southward.",
-      "stepsToVerify": [
-        "Start dev server: npm run dev",
-        "Use Playwright to navigate to localhost:3000?debug=1",
-        "Use browser_snapshot to verify #spawn-radial-kb-btn exists",
-        "Use browser_snapshot to verify #spawn-linear-kb-btn exists",
-        "Click #spawn-radial-kb-btn, verify radial knockback mechanic spawns (check debug panel)",
-        "Click #spawn-linear-kb-btn, verify linear knockback mechanic spawns (check debug panel)"
-      ],
-      "passes": true
-    },
-    {
-      "id": "KB-022",
-      "category": "integration-test",
-      "description": "Playwright test: Radial knockback moves player away from origin. Join game, record player position, spawn radial knockback at arena center, wait for resolve + knockback duration, verify player position moved away from center (distance from center increased).",
-      "stepsToVerify": [
-        "Create test file tests/radial-knockback.spec.ts",
-        "Test navigates to localhost:3000?debug=1, waits for player join",
-        "Test records initial player x,y from .debug-player attributes",
-        "Test calculates initial distance from arena center (400,400)",
-        "Test clicks #spawn-radial-kb-btn",
-        "Test waits for mechanic to resolve (endTime) plus knockback duration",
-        "Test reads final player position",
-        "Test asserts final distance from center > initial distance",
-        "Run: npx playwright test radial-knockback --headed"
-      ],
-      "passes": false
-    },
-    {
-      "id": "KB-023",
-      "category": "integration-test",
-      "description": "Playwright test: Linear knockback only affects players on correct side. Open two browser tabs (2 players). Position one player north of center, one south. Spawn linear knockback (horizontal line through center, knockback southward). Verify south player knocked back, north player unaffected.",
-      "stepsToVerify": [
-        "Create test file tests/linear-knockback-sides.spec.ts",
-        "Test opens two browser contexts/pages",
-        "Test positions Player 1 north of center (y < 400)",
-        "Test positions Player 2 south of center (y > 400)",
-        "Test spawns linear knockback (line from west to east, knockback south)",
-        "Test waits for resolve + knockback duration",
-        "Test verifies Player 2 y-coordinate increased (knocked south)",
-        "Test verifies Player 1 position unchanged (not on knockback side)",
-        "Run: npx playwright test linear-knockback-sides --headed"
-      ],
-      "passes": false
-    },
-    {
-      "id": "KB-024",
-      "category": "integration-test",
-      "description": "Playwright test: Player cannot move during knockback duration. Spawn knockback, immediately start holding W key (move up), verify player follows knockback trajectory not input. After knockback ends, verify player can move normally.",
-      "stepsToVerify": [
-        "Create test file tests/knockback-input-disabled.spec.ts",
-        "Test joins game, spawns radial knockback at arena center",
-        "Test immediately after spawn starts holding 'w' key (move up)",
-        "Test samples player position during knockback",
-        "Test verifies position is moving AWAY from center (knockback direction), not up",
-        "Test waits for knockback to complete",
-        "Test continues holding 'w', verifies player now moves up (input works)",
-        "Run: npx playwright test knockback-input-disabled --headed"
-      ],
-      "passes": false
-    },
-    {
-      "id": "KB-025",
-      "category": "integration-test",
-      "description": "Playwright test: Wall collision clamps knockback endpoint. Position player near arena edge (e.g., x=700), spawn radial knockback at center that would push player 500px (past wall). Verify player ends at wall boundary, not beyond.",
-      "stepsToVerify": [
-        "Create test file tests/knockback-wall-clamp.spec.ts",
-        "Test joins game, moves player near right wall (x around 750)",
-        "Test spawns radial knockback at center with large knockbackDistance (500+)",
-        "Test waits for knockback to complete",
-        "Test reads final player position",
-        "Test verifies player x <= ARENA_WIDTH - PLAYER_RADIUS (at wall, not beyond)",
-        "Test verifies player was still knocked back (didn't stay at original position)",
-        "Run: npx playwright test knockback-wall-clamp --headed"
-      ],
-      "passes": false
-    },
-    {
-      "id": "KB-026",
-      "category": "integration-test",
-      "description": "Playwright test: Knockback uses ease-out curve (fast start, slow end). Sample positions at 25%, 50%, 75% of knockback duration. Verify distance traveled in first half > distance in second half.",
-      "stepsToVerify": [
-        "Create test file tests/knockback-easing.spec.ts",
-        "Test joins game, records start position",
-        "Test spawns knockback with known duration (e.g., 1000ms)",
-        "Test samples position at ~250ms, ~500ms, ~750ms, ~1000ms",
-        "Test calculates distance traveled in each quarter",
-        "Test verifies: distance(0-250ms) > distance(250-500ms) > distance(500-750ms) > distance(750-1000ms)",
-        "This confirms ease-out cubic curve (decelerating motion)",
-        "Run: npx playwright test knockback-easing --headed"
-      ],
-      "passes": false
-    }
-  ]
-}
+[
+  {
+    "id": "TEST-001",
+    "category": "server",
+    "description": "Add optional duration parameter to admin:spawnChariot socket handler. Server should accept `{ duration?: number }` and use provided value or default to 3000ms. This allows tests to spawn long-duration mechanics for screenshot testing.",
+    "steps_to_verify": [
+      "In src/server/index.ts, find the admin:spawnChariot handler",
+      "Verify it accepts optional params: `(params?: { duration?: number })`",
+      "Verify it uses `params?.duration ?? 3000` when calling game.spawnChariot()",
+      "Start dev server, open browser to localhost:3000?debug=1",
+      "In browser console: `__adminTest.emitSpawnChariot({ duration: 10000 })`",
+      "Verify debug panel shows mechanic with ~10000ms until expiry (check data-expires attribute)",
+      "Verify default still works: `__adminTest.emitSpawnChariot()` creates ~3000ms mechanic"
+    ],
+    "passes": false
+  },
+  {
+    "id": "TEST-002",
+    "category": "server",
+    "description": "Add optional duration parameter to admin:spawnSpreads socket handler. Server should accept `{ duration?: number }` and use provided value or default to 3000ms.",
+    "steps_to_verify": [
+      "In src/server/index.ts, find the admin:spawnSpreads handler",
+      "Verify it accepts optional params: `(params?: { duration?: number })`",
+      "Verify it uses `params?.duration ?? 3000` when spawning spreads",
+      "Start dev server, open browser to localhost:3000?debug=1",
+      "In browser console: `__adminTest.emitSpawnSpreads({ duration: 10000 })`",
+      "Verify debug panel shows spread mechanic(s) with ~10000ms until expiry",
+      "Verify default still works: `__adminTest.emitSpawnSpreads()` creates ~3000ms mechanic"
+    ],
+    "passes": false
+  },
+  {
+    "id": "TEST-003",
+    "category": "server",
+    "description": "Add optional delay and knockbackDuration parameters to admin:spawnRadialKnockback socket handler. Server should accept `{ delay?: number, knockbackDuration?: number }` with defaults of 2000ms delay and 500ms knockbackDuration.",
+    "steps_to_verify": [
+      "In src/server/index.ts, find the radialKnockback spawn handler",
+      "Verify it accepts optional params: `(params?: { delay?: number, knockbackDuration?: number })`",
+      "Verify it uses `params?.delay ?? 2000` and `params?.knockbackDuration ?? 500`",
+      "Start dev server, open browser to localhost:3000?debug=1",
+      "In browser console: `__adminTest.emitSpawnRadialKnockback({ delay: 8000 })`",
+      "Verify debug panel shows mechanic with ~8000ms until resolve (not default 2000ms)",
+      "Test knockbackDuration override: `__adminTest.emitSpawnRadialKnockback({ delay: 100, knockbackDuration: 2000 })`",
+      "After resolve, player knockback animation should last ~2 seconds (not 500ms)"
+    ],
+    "passes": false
+  },
+  {
+    "id": "TEST-004",
+    "category": "server",
+    "description": "Add optional delay and knockbackDuration parameters to admin:spawnLinearKnockback socket handler. Server should accept `{ delay?: number, knockbackDuration?: number }` with defaults of 2000ms delay and 500ms knockbackDuration.",
+    "steps_to_verify": [
+      "In src/server/index.ts, find the linearKnockback spawn handler",
+      "Verify it accepts optional params: `(params?: { delay?: number, knockbackDuration?: number })`",
+      "Verify it uses `params?.delay ?? 2000` and `params?.knockbackDuration ?? 500`",
+      "Start dev server, open browser to localhost:3000?debug=1",
+      "In browser console: `__adminTest.emitSpawnLinearKnockback({ delay: 8000 })`",
+      "Verify debug panel shows mechanic with ~8000ms until resolve",
+      "Verify default still works with ~2000ms delay"
+    ],
+    "passes": false
+  },
+  {
+    "id": "TEST-005",
+    "category": "server",
+    "description": "Add optional duration parameter to admin:spawnPointTethers and admin:spawnPlayerTethers socket handlers. Server should accept `{ duration?: number }` and use provided value or default to 3000ms.",
+    "steps_to_verify": [
+      "In src/server/index.ts, find admin:spawnPointTethers and admin:spawnPlayerTethers handlers",
+      "Verify both accept optional params: `(params?: { duration?: number })`",
+      "Verify both use `params?.duration ?? 3000` when creating tethers",
+      "Start dev server, open browser to localhost:3000?debug=1",
+      "In browser console: `__adminTest.emitSpawnPointTethers({ duration: 10000 })`",
+      "Verify debug panel shows tether mechanic with ~10000ms until expiry",
+      "Test player tethers: `__adminTest.emitSpawnPlayerTethers({ duration: 10000 })`",
+      "Verify default still works with ~3000ms duration"
+    ],
+    "passes": false
+  },
+  {
+    "id": "TEST-006",
+    "category": "server",
+    "description": "Add optional duration parameter to admin:spawnTower socket handler. Server should accept `{ duration?: number }` and use provided value or default to 5000ms.",
+    "steps_to_verify": [
+      "In src/server/index.ts, find the admin:spawnTower handler",
+      "Verify it accepts optional params: `(params?: { duration?: number })`",
+      "Verify it uses `params?.duration ?? 5000` when creating tower",
+      "Start dev server, open browser to localhost:3000?debug=1",
+      "In browser console: `__adminTest.emitSpawnTower({ duration: 15000 })`",
+      "Verify debug panel shows tower mechanic with ~15000ms until expiry",
+      "Verify default still works: `__adminTest.emitSpawnTower()` creates ~5000ms mechanic"
+    ],
+    "passes": false
+  },
+  {
+    "id": "TEST-007",
+    "category": "client",
+    "description": "Update all __adminTest emit methods in src/client/admin.ts to accept and forward optional timing parameters to the server. Methods should have TypeScript types for the params object.",
+    "steps_to_verify": [
+      "In src/client/admin.ts, verify emitSpawnChariot accepts `(params?: { duration?: number })`",
+      "Verify emitSpawnSpreads accepts `(params?: { duration?: number })`",
+      "Verify emitSpawnRadialKnockback accepts `(params?: { delay?: number, knockbackDuration?: number })`",
+      "Verify emitSpawnLinearKnockback accepts `(params?: { delay?: number, knockbackDuration?: number })`",
+      "Verify emitSpawnPointTethers accepts `(params?: { duration?: number })`",
+      "Verify emitSpawnPlayerTethers accepts `(params?: { duration?: number })`",
+      "Verify emitSpawnTower accepts `(params?: { duration?: number })`",
+      "Verify all methods forward params to socket.emit()",
+      "Run `npm run build` - should pass with no TypeScript errors"
+    ],
+    "passes": false
+  },
+  {
+    "id": "TEST-008",
+    "category": "docs",
+    "description": "Add 'Time-Sensitive Testing' section to CLAUDE.md explaining how to use timing overrides for testing. Include examples of using __adminTest with duration params and browser_run_code for atomic operations.",
+    "steps_to_verify": [
+      "In CLAUDE.md, find or add a '### Time-Sensitive Testing' section under the Testing heading",
+      "Section explains the problem: mechanics expire in 1-5s, sequential tool calls take longer",
+      "Section shows example of timing overrides: `__adminTest.emitSpawnChariot({ duration: 10000 })`",
+      "Section shows example of knockback delay override: `__adminTest.emitSpawnRadialKnockback({ delay: 5000 })`",
+      "Section shows browser_run_code pattern for atomic click+screenshot operations",
+      "Section includes tip: check data-expires attribute before debugging visuals"
+    ],
+    "passes": false
+  }
+]
