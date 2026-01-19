@@ -77,6 +77,21 @@ io.on('connection', (socket) => {
     console.log(`Admin spawned chariot at (${x.toFixed(0)}, ${y.toFixed(0)})`);
   });
 
+  socket.on('admin:spawnSpreads', (params?: { duration?: number }) => {
+    const players = Array.from(game.getPlayers().keys());
+    if (players.length > 0) {
+      const radius = ARENA_HEIGHT * 0.15;
+      const duration = params?.duration ?? 3000;
+      const effects = [{ type: 'damage' as const, amount: 25 }];
+      for (const targetId of players) {
+        game.spawnSpread(targetId, radius, duration, effects);
+      }
+      console.log(`Admin spawned spreads on ${players.length} players`);
+    } else {
+      console.log('Admin tried to spawn spreads but no players in game');
+    }
+  });
+
   socket.on('admin:spawnMechanic', (data: { type: string }) => {
     if (data.type === 'chariot') {
       const radius = ARENA_HEIGHT * 0.2;

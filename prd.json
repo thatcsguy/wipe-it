@@ -27,7 +27,7 @@
       "Verify debug panel shows spread mechanic(s) with ~10000ms until expiry",
       "Verify default still works: `__adminTest.emitSpawnSpreads()` creates ~3000ms mechanic"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "id": "TEST-003",

@@ -109,9 +109,9 @@ export function setChangeNameCallback(callback: () => void): void {
       adminSocket.emit('admin:spawnChariot', params);
     }
   },
-  emitSpawnSpreads: () => {
+  emitSpawnSpreads: (params?: { duration?: number }) => {
     if (adminSocket) {
-      adminSocket.emit('admin:spawnMechanic', { type: 'spreads' });
+      adminSocket.emit('admin:spawnSpreads', params);
     }
   },
   emitSpawnPointTethers: () => {

@@ -5,3 +5,11 @@
 - Client `emitSpawnChariot` updated to accept+forward params
 - Validated: 10000ms override shows ~9013ms, default shows ~2000ms remaining
 - Files: src/server/index.ts, src/client/admin.ts
+
+## TEST-002 - admin:spawnSpreads duration param
+
+- Added dedicated `admin:spawnSpreads` handler accepting `(params?: { duration?: number })`
+- Uses `params?.duration ?? 3000` for default
+- Client `emitSpawnSpreads` updated to accept+forward params
+- Validated: 10000ms override shows ~9010ms, default shows ~2024ms remaining
+- Files: src/server/index.ts, src/client/admin.ts
