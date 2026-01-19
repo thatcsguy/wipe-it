@@ -24,3 +24,11 @@ TOWER-003 (server integration) - DONE
 - TowerMechanic already exported from tower.ts
 - File: src/server/game.ts
 - Build passes
+
+TOWER-004 (client colors) - DONE
+- Added TOWER_COLOR = '#ffaa00' (yellow-orange)
+- Added TOWER_FILL_ALPHA = 0.3
+- Added TOWER_STROKE_ALPHA = 0.8
+- All three exported
+- File: src/client/mechanics/shared.ts
+- Build passes

@@ -52,7 +52,7 @@
         "All three are exported",
         "Run: npm run build - compiles without errors"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "id": "TOWER-005",

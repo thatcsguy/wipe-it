@@ -13,6 +13,11 @@ export const SPREAD_BORDER_COLOR = 'rgba(200, 100, 200, 0.8)';
 export const TETHER_UNSTRETCHED_COLOR = '#ff66aa'; // Pink/magenta when close
 export const TETHER_STRETCHED_COLOR = '#ffcc00';   // Orange/yellow when stretched
 
+// Tower colors (yellow-orange)
+export const TOWER_COLOR = '#ffaa00';
+export const TOWER_FILL_ALPHA = 0.3;
+export const TOWER_STROKE_ALPHA = 0.8;
+
 // Position lookup data for spread mechanics
 export interface PlayerPositionData {
   players: PlayerState[];
