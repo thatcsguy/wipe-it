@@ -3629,6 +3629,22 @@ window.__networkTest = {
 var CHARIOT_COLOR = "#ff9f40";
 var CHARIOT_FILL_ALPHA = 0.3;
 var CHARIOT_INNER_ALPHA = 0.5;
+var SPREAD_OUTER_COLOR = "rgba(255, 128, 255, 0.3)";
+var SPREAD_BORDER_COLOR = "rgba(200, 100, 200, 0.8)";
+function getPlayerPosition(playerId, posData) {
+  if (posData.localPlayerId === playerId && posData.localPosition) {
+    return posData.localPosition;
+  }
+  const interpolated = posData.interpolatedPositions?.get(playerId);
+  if (interpolated) {
+    return interpolated;
+  }
+  const player = posData.players.find((p) => p.id === playerId);
+  if (player) {
+    return { x: player.x, y: player.y };
+  }
+  return null;
+}
 function renderChariot(ctx2, mechanic, serverTime) {
   const { x, y, radius, startTime, endTime } = mechanic;
   const duration = endTime - startTime;
@@ -3649,10 +3665,49 @@ function renderChariot(ctx2, mechanic, serverTime) {
     ctx2.fill();
   }
 }
-function renderMechanics(ctx2, mechanics, serverTime) {
+function renderSpread(ctx2, mechanic, serverTime, posData) {
+  const { targetPlayerId, radius, startTime, endTime } = mechanic;
+  const pos = getPlayerPosition(targetPlayerId, posData);
+  if (!pos)
+    return;
+  const { x, y } = pos;
+  const duration = endTime - startTime;
+  const elapsed = serverTime - startTime;
+  const progress = Math.max(0, Math.min(1, elapsed / duration));
+  const pulseSpeed = 3 + progress * 6;
+  const pulsePhase = serverTime / 1e3 * pulseSpeed * Math.PI * 2;
+  const pulseIntensity = 0.3 + 0.2 * Math.sin(pulsePhase);
+  const gradient = ctx2.createRadialGradient(x, y, 0, x, y, radius);
+  gradient.addColorStop(0, `rgba(255, 180, 255, ${0.2 + pulseIntensity})`);
+  gradient.addColorStop(0.6, `rgba(255, 128, 255, ${0.15 + pulseIntensity * 0.5})`);
+  gradient.addColorStop(1, `rgba(180, 100, 220, ${0.1 + pulseIntensity * 0.3})`);
+  ctx2.beginPath();
+  ctx2.arc(x, y, radius, 0, Math.PI * 2);
+  ctx2.fillStyle = gradient;
+  ctx2.fill();
+  ctx2.beginPath();
+  ctx2.arc(x, y, radius, 0, Math.PI * 2);
+  ctx2.strokeStyle = SPREAD_OUTER_COLOR;
+  ctx2.lineWidth = 8;
+  ctx2.stroke();
+  ctx2.beginPath();
+  ctx2.arc(x, y, radius, 0, Math.PI * 2);
+  ctx2.strokeStyle = SPREAD_BORDER_COLOR;
+  ctx2.lineWidth = 2;
+  ctx2.stroke();
+  const innerRadius = radius * (1 - progress * 0.3);
+  ctx2.beginPath();
+  ctx2.arc(x, y, innerRadius, 0, Math.PI * 2);
+  ctx2.strokeStyle = `rgba(255, 200, 255, ${0.4 + pulseIntensity})`;
+  ctx2.lineWidth = 2;
+  ctx2.stroke();
+}
+function renderMechanics(ctx2, mechanics, serverTime, posData) {
   for (const mechanic of mechanics) {
     if (mechanic.type === "chariot") {
       renderChariot(ctx2, mechanic, serverTime);
+    } else if (mechanic.type === "spread" && posData) {
+      renderSpread(ctx2, mechanic, serverTime, posData);
     }
   }
 }
@@ -3786,7 +3841,13 @@ function render(players, localPlayerId3, localPosition, interpolatedPositions, m
   clear();
   drawArena();
   if (mechanics && serverTime !== void 0) {
-    renderMechanics(ctx, mechanics, serverTime);
+    const posData = {
+      players,
+      localPlayerId: localPlayerId3,
+      localPosition,
+      interpolatedPositions
+    };
+    renderMechanics(ctx, mechanics, serverTime, posData);
   }
   for (const player of players) {
     if (localPlayerId3 && player.id === localPlayerId3 && localPosition) {
@@ -3906,12 +3967,38 @@ function initAdmin(socket3) {
       }
     });
   }
+  const spawnSpreadBtn = document.getElementById("spawn-spread-btn");
+  if (spawnSpreadBtn) {
+    spawnSpreadBtn.addEventListener("click", () => {
+      if (adminSocket) {
+        adminSocket.emit("admin:spawnMechanic", { type: "spread" });
+      }
+    });
+  }
+  const healAllBtn = document.getElementById("heal-all-btn");
+  if (healAllBtn) {
+    healAllBtn.addEventListener("click", () => {
+      if (adminSocket) {
+        adminSocket.emit("admin:healAll");
+      }
+    });
+  }
 }
 window.__adminTest = {
   getSocket: () => adminSocket,
   emitSpawnChariot: () => {
     if (adminSocket) {
       adminSocket.emit("admin:spawnMechanic", { type: "chariot" });
+    }
+  },
+  emitSpawnSpread: () => {
+    if (adminSocket) {
+      adminSocket.emit("admin:spawnMechanic", { type: "spread" });
+    }
+  },
+  emitHealAll: () => {
+    if (adminSocket) {
+      adminSocket.emit("admin:healAll");
     }
   }
 };
