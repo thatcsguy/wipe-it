@@ -87,6 +87,8 @@ page.locator('.combat-entry', { hasText: 'Spawned chariot' }) // Specific entry
 **Admin Buttons:**
 - `#spawn-chariot-btn` - Spawns chariot mechanic
 - `#spawn-spreads-btn` - Spawns spread mechanics
+- `#spawn-line-aoe-btn` - Spawns line AOE mechanic
+- `#spawn-conal-aoe-btn` - Spawns conal AOE mechanic
 - `#heal-all-btn` - Heals all players
 
 ### Test APIs (window globals)
@@ -119,6 +121,8 @@ __adminTest.emitSpawnSpreads({ duration: 10000 })
 __adminTest.emitSpawnTower({ duration: 15000 })
 __adminTest.emitSpawnPointTethers({ duration: 10000 })
 __adminTest.emitSpawnPlayerTethers({ duration: 10000 })
+__adminTest.emitSpawnLineAoe({ duration: 10000 })
+__adminTest.emitSpawnConalAoe({ duration: 10000 })
 
 // Knockback delay overrides (default 2000ms delay, 500ms knockbackDuration)
 __adminTest.emitSpawnRadialKnockback({ delay: 8000 })

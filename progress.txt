@@ -104,3 +104,9 @@ AOE-011 COMPLETE: Verified Conal AOE collision and damage
 - MISS case 2 (too far): Player at (780,400), 380 units from center > 200 radius, no damage
 - Collision correctly checks both distance AND angle constraints
 Files: (integration test only, no code changes)
+
+AOE-014 COMPLETE: Updated CLAUDE.md documentation
+- Added __adminTest.emitSpawnLineAoe({ duration: 10000 }) to Time-Sensitive Testing section
+- Added __adminTest.emitSpawnConalAoe({ duration: 10000 }) to Time-Sensitive Testing section
+- Added #spawn-line-aoe-btn and #spawn-conal-aoe-btn to Admin Buttons section
+Files: CLAUDE.md

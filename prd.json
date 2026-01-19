@@ -227,6 +227,6 @@
       "Verify #spawn-line-aoe-btn is documented",
       "Verify #spawn-conal-aoe-btn is documented"
     ],
-    "passes": false
+    "passes": true
   }
 ]
