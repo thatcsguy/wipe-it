@@ -119,3 +119,12 @@
 - Verified with Playwright: both buttons visible, clicking spawns mechanics shown in debug panel
 - Files: public/index.html, src/client/admin.ts
 - Build passes
+
+=== KB-019 - Debug Data Attributes for Knockback Mechanics ===
+- Added RadialKnockbackMechanicState and LinearKnockbackMechanicState imports to debugPanel.ts
+- Added conditional handling in updateMechanicsSection for both types
+- Radial: data-origin-x, data-origin-y, data-kb-distance, data-kb-duration
+- Linear: data-line-start-x/y, data-line-end-x/y, data-kb-distance, data-kb-duration
+- Verified with Playwright: both mechanic types show correct attributes in debug panel
+- Files: src/client/debugPanel.ts
+- Build passes

@@ -248,7 +248,7 @@
         "Click #spawn-linear-kb-btn",
         "Use browser_snapshot to verify .debug-mechanic[data-type='linearKnockback'] exists with line coordinate attributes"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "id": "KB-020",

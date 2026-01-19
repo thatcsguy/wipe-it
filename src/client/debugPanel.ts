@@ -1,4 +1,4 @@
-import { GameState, PlayerState, MechanicState, TetherMechanicState, TetherEndpoint, TowerMechanicState } from '../shared/types';
+import { GameState, PlayerState, MechanicState, TetherMechanicState, TetherEndpoint, TowerMechanicState, RadialKnockbackMechanicState, LinearKnockbackMechanicState } from '../shared/types';
 
 let debugPanelElement: HTMLDivElement | null = null;
 let playersSection: HTMLDivElement | null = null;
@@ -141,6 +141,20 @@ function updateMechanicsSection(mechanics: MechanicState[], serverTimestamp: num
     } else if (mechanic.type === 'tower') {
       const tower = mechanic as TowerMechanicState;
       mechanicDiv.setAttribute('data-required-players', String(tower.requiredPlayers));
+    } else if (mechanic.type === 'radialKnockback') {
+      const radial = mechanic as RadialKnockbackMechanicState;
+      mechanicDiv.setAttribute('data-origin-x', String(radial.originX));
+      mechanicDiv.setAttribute('data-origin-y', String(radial.originY));
+      mechanicDiv.setAttribute('data-kb-distance', String(radial.knockbackDistance));
+      mechanicDiv.setAttribute('data-kb-duration', String(radial.knockbackDuration));
+    } else if (mechanic.type === 'linearKnockback') {
+      const linear = mechanic as LinearKnockbackMechanicState;
+      mechanicDiv.setAttribute('data-line-start-x', String(linear.lineStartX));
+      mechanicDiv.setAttribute('data-line-start-y', String(linear.lineStartY));
+      mechanicDiv.setAttribute('data-line-end-x', String(linear.lineEndX));
+      mechanicDiv.setAttribute('data-line-end-y', String(linear.lineEndY));
+      mechanicDiv.setAttribute('data-kb-distance', String(linear.knockbackDistance));
+      mechanicDiv.setAttribute('data-kb-duration', String(linear.knockbackDuration));
     }
 
     // Calculate time remaining
