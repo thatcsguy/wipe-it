@@ -46,3 +46,11 @@ TETHER-007 (Server - resolution event) - DONE
 - Client: added onTetherResolution() callback registration + listener in game.ts
 - Verified w/ Playwright: success=false when not stretched, success=true when stretched
 - Files: src/shared/types.ts, src/server/mechanics/types.ts, src/server/mechanics/tether.ts, src/server/mechanics/manager.ts, src/server/game.ts, src/client/game.ts
+
+TETHER-008 (Client - toast on resolution) - DONE
+- Exported onTetherResolution from game.ts
+- Added listener in main.ts after game starts
+- Shows "Tether snapped!" when success=false (player too close)
+- Shows "Tether stretched!" when success=true (player far enough)
+- Verified w/ Playwright: both toasts appear correctly based on player distance
+- Files: src/client/game.ts, src/client/main.ts

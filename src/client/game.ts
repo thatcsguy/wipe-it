@@ -253,6 +253,9 @@ export function stopGame(): void {
   gameRunning = false;
 }
 
+// Export tether resolution callback registration
+export { onTetherResolution };
+
 // Get current game state (for testing)
 export function getGameState(): GameState {
   return currentGameState;

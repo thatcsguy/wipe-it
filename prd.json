@@ -93,7 +93,7 @@
                 "Using Playwright: join player, spawn point tethers, move far from top center, wait for resolve",
                 "Verify toast 'Tether stretched!' appears"
             ],
-            "passes": false
+            "passes": true
         },
         {
             "id": "TETHER-009",
