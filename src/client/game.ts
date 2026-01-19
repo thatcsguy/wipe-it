@@ -1,5 +1,5 @@
 import { Socket } from 'socket.io-client';
-import { GameState, PlayerState } from '../shared/types';
+import { GameState, PlayerState, MechanicState } from '../shared/types';
 import { hasInput, createInput } from './input';
 import {
   applyInput,
@@ -22,15 +22,30 @@ let gameRunning = false;
 // Current game state from server
 let currentGameState: GameState = { players: [], mechanics: [], statusEffects: [], timestamp: 0 };
 
+// Track previous mechanic IDs for spawn detection
+let previousMechanicIds = new Set<string>();
+
 // State change callbacks
 type StateChangeCallback = (state: GameState) => void;
 const stateChangeCallbacks = new Set<StateChangeCallback>();
+
+// Mechanic spawn callbacks
+type MechanicSpawnCallback = (mechanic: MechanicState) => void;
+const mechanicSpawnCallbacks = new Set<MechanicSpawnCallback>();
 
 // Register a callback for state changes, returns unsubscribe function
 function onStateChange(callback: StateChangeCallback): () => void {
   stateChangeCallbacks.add(callback);
   return () => {
     stateChangeCallbacks.delete(callback);
+  };
+}
+
+// Register a callback for mechanic spawns, returns unsubscribe function
+function onMechanicSpawn(callback: MechanicSpawnCallback): () => void {
+  mechanicSpawnCallbacks.add(callback);
+  return () => {
+    mechanicSpawnCallbacks.delete(callback);
   };
 }
 
@@ -43,6 +58,25 @@ function notifyStateChange(state: GameState): void {
       console.error('State change callback error:', e);
     }
   }
+}
+
+// Check for new mechanics and notify spawn callbacks
+function checkMechanicSpawns(state: GameState): void {
+  const currentIds = new Set<string>();
+  for (const mechanic of state.mechanics) {
+    currentIds.add(mechanic.id);
+    if (!previousMechanicIds.has(mechanic.id)) {
+      // New mechanic spawned
+      for (const callback of mechanicSpawnCallbacks) {
+        try {
+          callback(mechanic);
+        } catch (e) {
+          console.error('Mechanic spawn callback error:', e);
+        }
+      }
+    }
+  }
+  previousMechanicIds = currentIds;
 }
 
 // Timing
@@ -64,6 +98,9 @@ export function startGame(
 
   // Set up state listener
   socket.on('state', (state: GameState) => {
+    // Check for new mechanics before updating state
+    checkMechanicSpawns(state);
+
     currentGameState = state;
 
     // Notify state change callbacks
@@ -165,4 +202,5 @@ export function isGameRunning(): boolean {
   getGameState,
   isGameRunning,
   onStateChange,
+  onMechanicSpawn,
 };

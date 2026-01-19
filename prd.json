@@ -136,7 +136,7 @@
         "Use Playwright: await page.evaluate(() => new Promise(resolve => { __gameTest.onMechanicSpawn(m => resolve(m)); })); await page.click('#spawn-chariot-btn'); verify promise resolves with mechanic",
         "Verify callback does not fire for mechanics already present (only new ones)"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "id": "EVENT-003",

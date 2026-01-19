@@ -63,3 +63,14 @@
 - Validated: callback fires with valid GameState (players, mechanics, statusEffects, timestamp)
 - Validated: unsubscribe stops callbacks, multiple callbacks work
 - Files: src/client/game.ts
+
+## EVENT-002 - onMechanicSpawn callback in __gameTest API
+- Added previousMechanicIds Set to track known mechanic IDs
+- Added mechanicSpawnCallbacks Set and onMechanicSpawn(callback) function
+- checkMechanicSpawns() called before state update, compares current vs previous IDs
+- Callback fires only for mechanics with new IDs (not in previous state)
+- Returns unsubscribe function that removes callback from Set
+- Added onMechanicSpawn to __gameTest API
+- Validated: callback fires with MechanicState (id, type, x, y, radius, startTime, endTime)
+- Validated: unsubscribe stops callbacks, only fires for new mechanics
+- Files: src/client/game.ts
