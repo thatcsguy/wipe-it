@@ -1,125 +1,232 @@
 [
   {
-    "id": "TEST-001",
-    "category": "server",
-    "description": "Add optional duration parameter to admin:spawnChariot socket handler. Server should accept `{ duration?: number }` and use provided value or default to 3000ms. This allows tests to spawn long-duration mechanics for screenshot testing.",
+    "id": "AOE-001",
+    "category": "shared",
+    "description": "Add LineAoeMechanicState and ConalAoeMechanicState types to src/shared/types.ts. Add 'lineAoe' and 'conalAoe' to MechanicType union. LineAoe has: startX, startY, endX, endY (center points of opposite edges), width, startTime, endTime, effects[]. ConalAoe has: centerX, centerY (cone origin), endpointX, endpointY (midpoint of arc), angle (radians), startTime, endTime, effects[].",
     "steps_to_verify": [
-      "In src/server/index.ts, find the admin:spawnChariot handler",
-      "Verify it accepts optional params: `(params?: { duration?: number })`",
-      "Verify it uses `params?.duration ?? 3000` when calling game.spawnChariot()",
-      "Start dev server, open browser to localhost:3000?debug=1",
-      "In browser console: `__adminTest.emitSpawnChariot({ duration: 10000 })`",
-      "Verify debug panel shows mechanic with ~10000ms until expiry (check data-expires attribute)",
-      "Verify default still works: `__adminTest.emitSpawnChariot()` creates ~3000ms mechanic"
+      "Open src/shared/types.ts",
+      "Verify MechanicType union includes 'lineAoe' and 'conalAoe'",
+      "Verify LineAoeMechanicState interface exists with fields: type: 'lineAoe', id: string, startX: number, startY: number, endX: number, endY: number, width: number, startTime: number, endTime: number, effects: Effect[]",
+      "Verify ConalAoeMechanicState interface exists with fields: type: 'conalAoe', id: string, centerX: number, centerY: number, endpointX: number, endpointY: number, angle: number, startTime: number, endTime: number, effects: Effect[]",
+      "Verify MechanicState union type includes both new interfaces",
+      "Run npm run build - should pass with no TypeScript errors"
     ],
-    "passes": true
+    "passes": false
   },
   {
-    "id": "TEST-002",
+    "id": "AOE-002",
     "category": "server",
-    "description": "Add optional duration parameter to admin:spawnSpreads socket handler. Server should accept `{ duration?: number }` and use provided value or default to 3000ms.",
+    "description": "Create LineAoe server mechanic class in src/server/mechanics/lineAoe.ts implementing BaseMechanic interface. Constructor takes startX, startY, endX, endY, width, duration, effects. resolve() checks point-in-rotated-rectangle collision: transform player position to rectangle's local coordinate space (direction vector from start to end, perpendicular for width), check if within bounds. Only players inside at resolve time receive effects.",
     "steps_to_verify": [
-      "In src/server/index.ts, find the admin:spawnSpreads handler",
-      "Verify it accepts optional params: `(params?: { duration?: number })`",
-      "Verify it uses `params?.duration ?? 3000` when spawning spreads",
-      "Start dev server, open browser to localhost:3000?debug=1",
-      "In browser console: `__adminTest.emitSpawnSpreads({ duration: 10000 })`",
-      "Verify debug panel shows spread mechanic(s) with ~10000ms until expiry",
-      "Verify default still works: `__adminTest.emitSpawnSpreads()` creates ~3000ms mechanic"
+      "Verify src/server/mechanics/lineAoe.ts exists",
+      "Verify class implements BaseMechanic interface with tick(), isExpired(), resolve(), toState()",
+      "Verify constructor generates unique ID (format: lineAoe-{timestamp}-{random})",
+      "Verify constructor sets startTime = Date.now(), endTime = startTime + duration",
+      "Verify resolve() implements point-in-rotated-rectangle collision correctly",
+      "Verify resolve() applies all effects to players inside the rectangle",
+      "Verify toState() returns LineAoeMechanicState with all fields",
+      "Run npm run build - should pass"
     ],
-    "passes": true
+    "passes": false
   },
   {
-    "id": "TEST-003",
+    "id": "AOE-003",
     "category": "server",
-    "description": "Add optional delay and knockbackDuration parameters to admin:spawnRadialKnockback socket handler. Server should accept `{ delay?: number, knockbackDuration?: number }` with defaults of 2000ms delay and 500ms knockbackDuration.",
+    "description": "Create ConalAoe server mechanic class in src/server/mechanics/conalAoe.ts implementing BaseMechanic interface. Constructor takes centerX, centerY, endpointX, endpointY, angle, duration, effects. Radius is computed as distance from center to endpoint. resolve() checks point-in-sector collision: 1) distance from center <= radius, 2) angle from center to player is within +/-(angle/2) of direction to endpoint (handle angle wraparound). Only players inside at resolve time receive effects.",
     "steps_to_verify": [
-      "In src/server/index.ts, find the radialKnockback spawn handler",
-      "Verify it accepts optional params: `(params?: { delay?: number, knockbackDuration?: number })`",
-      "Verify it uses `params?.delay ?? 2000` and `params?.knockbackDuration ?? 500`",
-      "Start dev server, open browser to localhost:3000?debug=1",
-      "In browser console: `__adminTest.emitSpawnRadialKnockback({ delay: 8000 })`",
-      "Verify debug panel shows mechanic with ~8000ms until resolve (not default 2000ms)",
-      "Test knockbackDuration override: `__adminTest.emitSpawnRadialKnockback({ delay: 100, knockbackDuration: 2000 })`",
-      "After resolve, player knockback animation should last ~2 seconds (not 500ms)"
+      "Verify src/server/mechanics/conalAoe.ts exists",
+      "Verify class implements BaseMechanic interface with tick(), isExpired(), resolve(), toState()",
+      "Verify constructor generates unique ID (format: conalAoe-{timestamp}-{random})",
+      "Verify constructor computes radius = sqrt((endpointX-centerX)^2 + (endpointY-centerY)^2)",
+      "Verify constructor sets startTime = Date.now(), endTime = startTime + duration",
+      "Verify resolve() checks distance <= radius AND angle within bounds",
+      "Verify angle comparison handles wraparound (e.g., comparing angles near +/- PI)",
+      "Verify resolve() applies all effects to players inside the sector",
+      "Verify toState() returns ConalAoeMechanicState with all fields",
+      "Run npm run build - should pass"
     ],
-    "passes": true
+    "passes": false
   },
   {
-    "id": "TEST-004",
+    "id": "AOE-004",
     "category": "server",
-    "description": "Add optional delay and knockbackDuration parameters to admin:spawnLinearKnockback socket handler. Server should accept `{ delay?: number, knockbackDuration?: number }` with defaults of 2000ms delay and 500ms knockbackDuration.",
+    "description": "Add spawnLineAoe and spawnConalAoe methods to Game class in src/server/game.ts. spawnLineAoe(startX, startY, endX, endY, width, duration, effects) creates LineAoe and adds to mechanicManager. spawnConalAoe(centerX, centerY, endpointX, endpointY, angle, duration, effects) creates ConalAoe and adds to mechanicManager. No default effects - effects array is required parameter.",
     "steps_to_verify": [
-      "In src/server/index.ts, find the linearKnockback spawn handler",
-      "Verify it accepts optional params: `(params?: { delay?: number, knockbackDuration?: number })`",
-      "Verify it uses `params?.delay ?? 2000` and `params?.knockbackDuration ?? 500`",
-      "Start dev server, open browser to localhost:3000?debug=1",
-      "In browser console: `__adminTest.emitSpawnLinearKnockback({ delay: 8000 })`",
-      "Verify debug panel shows mechanic with ~8000ms until resolve",
-      "Verify default still works with ~2000ms delay"
+      "Open src/server/game.ts",
+      "Verify spawnLineAoe method exists with signature: spawnLineAoe(startX: number, startY: number, endX: number, endY: number, width: number, duration: number, effects: Effect[]): void",
+      "Verify spawnConalAoe method exists with signature: spawnConalAoe(centerX: number, centerY: number, endpointX: number, endpointY: number, angle: number, duration: number, effects: Effect[]): void",
+      "Verify both methods create mechanic instance and call mechanicManager.add()",
+      "Verify effects parameter has no default value (must be explicitly passed)",
+      "Run npm run build - should pass"
     ],
-    "passes": true
+    "passes": false
   },
   {
-    "id": "TEST-005",
+    "id": "AOE-005",
     "category": "server",
-    "description": "Add optional duration parameter to admin:spawnPointTethers and admin:spawnPlayerTethers socket handlers. Server should accept `{ duration?: number }` and use provided value or default to 3000ms.",
+    "description": "Add admin:spawnLineAoe socket handler in src/server/index.ts. Accepts optional { duration?: number }. Default spawn: vertical line through arena center from (ARENA_WIDTH/2, 0) to (ARENA_WIDTH/2, ARENA_HEIGHT), width 100, duration 3000ms, effects [{ type: 'damage', amount: 25 }]. Add corresponding emitSpawnLineAoe method to __adminTest on client.",
     "steps_to_verify": [
-      "In src/server/index.ts, find admin:spawnPointTethers and admin:spawnPlayerTethers handlers",
-      "Verify both accept optional params: `(params?: { duration?: number })`",
-      "Verify both use `params?.duration ?? 3000` when creating tethers",
-      "Start dev server, open browser to localhost:3000?debug=1",
-      "In browser console: `__adminTest.emitSpawnPointTethers({ duration: 10000 })`",
-      "Verify debug panel shows tether mechanic with ~10000ms until expiry",
-      "Test player tethers: `__adminTest.emitSpawnPlayerTethers({ duration: 10000 })`",
-      "Verify default still works with ~3000ms duration"
+      "Open src/server/index.ts",
+      "Verify socket.on('admin:spawnLineAoe', ...) handler exists",
+      "Verify handler accepts (params?: { duration?: number })",
+      "Verify default values: startX/endX = ARENA_WIDTH/2, startY = 0, endY = ARENA_HEIGHT, width = 100, duration = params?.duration ?? 3000, effects = [{ type: 'damage', amount: 25 }]",
+      "Open src/client/admin.ts",
+      "Verify emitSpawnLineAoe(params?: { duration?: number }) method exists",
+      "Verify method calls socket.emit('admin:spawnLineAoe', params)",
+      "Start dev server, open localhost:3000?debug=1",
+      "In console run: __adminTest.emitSpawnLineAoe({ duration: 10000 })",
+      "Verify debug panel shows mechanic with data-type='lineAoe' and ~10000ms until expiry"
     ],
-    "passes": true
+    "passes": false
   },
   {
-    "id": "TEST-006",
+    "id": "AOE-006",
     "category": "server",
-    "description": "Add optional duration parameter to admin:spawnTower socket handler. Server should accept `{ duration?: number }` and use provided value or default to 5000ms.",
+    "description": "Add admin:spawnConalAoe socket handler in src/server/index.ts. Accepts optional { duration?: number }. Default spawn: center at arena center (ARENA_WIDTH/2, ARENA_HEIGHT/2), endpoint 200px to the right (ARENA_WIDTH/2 + 200, ARENA_HEIGHT/2), angle PI/2 (90 degrees), duration 3000ms, effects [{ type: 'damage', amount: 25 }]. Add corresponding emitSpawnConalAoe method to __adminTest on client.",
     "steps_to_verify": [
-      "In src/server/index.ts, find the admin:spawnTower handler",
-      "Verify it accepts optional params: `(params?: { duration?: number })`",
-      "Verify it uses `params?.duration ?? 5000` when creating tower",
-      "Start dev server, open browser to localhost:3000?debug=1",
-      "In browser console: `__adminTest.emitSpawnTower({ duration: 15000 })`",
-      "Verify debug panel shows tower mechanic with ~15000ms until expiry",
-      "Verify default still works: `__adminTest.emitSpawnTower()` creates ~5000ms mechanic"
+      "Open src/server/index.ts",
+      "Verify socket.on('admin:spawnConalAoe', ...) handler exists",
+      "Verify handler accepts (params?: { duration?: number })",
+      "Verify default values: centerX/Y = arena center, endpointX = centerX + 200, endpointY = centerY, angle = Math.PI / 2, duration = params?.duration ?? 3000, effects = [{ type: 'damage', amount: 25 }]",
+      "Open src/client/admin.ts",
+      "Verify emitSpawnConalAoe(params?: { duration?: number }) method exists",
+      "Verify method calls socket.emit('admin:spawnConalAoe', params)",
+      "Start dev server, open localhost:3000?debug=1",
+      "In console run: __adminTest.emitSpawnConalAoe({ duration: 10000 })",
+      "Verify debug panel shows mechanic with data-type='conalAoe' and ~10000ms until expiry"
     ],
-    "passes": true
+    "passes": false
   },
   {
-    "id": "TEST-007",
+    "id": "AOE-007",
     "category": "client",
-    "description": "Update all __adminTest emit methods in src/client/admin.ts to accept and forward optional timing parameters to the server. Methods should have TypeScript types for the params object.",
+    "description": "Create Line AOE renderer in src/client/mechanics/lineAoe.ts. Draw a semi-transparent rectangle using chariot color palette (#ff9f40). Rectangle defined by start/end center points and width. Use canvas transforms or manual path calculation to draw rotated rectangle. Fill with alpha 0.3, optional inner glow at 0.5 alpha to match chariot style. No visual indicator of duration/progress.",
     "steps_to_verify": [
-      "In src/client/admin.ts, verify emitSpawnChariot accepts `(params?: { duration?: number })`",
-      "Verify emitSpawnSpreads accepts `(params?: { duration?: number })`",
-      "Verify emitSpawnRadialKnockback accepts `(params?: { delay?: number, knockbackDuration?: number })`",
-      "Verify emitSpawnLinearKnockback accepts `(params?: { delay?: number, knockbackDuration?: number })`",
-      "Verify emitSpawnPointTethers accepts `(params?: { duration?: number })`",
-      "Verify emitSpawnPlayerTethers accepts `(params?: { duration?: number })`",
-      "Verify emitSpawnTower accepts `(params?: { duration?: number })`",
-      "Verify all methods forward params to socket.emit()",
-      "Run `npm run build` - should pass with no TypeScript errors"
+      "Verify src/client/mechanics/lineAoe.ts exists",
+      "Verify renderLineAoe function exported with signature matching other renderers",
+      "Verify uses chariot orange color #ff9f40",
+      "Verify rectangle corners calculated correctly: perpendicular to line direction, width/2 on each side",
+      "Verify fill uses semi-transparent alpha (0.3-0.5 range)",
+      "Start dev server, open localhost:3000?debug=1",
+      "Run: __adminTest.emitSpawnLineAoe({ duration: 10000 })",
+      "Use Playwright browser_take_screenshot to capture the rendered line AOE",
+      "Verify screenshot shows orange semi-transparent vertical rectangle through arena center, width ~100px"
     ],
-    "passes": true
+    "passes": false
   },
   {
-    "id": "TEST-008",
-    "category": "docs",
-    "description": "Add 'Time-Sensitive Testing' section to CLAUDE.md explaining how to use timing overrides for testing. Include examples of using __adminTest with duration params and browser_run_code for atomic operations.",
+    "id": "AOE-008",
+    "category": "client",
+    "description": "Create Conal AOE renderer in src/client/mechanics/conalAoe.ts. Draw a semi-transparent circular sector (pie slice) using chariot color palette (#ff9f40). Sector centered at centerX/Y, radius = distance to endpoint, spanning angle radians centered on direction to endpoint. Use ctx.arc() with calculated start/end angles, lineTo center, closePath. Fill with alpha 0.3, match chariot style.",
     "steps_to_verify": [
-      "In CLAUDE.md, find or add a '### Time-Sensitive Testing' section under the Testing heading",
-      "Section explains the problem: mechanics expire in 1-5s, sequential tool calls take longer",
-      "Section shows example of timing overrides: `__adminTest.emitSpawnChariot({ duration: 10000 })`",
-      "Section shows example of knockback delay override: `__adminTest.emitSpawnRadialKnockback({ delay: 5000 })`",
-      "Section shows browser_run_code pattern for atomic click+screenshot operations",
-      "Section includes tip: check data-expires attribute before debugging visuals"
+      "Verify src/client/mechanics/conalAoe.ts exists",
+      "Verify renderConalAoe function exported with signature matching other renderers",
+      "Verify uses chariot orange color #ff9f40",
+      "Verify radius computed as distance from center to endpoint",
+      "Verify arc angles calculated: direction = atan2(endpointY-centerY, endpointX-centerX), startAngle = direction - angle/2, endAngle = direction + angle/2",
+      "Verify path: ctx.moveTo(center), ctx.arc(...), ctx.closePath()",
+      "Verify fill uses semi-transparent alpha (0.3-0.5 range)",
+      "Start dev server, open localhost:3000?debug=1",
+      "Run: __adminTest.emitSpawnConalAoe({ duration: 10000 })",
+      "Use Playwright browser_take_screenshot to capture the rendered conal AOE",
+      "Verify screenshot shows orange semi-transparent 90-degree cone pointing right from arena center, radius ~200px"
     ],
-    "passes": true
+    "passes": false
+  },
+  {
+    "id": "AOE-009",
+    "category": "client",
+    "description": "Update mechanic dispatcher in src/client/mechanics/index.ts to handle 'lineAoe' and 'conalAoe' mechanic types. Import renderers and add cases to the switch statement in renderMechanics().",
+    "steps_to_verify": [
+      "Open src/client/mechanics/index.ts",
+      "Verify import statements for lineAoe and conalAoe renderers",
+      "Verify switch statement has case 'lineAoe': calling renderLineAoe with appropriate args",
+      "Verify switch statement has case 'conalAoe': calling renderConalAoe with appropriate args",
+      "Run npm run build - should pass",
+      "Start dev server, open localhost:3000?debug=1",
+      "Spawn both mechanics: __adminTest.emitSpawnLineAoe({ duration: 10000 }); __adminTest.emitSpawnConalAoe({ duration: 10000 });",
+      "Verify both mechanics render simultaneously on canvas"
+    ],
+    "passes": false
+  },
+  {
+    "id": "AOE-010",
+    "category": "integration",
+    "description": "Verify Line AOE collision and damage. Player standing in the line rectangle when it expires should take damage. Player outside should not take damage. Use Playwright to: spawn line AOE with long duration, position player inside, wait for resolve, check HP decreased by 25.",
+    "steps_to_verify": [
+      "Start dev server, open localhost:3000?debug=1 with Playwright",
+      "Wait for player to spawn and note initial HP from data-hp attribute",
+      "Spawn line AOE at player position: use browser_evaluate to call __adminTest.emitSpawnLineAoe({ duration: 2000 })",
+      "Wait 2.5 seconds for mechanic to resolve",
+      "Check player HP via data-hp attribute - should be initial HP minus 25",
+      "Verify combat log shows damage entry",
+      "Test miss case: spawn line AOE, immediately move player far away with WASD input, verify no damage taken"
+    ],
+    "passes": false
+  },
+  {
+    "id": "AOE-011",
+    "category": "integration",
+    "description": "Verify Conal AOE collision and damage. Player standing in the cone sector when it expires should take damage. Player outside (wrong angle or too far) should not take damage. Use Playwright to test both hit and miss scenarios.",
+    "steps_to_verify": [
+      "Start dev server, open localhost:3000?debug=1 with Playwright",
+      "Wait for player to spawn and note initial HP",
+      "Spawn conal AOE aimed at player: use browser_evaluate to spawn cone with endpoint toward player",
+      "Wait for mechanic to resolve",
+      "Check player HP - should decrease by 25 if player was in cone",
+      "Test miss case 1: spawn cone pointing away from player, verify no damage",
+      "Test miss case 2: spawn cone with small radius, player far away, verify no damage"
+    ],
+    "passes": false
+  },
+  {
+    "id": "AOE-012",
+    "category": "client",
+    "description": "Add 'Spawn Line AOE' button to admin panel in public/index.html with id='spawn-line-aoe-btn'. Wire up click handler in src/client/admin.ts to call emitSpawnLineAoe(). Button should appear in the admin-controls div alongside other spawn buttons.",
+    "steps_to_verify": [
+      "Open public/index.html",
+      "Verify <button id='spawn-line-aoe-btn'>Spawn Line AOE</button> exists in admin-controls div",
+      "Open src/client/admin.ts",
+      "Verify getElementById('spawn-line-aoe-btn') is called",
+      "Verify click handler calls emitSpawnLineAoe() (no params - uses server defaults)",
+      "Start dev server, open localhost:3000?debug=1",
+      "Click the 'Spawn Line AOE' button",
+      "Verify orange vertical line AOE appears on canvas",
+      "Verify debug panel shows mechanic with data-type='lineAoe'"
+    ],
+    "passes": false
+  },
+  {
+    "id": "AOE-013",
+    "category": "client",
+    "description": "Add 'Spawn Conal AOE' button to admin panel in public/index.html with id='spawn-conal-aoe-btn'. Wire up click handler in src/client/admin.ts to call emitSpawnConalAoe(). Button should appear in the admin-controls div alongside other spawn buttons.",
+    "steps_to_verify": [
+      "Open public/index.html",
+      "Verify <button id='spawn-conal-aoe-btn'>Spawn Conal AOE</button> exists in admin-controls div",
+      "Open src/client/admin.ts",
+      "Verify getElementById('spawn-conal-aoe-btn') is called",
+      "Verify click handler calls emitSpawnConalAoe() (no params - uses server defaults)",
+      "Start dev server, open localhost:3000?debug=1",
+      "Click the 'Spawn Conal AOE' button",
+      "Verify orange cone AOE appears on canvas pointing right from center",
+      "Verify debug panel shows mechanic with data-type='conalAoe'"
+    ],
+    "passes": false
+  },
+  {
+    "id": "AOE-014",
+    "category": "docs",
+    "description": "Update CLAUDE.md to document the new __adminTest methods for Line AOE and Conal AOE, including duration override examples. Also add the new admin button selectors to the Admin Buttons section.",
+    "steps_to_verify": [
+      "Open CLAUDE.md",
+      "Find Time-Sensitive Testing section",
+      "Verify __adminTest.emitSpawnLineAoe({ duration: 10000 }) example is documented",
+      "Verify __adminTest.emitSpawnConalAoe({ duration: 10000 }) example is documented",
+      "Verify default duration (3000ms) is mentioned for both",
+      "Find Admin Buttons section",
+      "Verify #spawn-line-aoe-btn is documented",
+      "Verify #spawn-conal-aoe-btn is documented"
+    ],
+    "passes": false
   }
 ]
