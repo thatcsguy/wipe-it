@@ -1,5 +1,5 @@
 import { TowerMechanicState } from '../../shared/types';
-import { TOWER_COLOR, TOWER_FILL_ALPHA, TOWER_STROKE_ALPHA } from './shared';
+import { TOWER_COLOR, TOWER_STROKE_ALPHA } from './shared';
 
 // Render a tower mechanic - circle AOE requiring N players
 export function renderTower(
@@ -14,43 +14,36 @@ export function renderTower(
   const g = parseInt(TOWER_COLOR.slice(3, 5), 16);
   const b = parseInt(TOWER_COLOR.slice(5, 7), 16);
 
-  // Outer circle with semi-transparent fill
+  // Ring outline only (no fill)
   ctx.beginPath();
   ctx.arc(x, y, radius, 0, Math.PI * 2);
-  ctx.fillStyle = `rgba(${r}, ${g}, ${b}, ${TOWER_FILL_ALPHA})`;
-  ctx.fill();
   ctx.strokeStyle = `rgba(${r}, ${g}, ${b}, ${TOWER_STROKE_ALPHA})`;
   ctx.lineWidth = 3;
   ctx.stroke();
 
-  // 6 rotating tick marks around perimeter
-  const rotationAngle = serverTime * 0.002;
-  const tickCount = 6;
-  const tickLength = radius * 0.15;
-  const tickWidth = radius * 0.08;
+  // Black ribbon spiral effect - rotates with sine wave speed
+  // Speed fluctuates so max speed = 2x min speed
+  const cycleDuration = 2500; // 2.5 seconds per rotation (40% of original speed)
+  const t = (serverTime % cycleDuration) / cycleDuration; // 0 to 1
+  // Integral of speed = 2π*(1 + (1/3)*sin(2πt)) gives position
+  const rotationAngle = 2 * Math.PI * t - (1/3) * Math.cos(2 * Math.PI * t) + 1/3;
 
-  ctx.save();
-  ctx.translate(x, y);
-  ctx.rotate(rotationAngle);
+  // Dashed black ribbon around the circumference
+  const circumference = 2 * Math.PI * radius;
+  const dashLength = circumference / 24; // 12 dashes, 12 gaps
+  const dashOffset = (rotationAngle / (2 * Math.PI)) * circumference;
 
-  for (let i = 0; i < tickCount; i++) {
-    const angle = (i / tickCount) * Math.PI * 2;
-    ctx.save();
-    ctx.rotate(angle);
+  ctx.beginPath();
+  ctx.arc(x, y, radius, 0, Math.PI * 2);
+  ctx.setLineDash([dashLength, dashLength]);
+  ctx.lineDashOffset = -dashOffset;
+  ctx.strokeStyle = 'rgba(0, 0, 0, 0.85)';
+  ctx.lineWidth = 6;
+  ctx.stroke();
 
-    // Draw triangle tick mark pointing inward
-    ctx.beginPath();
-    ctx.moveTo(radius - tickLength, -tickWidth / 2);
-    ctx.lineTo(radius, 0);
-    ctx.lineTo(radius - tickLength, tickWidth / 2);
-    ctx.closePath();
-    ctx.fillStyle = `rgba(${r}, ${g}, ${b}, ${TOWER_STROKE_ALPHA})`;
-    ctx.fill();
-
-    ctx.restore();
-  }
-
-  ctx.restore();
+  // Reset line dash for subsequent drawing
+  ctx.setLineDash([]);
+  ctx.lineDashOffset = 0;
 
   // Large centered number showing requiredPlayers
   const fontSize = radius * 0.45;
