@@ -80,7 +80,7 @@
                 "Verify server emits tether resolution event when mechanic expires",
                 "Event payload includes mechanicId, success boolean, and affectedPlayerIds array"
             ],
-            "passes": false
+            "passes": true
         },
         {
             "id": "TETHER-008",

@@ -97,6 +97,13 @@ export interface TetherMechanicState {
 // Union of all mechanic states
 export type MechanicState = ChariotMechanicState | SpreadMechanicState | TetherMechanicState;
 
+// Tether resolution event - emitted when a tether mechanic resolves
+export interface TetherResolutionEvent {
+  mechanicId: string;
+  success: boolean; // true if stretched enough, false if snapped
+  affectedPlayerIds: string[]; // players who took damage (empty if success=true)
+}
+
 // Game state broadcast from server to clients
 export interface GameState {
   players: PlayerState[];

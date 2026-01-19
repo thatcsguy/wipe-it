@@ -1,6 +1,6 @@
 import { Server } from 'socket.io';
 import { Player } from './player';
-import { GameState, PlayerInput, TICK_RATE, BROADCAST_RATE, MAX_PLAYERS, MAX_HP } from '../shared/types';
+import { GameState, PlayerInput, TICK_RATE, BROADCAST_RATE, MAX_PLAYERS, MAX_HP, TetherResolutionEvent } from '../shared/types';
 import { MechanicManager } from './mechanics/manager';
 import { ChariotMechanic } from './mechanics/chariot';
 import { SpreadMechanic } from './mechanics/spread';
@@ -25,6 +25,14 @@ export class Game {
 
   constructor(io: Server) {
     this.io = io;
+
+    // Register callback for mechanic resolution events
+    this.mechanicManager.onResolution((result) => {
+      if (result && 'mechanicId' in result) {
+        // This is a TetherResolutionEvent
+        this.io.emit('tether:resolved', result as TetherResolutionEvent);
+      }
+    });
   }
 
   getNextPlayerNumber(): number {

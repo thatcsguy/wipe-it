@@ -1,6 +1,6 @@
 import { Player } from '../player';
-import { BaseMechanic, MechanicState } from './types';
-import { TetherEndpoint, TetherMechanicState } from '../../shared/types';
+import { BaseMechanic, MechanicResolutionResult } from './types';
+import { TetherEndpoint, TetherMechanicState, TetherResolutionEvent } from '../../shared/types';
 
 export class TetherMechanic implements BaseMechanic {
   id: string;
@@ -35,13 +35,18 @@ export class TetherMechanic implements BaseMechanic {
     return now >= this.endTime;
   }
 
-  resolve(players: Map<string, Player>): void {
+  resolve(players: Map<string, Player>): MechanicResolutionResult {
     // Resolve endpoint positions
     const posA = this.resolveEndpointPosition(this.endpointA, players);
     const posB = this.resolveEndpointPosition(this.endpointB, players);
 
     if (!posA || !posB) {
-      return; // Player disconnected
+      // Player disconnected - return result with no affected players
+      return {
+        mechanicId: this.id,
+        success: true,
+        affectedPlayerIds: [],
+      };
     }
 
     // Calculate Euclidean distance
@@ -51,8 +56,19 @@ export class TetherMechanic implements BaseMechanic {
 
     // If distance < requiredDistance, apply damage to connected players
     if (distance < this.requiredDistance) {
-      this.applyDamageToConnectedPlayers(players);
+      const affectedPlayerIds = this.applyDamageToConnectedPlayers(players);
+      return {
+        mechanicId: this.id,
+        success: false,
+        affectedPlayerIds,
+      };
     }
+
+    return {
+      mechanicId: this.id,
+      success: true,
+      affectedPlayerIds: [],
+    };
   }
 
   private resolveEndpointPosition(
@@ -70,20 +86,24 @@ export class TetherMechanic implements BaseMechanic {
     }
   }
 
-  private applyDamageToConnectedPlayers(players: Map<string, Player>): void {
+  private applyDamageToConnectedPlayers(players: Map<string, Player>): string[] {
+    const affectedPlayerIds: string[] = [];
     // Apply damage to all players connected to this tether
     if (this.endpointA.type === 'player') {
       const player = players.get(this.endpointA.playerId);
       if (player) {
         player.takeDamage(this.damage);
+        affectedPlayerIds.push(this.endpointA.playerId);
       }
     }
     if (this.endpointB.type === 'player') {
       const player = players.get(this.endpointB.playerId);
       if (player) {
         player.takeDamage(this.damage);
+        affectedPlayerIds.push(this.endpointB.playerId);
       }
     }
+    return affectedPlayerIds;
   }
 
   toState(): TetherMechanicState {

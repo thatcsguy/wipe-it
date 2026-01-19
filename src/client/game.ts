@@ -1,5 +1,5 @@
 import { Socket } from 'socket.io-client';
-import { GameState, PlayerState, MechanicState } from '../shared/types';
+import { GameState, PlayerState, MechanicState, TetherResolutionEvent } from '../shared/types';
 import { hasInput, createInput } from './input';
 import {
   applyInput,
@@ -37,6 +37,10 @@ const mechanicSpawnCallbacks = new Set<MechanicSpawnCallback>();
 type MechanicResolveCallback = (mechanicId: string) => void;
 const mechanicResolveCallbacks = new Set<MechanicResolveCallback>();
 
+// Tether resolution callbacks
+type TetherResolutionCallback = (event: TetherResolutionEvent) => void;
+const tetherResolutionCallbacks = new Set<TetherResolutionCallback>();
+
 // Register a callback for state changes, returns unsubscribe function
 function onStateChange(callback: StateChangeCallback): () => void {
   stateChangeCallbacks.add(callback);
@@ -58,6 +62,14 @@ function onMechanicResolve(callback: MechanicResolveCallback): () => void {
   mechanicResolveCallbacks.add(callback);
   return () => {
     mechanicResolveCallbacks.delete(callback);
+  };
+}
+
+// Register a callback for tether resolution events, returns unsubscribe function
+function onTetherResolution(callback: TetherResolutionCallback): () => void {
+  tetherResolutionCallbacks.add(callback);
+  return () => {
+    tetherResolutionCallbacks.delete(callback);
   };
 }
 
@@ -140,6 +152,17 @@ export function startGame(
 
   // Initialize renderer
   initRenderer();
+
+  // Set up tether resolution listener
+  socket.on('tether:resolved', (event: TetherResolutionEvent) => {
+    for (const callback of tetherResolutionCallbacks) {
+      try {
+        callback(event);
+      } catch (e) {
+        console.error('Tether resolution callback error:', e);
+      }
+    }
+  });
 
   // Set up state listener
   socket.on('state', (state: GameState) => {
@@ -250,4 +273,6 @@ export function isGameRunning(): boolean {
   onMechanicSpawn,
   onMechanicResolve,
   waitForMechanicResolve,
+  onTetherResolution,
+  getLocalPlayerId: () => localPlayerId,
 };

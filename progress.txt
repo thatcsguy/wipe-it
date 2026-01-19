@@ -36,3 +36,13 @@ TETHER-005 (Client - tether rendering) - DONE
 - Uses getEndpointPosition() helper for player/point lookup
 - Verified w/ Playwright: pink line when close, orange glow when far, transitions correctly
 - File: src/client/mechanics.ts
+
+TETHER-007 (Server - resolution event) - DONE
+- Added TetherResolutionEvent type to src/shared/types.ts (mechanicId, success, affectedPlayerIds)
+- TetherMechanic.resolve() now returns resolution result
+- Added MechanicResolutionResult type to mechanics/types.ts
+- MechanicManager calls onResolution callback when mechanic resolves w/ non-void result
+- Game class emits 'tether:resolved' socket event w/ TetherResolutionEvent payload
+- Client: added onTetherResolution() callback registration + listener in game.ts
+- Verified w/ Playwright: success=false when not stretched, success=true when stretched
+- Files: src/shared/types.ts, src/server/mechanics/types.ts, src/server/mechanics/tether.ts, src/server/mechanics/manager.ts, src/server/game.ts, src/client/game.ts
