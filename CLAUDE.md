@@ -106,6 +106,36 @@ waitForMechanicResolve(id)        // Promise resolves when mechanic gone
 log(message)  // Programmatically add combat log entry
 ```
 
+### Time-Sensitive Testing
+
+**Problem:** Mechanics expire in 1-5 seconds. Sequential tool calls (spawn → screenshot) often take longer, causing mechanics to disappear before capture.
+
+**Solution:** Use timing overrides to extend mechanic durations for testing:
+
+```javascript
+// Duration overrides (default 3000ms for most, 5000ms for tower)
+__adminTest.emitSpawnChariot({ duration: 10000 })
+__adminTest.emitSpawnSpreads({ duration: 10000 })
+__adminTest.emitSpawnTower({ duration: 15000 })
+__adminTest.emitSpawnPointTethers({ duration: 10000 })
+__adminTest.emitSpawnPlayerTethers({ duration: 10000 })
+
+// Knockback delay overrides (default 2000ms delay, 500ms knockbackDuration)
+__adminTest.emitSpawnRadialKnockback({ delay: 8000 })
+__adminTest.emitSpawnLinearKnockback({ delay: 5000, knockbackDuration: 2000 })
+```
+
+**Atomic operations with browser_run_code:** For reliable spawn+screenshot, combine in single Playwright call:
+
+```javascript
+await page.evaluate(() => {
+  __adminTest.emitSpawnChariot({ duration: 10000 });
+});
+// Now safe to screenshot - mechanic has 10s lifetime
+```
+
+**Tip:** Check `data-expires` attribute on `.debug-mechanic` elements to verify timing before debugging visuals.
+
 ### Playwright Examples
 
 ```javascript

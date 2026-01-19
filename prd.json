@@ -120,6 +120,6 @@
       "Section shows browser_run_code pattern for atomic click+screenshot operations",
       "Section includes tip: check data-expires attribute before debugging visuals"
     ],
-    "passes": false
+    "passes": true
   }
 ]
