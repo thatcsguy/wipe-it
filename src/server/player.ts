@@ -2,12 +2,14 @@ import {
   PlayerState,
   PlayerInput,
   InputKeys,
+  KnockbackState,
   PLAYER_SPEED,
   PLAYER_RADIUS,
   ARENA_WIDTH,
   ARENA_HEIGHT,
   MAX_HP,
 } from '../shared/types';
+import { calculateKnockbackEndpoint } from '../shared/knockback';
 import { StatusEffectManager } from './statusEffectManager';
 
 export class Player {
@@ -18,6 +20,7 @@ export class Player {
   color: string;
   hp: number;
   lastProcessedInput: number;
+  knockback: KnockbackState | undefined;
   private statusEffectManager: StatusEffectManager | null = null;
 
   constructor(id: string, name: string, color: string) {
@@ -81,6 +84,39 @@ export class Player {
     this.hp = Math.max(0, this.hp - finalAmount);
   }
 
+  /**
+   * Apply knockback to this player
+   * @param dirX Normalized knockback direction X
+   * @param dirY Normalized knockback direction Y
+   * @param distance Knockback distance in pixels
+   * @param duration Knockback duration in ms
+   * @param now Current timestamp
+   */
+  applyKnockback(
+    dirX: number,
+    dirY: number,
+    distance: number,
+    duration: number,
+    now: number
+  ): void {
+    // Ignore if already being knocked back
+    if (this.knockback) {
+      return;
+    }
+
+    // Pre-calculate wall-clamped endpoint
+    const endpoint = calculateKnockbackEndpoint(this.x, this.y, dirX, dirY, distance);
+
+    this.knockback = {
+      startTime: now,
+      startX: this.x,
+      startY: this.y,
+      endX: endpoint.x,
+      endY: endpoint.y,
+      duration,
+    };
+  }
+
   toState(): PlayerState {
     return {
       id: this.id,
@@ -91,6 +127,7 @@ export class Player {
       hp: this.hp,
       lastProcessedInput: this.lastProcessedInput,
       statusEffects: [], // Populated by StatusEffectManager
+      knockback: this.knockback,
     };
   }
 }

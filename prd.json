@@ -148,7 +148,7 @@
         "Verify method calls calculateKnockbackEndpoint to get wall-clamped endpoint",
         "Verify method sets this.knockback with all 6 fields"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "id": "KB-013",

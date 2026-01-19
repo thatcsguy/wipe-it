@@ -40,3 +40,13 @@
 - Clamps to arena bounds: PLAYER_RADIUS to ARENA_SIZE - PLAYER_RADIUS
 - Files: src/shared/knockback.ts
 - Build passes
+
+=== KB-012 - Player.applyKnockback Method ===
+- Added knockback property to Player class (KnockbackState | undefined)
+- applyKnockback(dirX, dirY, distance, duration, now) - applies knockback
+- Returns early if this.knockback exists (ignores new knockback during active one)
+- Pre-calculates wall-clamped endpoint using calculateKnockbackEndpoint
+- Sets knockback with all 6 fields: startTime, startX/Y, endX/Y, duration
+- Updated toState() to include knockback in serialized state
+- Files: src/server/player.ts
+- Build passes
