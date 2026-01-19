@@ -3,6 +3,7 @@ import { Player } from './player';
 import { GameState, PlayerInput, TICK_RATE, BROADCAST_RATE, MAX_PLAYERS } from '../shared/types';
 import { MechanicManager } from './mechanics/manager';
 import { ChariotMechanic } from './mechanics/chariot';
+import { SpreadMechanic } from './mechanics/spread';
 import { Effect } from './mechanics/types';
 import { StatusEffectManager } from './statusEffectManager';
 
@@ -124,6 +125,11 @@ export class Game {
 
   spawnChariot(x: number, y: number, radius: number, duration: number, effects: Effect[]): void {
     const mechanic = new ChariotMechanic(x, y, radius, duration, effects);
+    this.mechanicManager.add(mechanic);
+  }
+
+  spawnSpread(playerId: string, radius: number, duration: number, effects: Effect[]): void {
+    const mechanic = new SpreadMechanic(playerId, radius, duration, effects);
     this.mechanicManager.add(mechanic);
   }
 

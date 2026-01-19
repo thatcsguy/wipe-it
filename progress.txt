@@ -73,3 +73,10 @@ SPREAD-003: COMPLETE
 - Updated Game.tick() to pass this.statusEffectManager to mechanicManager.tick()
 - Enables SpreadMechanic (and future mechanics) to apply status effects on resolve
 Files: src/server/mechanics/manager.ts, src/server/game.ts
+
+SPREAD-004: COMPLETE
+- Added spawnSpread(playerId, radius, duration, effects) to Game class
+- Creates SpreadMechanic and adds to mechanicManager
+- Follows same pattern as existing spawnChariot()
+- Imported SpreadMechanic from mechanics/spread
+Files: src/server/game.ts

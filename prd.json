@@ -153,7 +153,7 @@
                 "Verify it accepts playerId, radius, duration, effects parameters",
                 "Verify it creates and adds a SpreadMechanic to mechanicManager"
             ],
-            "passes": false
+            "passes": true
         },
         {
             "id": "SPREAD-005",
