@@ -12,7 +12,7 @@
         "Verify type field is literal 'radialKnockback'",
         "Verify interface is exported and added to MechanicState union type"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "id": "KB-002",
@@ -24,7 +24,7 @@
         "Verify type field is literal 'linearKnockback'",
         "Verify interface is exported and added to MechanicState union type"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "id": "KB-003",
@@ -35,7 +35,7 @@
         "Verify PlayerState has optional knockback property",
         "Verify knockback object has all 6 required fields: startTime, startX, startY, endX, endY, duration"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "id": "KB-004",

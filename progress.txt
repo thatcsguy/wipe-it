@@ -1,0 +1,8 @@
+=== KB-001, KB-002, KB-003 - Knockback Type Definitions ===
+- Added RadialKnockbackMechanicState interface (type, id, originX/Y, startTime, endTime, knockbackDistance, knockbackDuration)
+- Added LinearKnockbackMechanicState interface (type, id, lineStartX/Y, lineEndX/Y, startTime, endTime, knockbackDistance, knockbackDuration)
+- Added KnockbackState interface (startTime, startX/Y, endX/Y, duration)
+- Added optional knockback property to PlayerState
+- Updated MechanicType and MechanicState unions
+- Files: src/shared/types.ts
+- Build passes

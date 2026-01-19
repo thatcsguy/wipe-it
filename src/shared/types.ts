@@ -41,6 +41,16 @@ export type Effect =
   | { type: 'damage'; amount: number }
   | { type: 'status'; statusType: StatusEffectType; duration: number };
 
+// Knockback state on a player
+export interface KnockbackState {
+  startTime: number;
+  startX: number;
+  startY: number;
+  endX: number;
+  endY: number;
+  duration: number;
+}
+
 // Player state
 export interface PlayerState {
   id: string;
@@ -51,10 +61,11 @@ export interface PlayerState {
   hp: number;
   lastProcessedInput: number;
   statusEffects: StatusEffectState[];
+  knockback?: KnockbackState;
 }
 
 // Mechanic types
-export type MechanicType = 'chariot' | 'spread' | 'tether' | 'tower';
+export type MechanicType = 'chariot' | 'spread' | 'tether' | 'tower' | 'radialKnockback' | 'linearKnockback';
 
 // Tether endpoint - either a player or a fixed point
 export type TetherEndpoint =
@@ -108,8 +119,34 @@ export interface TowerMechanicState {
   successEffects: Effect[];
 }
 
+// Radial knockback mechanic - pushes all players away from origin
+export interface RadialKnockbackMechanicState {
+  type: 'radialKnockback';
+  id: string;
+  originX: number;
+  originY: number;
+  startTime: number;
+  endTime: number;
+  knockbackDistance: number;
+  knockbackDuration: number;
+}
+
+// Linear knockback mechanic - pushes players on one side perpendicular to line
+export interface LinearKnockbackMechanicState {
+  type: 'linearKnockback';
+  id: string;
+  lineStartX: number;
+  lineStartY: number;
+  lineEndX: number;
+  lineEndY: number;
+  startTime: number;
+  endTime: number;
+  knockbackDistance: number;
+  knockbackDuration: number;
+}
+
 // Union of all mechanic states
-export type MechanicState = ChariotMechanicState | SpreadMechanicState | TetherMechanicState | TowerMechanicState;
+export type MechanicState = ChariotMechanicState | SpreadMechanicState | TetherMechanicState | TowerMechanicState | RadialKnockbackMechanicState | LinearKnockbackMechanicState;
 
 // Tether resolution event - emitted when a tether mechanic resolves
 export interface TetherResolutionEvent {
