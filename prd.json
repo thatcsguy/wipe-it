@@ -58,7 +58,7 @@
       "Verify debug panel shows mechanic with ~8000ms until resolve",
       "Verify default still works with ~2000ms delay"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "id": "TEST-005",

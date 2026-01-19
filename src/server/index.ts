@@ -102,6 +102,19 @@ io.on('connection', (socket) => {
     console.log(`Admin spawned radial knockback at (${originX}, ${originY}) delay=${delay}ms kbDuration=${knockbackDuration}ms`);
   });
 
+  socket.on('admin:spawnLinearKnockback', (params?: { delay?: number, knockbackDuration?: number }) => {
+    // Horizontal line through center, knockback southward
+    const lineStartX = 0;
+    const lineStartY = ARENA_HEIGHT / 2;
+    const lineEndX = ARENA_WIDTH;
+    const lineEndY = ARENA_HEIGHT / 2;
+    const delay = params?.delay ?? 2000;
+    const knockbackDistance = 150;
+    const knockbackDuration = params?.knockbackDuration ?? 500;
+    game.spawnLinearKnockback(lineStartX, lineStartY, lineEndX, lineEndY, delay, knockbackDistance, knockbackDuration);
+    console.log(`Admin spawned linear knockback delay=${delay}ms kbDuration=${knockbackDuration}ms`);
+  });
+
   socket.on('admin:spawnMechanic', (data: { type: string }) => {
     if (data.type === 'chariot') {
       const radius = ARENA_HEIGHT * 0.2;

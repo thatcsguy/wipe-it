@@ -139,9 +139,9 @@ export function setChangeNameCallback(callback: () => void): void {
       adminSocket.emit('admin:spawnRadialKnockback', params);
     }
   },
-  emitSpawnLinearKnockback: () => {
+  emitSpawnLinearKnockback: (params?: { delay?: number, knockbackDuration?: number }) => {
     if (adminSocket) {
-      adminSocket.emit('admin:spawnMechanic', { type: 'linearKnockback' });
+      adminSocket.emit('admin:spawnLinearKnockback', params);
     }
   }
 };

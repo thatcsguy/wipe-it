@@ -21,3 +21,11 @@
 - Client `emitSpawnRadialKnockback` updated to accept+forward params
 - Validated: 8000ms delay override shows ~7008ms, default shows ~1019ms (2000ms default)
 - Files: src/server/index.ts, src/client/admin.ts
+
+## TEST-004 - admin:spawnLinearKnockback delay/knockbackDuration params
+
+- Added dedicated `admin:spawnLinearKnockback` handler accepting `(params?: { delay?: number, knockbackDuration?: number })`
+- Uses `params?.delay ?? 2000` and `params?.knockbackDuration ?? 500`
+- Client `emitSpawnLinearKnockback` updated to accept+forward params
+- Validated: 8000ms delay override shows ~7496ms, default shows ~1700ms (2000ms default)
+- Files: src/server/index.ts, src/client/admin.ts
