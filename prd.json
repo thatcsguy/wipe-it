@@ -45,7 +45,7 @@
       "Verify toState() returns ConalAoeMechanicState with all fields",
       "Run npm run build - should pass"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "id": "AOE-004",

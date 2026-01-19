@@ -14,3 +14,14 @@ AOE-002 COMPLETE: Created LineAoe server mechanic
 - toState() returns LineAoeMechanicState
 - Build passes
 Files: src/server/mechanics/lineAoe.ts
+
+AOE-003 COMPLETE: Created ConalAoe server mechanic
+- ConalAoeMechanic class implements BaseMechanic interface
+- ID format: conalAoe-{timestamp}-{random}
+- Radius computed as distance from center to endpoint
+- Point-in-sector collision: check dist <= radius AND angle within +/-(angle/2) of cone direction
+- normalizeAngle() handles wraparound for angles near +/- PI
+- resolve() applies effects to players inside sector
+- toState() returns ConalAoeMechanicState
+- Build passes
+Files: src/server/mechanics/conalAoe.ts
