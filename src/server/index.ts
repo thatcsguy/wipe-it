@@ -120,6 +120,26 @@ io.on('connection', (socket) => {
       } else {
         console.log('Admin tried to spawn player tethers but need at least 2 players');
       }
+    } else if (data.type === 'radialKnockback') {
+      // Spawn radial knockback at arena center
+      const originX = ARENA_WIDTH / 2;
+      const originY = ARENA_HEIGHT / 2;
+      const startDelay = 2000;
+      const knockbackDistance = 150;
+      const knockbackDuration = 500;
+      game.spawnRadialKnockback(originX, originY, startDelay, knockbackDistance, knockbackDuration);
+      console.log(`Admin spawned radial knockback at (${originX}, ${originY})`);
+    } else if (data.type === 'linearKnockback') {
+      // Spawn linear knockback: horizontal line through center, knockback southward
+      const lineStartX = 0;
+      const lineStartY = ARENA_HEIGHT / 2;
+      const lineEndX = ARENA_WIDTH;
+      const lineEndY = ARENA_HEIGHT / 2;
+      const startDelay = 2000;
+      const knockbackDistance = 150;
+      const knockbackDuration = 500;
+      game.spawnLinearKnockback(lineStartX, lineStartY, lineEndX, lineEndY, startDelay, knockbackDistance, knockbackDuration);
+      console.log(`Admin spawned linear knockback (horizontal line, southward knockback)`);
     }
   });
 

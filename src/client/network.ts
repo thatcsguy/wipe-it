@@ -2,11 +2,13 @@ import {
   PlayerInput,
   PlayerState,
   GameState,
+  KnockbackState,
   PLAYER_SPEED,
   PLAYER_RADIUS,
   ARENA_WIDTH,
   ARENA_HEIGHT,
 } from '../shared/types';
+import { getKnockbackPosition } from '../shared/knockback';
 
 // Pending input with predicted position after applying it
 interface PendingInput {
@@ -22,6 +24,9 @@ const pendingInputs: PendingInput[] = [];
 let localX = ARENA_WIDTH / 2;
 let localY = ARENA_HEIGHT / 2;
 
+// Local player's knockback state (synced from server)
+let localKnockback: KnockbackState | undefined;
+
 // Initialize local position (called when joining game)
 export function initLocalPosition(x: number, y: number): void {
   localX = x;
@@ -31,6 +36,16 @@ export function initLocalPosition(x: number, y: number): void {
 // Get local predicted position
 export function getLocalPosition(): { x: number; y: number } {
   return { x: localX, y: localY };
+}
+
+// Get local knockback state
+export function getLocalKnockback(): KnockbackState | undefined {
+  return localKnockback;
+}
+
+// Check if local player is being knocked back
+export function isLocalKnockedBack(): boolean {
+  return localKnockback !== undefined;
 }
 
 // Apply input locally for prediction (same physics as server)
@@ -137,11 +152,33 @@ export function reconcile(state: GameState, localPlayerId: string): void {
     pendingInputs.shift();
   }
 
+  // Sync knockback state from server (KB-015)
+  // Copy knockback state when server has it
+  if (serverPlayer.knockback) {
+    localKnockback = { ...serverPlayer.knockback };
+  } else {
+    localKnockback = undefined;
+  }
+
   // Set position to server's authoritative position
   localX = serverPlayer.x;
   localY = serverPlayer.y;
 
-  // Re-apply all remaining pending inputs
+  // During knockback, use getKnockbackPosition instead of replaying inputs (KB-016)
+  if (localKnockback) {
+    const now = state.timestamp;
+    const kbPos = getKnockbackPosition(localKnockback, now);
+    localX = kbPos.x;
+    localY = kbPos.y;
+    // Clear knockback when no longer active
+    if (!kbPos.active) {
+      localKnockback = undefined;
+    }
+    // Skip input replay during knockback
+    return;
+  }
+
+  // Re-apply all remaining pending inputs (normal case)
   for (const pending of pendingInputs) {
     const newPos = applyPhysicsToPosition(localX, localY, pending.input);
     localX = newPos.x;
@@ -270,6 +307,8 @@ export function getBufferedPlayerIds(): string[] {
 // Expose for testing
 (window as any).__networkTest = {
   getLocalPosition,
+  getLocalKnockback,
+  isLocalKnockedBack,
   getPendingInputs,
   getPendingInputCount,
   applyInput,

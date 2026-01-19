@@ -98,3 +98,16 @@
 - Added imports: getKnockbackPosition, PLAYER_RADIUS, ARENA_WIDTH, ARENA_HEIGHT
 - Files: src/server/game.ts
 - Build passes
+
+=== KB-015, KB-016 - Client Knockback Reconciliation ===
+- Added localKnockback state variable to network.ts
+- Added getLocalKnockback() and isLocalKnockedBack() exports
+- Modified reconcile() to sync knockback from serverPlayer.knockback
+- During knockback: calculates position via getKnockbackPosition(localKnockback, state.timestamp)
+- Skips input replay during active knockback
+- Clears knockback when getKnockbackPosition returns active=false
+- Added admin emit helpers for radialKnockback/linearKnockback
+- Added server handlers for admin:spawnMechanic radialKnockback/linearKnockback types
+- Tested with Playwright: radial knockback moves player away from center, linear only affects correct side
+- Files: src/client/network.ts, src/client/admin.ts, src/server/index.ts
+- Build passes

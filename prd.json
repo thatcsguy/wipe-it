@@ -187,7 +187,7 @@
         "Verify when serverPlayer.knockback exists, localPlayer.knockback is set to match",
         "Verify knockback state is preserved across reconciliation cycles until server clears it"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "id": "KB-016",
@@ -200,7 +200,7 @@
         "Verify pending inputs are NOT replayed during active knockback",
         "Verify knockback cleared when getKnockbackPosition returns active=false"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "id": "KB-017",
