@@ -24,7 +24,7 @@
         "initDebugPanel is called from main.ts or game.ts on startup",
         "updateDebugPanel is called in the game loop in game.ts"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "id": "DEBUG-003",

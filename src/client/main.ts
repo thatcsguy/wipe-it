@@ -3,8 +3,12 @@ import { getInputState, createInput, getSequenceNumber, hasInput } from './input
 import { startGame } from './game';
 import { initAdmin, setChangeNameCallback } from './admin';
 import { showToast } from './toast';
+import { initDebugPanel } from './debugPanel';
 
-// Initialize debug panel visibility based on query param
+// Initialize debug panel
+initDebugPanel();
+
+// Show/hide debug panel based on query param
 const debugPanel = document.getElementById('debug-panel') as HTMLDivElement;
 const urlParams = new URLSearchParams(window.location.search);
 if (urlParams.get('debug') === '1') {

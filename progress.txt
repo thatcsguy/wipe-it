@@ -27,3 +27,15 @@
 - main.ts checks URLSearchParams for debug=1, removes hidden class if present
 - Verified: panel hidden without param, visible with ?debug=1
 - Files: public/index.html, public/css/style.css, src/client/main.ts
+
+## DEBUG-002 - debugPanel.ts module with initDebugPanel and updateDebugPanel
+- Created src/client/debugPanel.ts
+- initDebugPanel() sets up panel structure with Players/Mechanics sections
+- updateDebugPanel(gameState, localPlayerId) called each frame from game loop
+- Players: .debug-player with data-player-id, data-hp, data-x, data-y, health bar
+- Mechanics: .debug-mechanic with data-mechanic-id, data-type, data-expires
+- Exposed __debugTest API (show, hide, isVisible, getElement) for INTEGRATION-002
+- main.ts imports and calls initDebugPanel() on startup
+- game.ts imports and calls updateDebugPanel() in gameLoop after render
+- Validated: player attrs update, mechanic attrs appear/disappear, __debugTest API works
+- Files: src/client/debugPanel.ts, src/client/main.ts, src/client/game.ts

@@ -10,6 +10,7 @@ import {
   getInterpolatedPosition,
 } from './network';
 import { render, initRenderer } from './renderer';
+import { updateDebugPanel } from './debugPanel';
 
 // Game state
 let socket: Socket | null = null;
@@ -108,6 +109,9 @@ function gameLoop(currentTime: number): void {
     currentGameState.mechanics,
     currentGameState.timestamp
   );
+
+  // Update debug panel
+  updateDebugPanel(currentGameState, localPlayerId);
 
   // Schedule next frame
   requestAnimationFrame(gameLoop);
