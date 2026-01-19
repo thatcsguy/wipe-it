@@ -1,5 +1,5 @@
 import { PlayerState, MechanicState, StatusEffectState, ARENA_WIDTH, ARENA_HEIGHT, PLAYER_RADIUS, MAX_HP, CANVAS_SIZE, ARENA_OFFSET } from '../shared/types';
-import { renderMechanics, PlayerPositionData } from './mechanics';
+import { renderMechanics, PlayerPositionData } from './mechanics/index';
 import { renderStatusEffects } from './statusEffects';
 
 // Canvas and context (initialized on first render call)

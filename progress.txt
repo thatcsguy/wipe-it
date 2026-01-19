@@ -50,3 +50,12 @@ Created src/client/mechanics/index.ts with:
 
 Files: src/client/mechanics/index.ts (new)
 Build: passes
+
+## MECH-006 - Update import path
+
+Updated renderer.ts (not game.ts as PRD states) import from './mechanics' to './mechanics/index'.
+- PRD referenced game.ts but actual import is in renderer.ts
+- TypeScript prefers mechanics.ts file over mechanics/index.ts, so explicit path needed
+
+Files: src/client/renderer.ts (modified)
+Build: passes
