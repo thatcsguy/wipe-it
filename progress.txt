@@ -1,0 +1,10 @@
+## MECH-001 - Create shared.ts
+
+Created src/client/mechanics/shared.ts with:
+- 7 color constants (CHARIOT_*, SPREAD_*, TETHER_*)
+- PlayerPositionData interface
+- getPlayerPosition() helper
+- getEndpointPosition() helper
+
+Files: src/client/mechanics/shared.ts (new)
+Build: passes
