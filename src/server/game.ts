@@ -1,6 +1,7 @@
 import { Server } from 'socket.io';
 import { Player } from './player';
-import { GameState, PlayerInput, TICK_RATE, BROADCAST_RATE, MAX_PLAYERS, MAX_HP, TetherResolutionEvent, TowerResolutionEvent } from '../shared/types';
+import { GameState, PlayerInput, TICK_RATE, BROADCAST_RATE, MAX_PLAYERS, MAX_HP, TetherResolutionEvent, TowerResolutionEvent, PLAYER_RADIUS, ARENA_WIDTH, ARENA_HEIGHT } from '../shared/types';
+import { getKnockbackPosition } from '../shared/knockback';
 import { MechanicManager } from './mechanics/manager';
 import { ChariotMechanic } from './mechanics/chariot';
 import { SpreadMechanic } from './mechanics/spread';
@@ -131,6 +132,24 @@ export class Game {
         while (queue.length > 0) {
           const input = queue.shift()!;
           player.processInput(input, now);
+        }
+      }
+    }
+
+    // Update knockback positions for all players (60Hz updates even without inputs)
+    for (const player of this.players.values()) {
+      if (player.knockback) {
+        const result = getKnockbackPosition(player.knockback, now);
+        player.x = result.x;
+        player.y = result.y;
+
+        // Clamp to arena bounds
+        player.x = Math.max(PLAYER_RADIUS, Math.min(ARENA_WIDTH - PLAYER_RADIUS, player.x));
+        player.y = Math.max(PLAYER_RADIUS, Math.min(ARENA_HEIGHT - PLAYER_RADIUS, player.y));
+
+        // Clear knockback when complete
+        if (!result.active) {
+          player.knockback = undefined;
         }
       }
     }

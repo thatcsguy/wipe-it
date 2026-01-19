@@ -175,7 +175,7 @@
         "Verify positions are clamped to arena bounds after knockback position update",
         "Verify knockback state cleared when getKnockbackPosition returns active=false"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "id": "KB-015",

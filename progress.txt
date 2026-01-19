@@ -87,3 +87,14 @@
 - Updated game.ts tick() to pass now param to processInput()
 - Files: src/server/player.ts, src/server/game.ts
 - Build passes
+
+=== KB-014 - tick() Knockback Updates ===
+- Added knockback position update loop in tick() after input processing
+- Iterates all players, checks for active knockback
+- Updates position via getKnockbackPosition(player.knockback, now)
+- Clamps to arena bounds (PLAYER_RADIUS to ARENA_SIZE - PLAYER_RADIUS)
+- Clears knockback when active=false
+- This ensures 60Hz knockback updates even without player inputs queued
+- Added imports: getKnockbackPosition, PLAYER_RADIUS, ARENA_WIDTH, ARENA_HEIGHT
+- Files: src/server/game.ts
+- Build passes
