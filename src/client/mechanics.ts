@@ -75,7 +75,7 @@ function renderSpread(
   serverTime: number,
   posData: PlayerPositionData
 ): void {
-  const { targetPlayerId, radius, startTime, endTime } = mechanic;
+  const { targetPlayerId, radius } = mechanic;
 
   // Get target player position
   const pos = getPlayerPosition(targetPlayerId, posData);
@@ -83,21 +83,11 @@ function renderSpread(
 
   const { x, y } = pos;
 
-  // Calculate progress (0 to 1)
-  const duration = endTime - startTime;
-  const elapsed = serverTime - startTime;
-  const progress = Math.max(0, Math.min(1, elapsed / duration));
-
-  // Pulsing glow intensity (faster pulsing as progress increases)
-  const pulseSpeed = 3 + progress * 6; // pulse faster near end
-  const pulsePhase = (serverTime / 1000) * pulseSpeed * Math.PI * 2;
-  const pulseIntensity = 0.3 + 0.2 * Math.sin(pulsePhase);
-
-  // Create radial gradient (pink center to purple edge)
+  // Edge gradient (transparent center, pink at edge)
   const gradient = ctx.createRadialGradient(x, y, 0, x, y, radius);
-  gradient.addColorStop(0, `rgba(255, 180, 255, ${0.2 + pulseIntensity})`);
-  gradient.addColorStop(0.6, `rgba(255, 128, 255, ${0.15 + pulseIntensity * 0.5})`);
-  gradient.addColorStop(1, `rgba(180, 100, 220, ${0.1 + pulseIntensity * 0.3})`);
+  gradient.addColorStop(0, 'rgba(255, 128, 255, 0)');
+  gradient.addColorStop(0.7, 'rgba(255, 128, 255, 0)');
+  gradient.addColorStop(1, 'rgba(255, 128, 255, 0.4)');
 
   // Draw filled circle with gradient
   ctx.beginPath();
@@ -105,27 +95,26 @@ function renderSpread(
   ctx.fillStyle = gradient;
   ctx.fill();
 
-  // Outer ring (light pink/purple)
-  ctx.beginPath();
-  ctx.arc(x, y, radius, 0, Math.PI * 2);
-  ctx.strokeStyle = SPREAD_OUTER_COLOR;
-  ctx.lineWidth = 8;
-  ctx.stroke();
-
-  // Inner edge border (clearly defined)
+  // Outer border
   ctx.beginPath();
   ctx.arc(x, y, radius, 0, Math.PI * 2);
   ctx.strokeStyle = SPREAD_BORDER_COLOR;
   ctx.lineWidth = 2;
   ctx.stroke();
 
-  // Inner progress ring (shows time remaining)
-  const innerRadius = radius * (1 - progress * 0.3);
-  ctx.beginPath();
-  ctx.arc(x, y, innerRadius, 0, Math.PI * 2);
-  ctx.strokeStyle = `rgba(255, 200, 255, ${0.4 + pulseIntensity})`;
-  ctx.lineWidth = 2;
-  ctx.stroke();
+  // Radiating pulse wave (1 second cycle, 500ms travel time)
+  const cycleTime = serverTime % 1000;
+  if (cycleTime < 500) {
+    const pulseProgress = cycleTime / 500; // 0 to 1 over 500ms
+    const pulseRadius = radius * pulseProgress;
+    const pulseAlpha = 0.5 * (1 - pulseProgress); // fade out as it expands
+
+    ctx.beginPath();
+    ctx.arc(x, y, pulseRadius, 0, Math.PI * 2);
+    ctx.strokeStyle = `rgba(255, 180, 255, ${pulseAlpha})`;
+    ctx.lineWidth = 4;
+    ctx.stroke();
+  }
 }
 
 // Render all mechanics

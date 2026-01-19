@@ -18,7 +18,7 @@ export function initAdmin(socket: Socket): void {
   if (spawnSpreadBtn) {
     spawnSpreadBtn.addEventListener('click', () => {
       if (adminSocket) {
-        adminSocket.emit('admin:spawnMechanic', { type: 'spread' });
+        adminSocket.emit('admin:spawnMechanic', { type: 'spreads' });
       }
     });
   }
@@ -41,9 +41,9 @@ export function initAdmin(socket: Socket): void {
       adminSocket.emit('admin:spawnMechanic', { type: 'chariot' });
     }
   },
-  emitSpawnSpread: () => {
+  emitSpawnSpreads: () => {
     if (adminSocket) {
-      adminSocket.emit('admin:spawnMechanic', { type: 'spread' });
+      adminSocket.emit('admin:spawnMechanic', { type: 'spreads' });
     }
   },
   emitHealAll: () => {
