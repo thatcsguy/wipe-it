@@ -66,3 +66,12 @@ TOWER-008 (explosion rendering integration) - DONE
 - Explosions render on top of all game elements
 - File: src/client/renderer.ts
 - Build passes
+
+TOWER-009 (tower:resolved listener) - DONE
+- Added tower:resolved Socket.IO listener in game.ts (alongside tether:resolved)
+- Imported addTowerExplosion from './mechanics/towerExplosion'
+- Imported TowerResolutionEvent from shared types
+- On tower:resolved, if success is false, calls addTowerExplosion(event.x, event.y, currentGameState.timestamp)
+- TowerResolutionEvent already has x,y from TOWER-001
+- File: src/client/game.ts
+- Build passes

@@ -115,7 +115,7 @@
         "Explosion is triggered only when success is false",
         "Run: npm run build - compiles without errors"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "id": "TOWER-010",

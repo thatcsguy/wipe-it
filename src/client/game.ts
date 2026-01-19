@@ -1,5 +1,5 @@
 import { Socket } from 'socket.io-client';
-import { GameState, PlayerState, MechanicState, TetherResolutionEvent, StatusEffectState } from '../shared/types';
+import { GameState, PlayerState, MechanicState, TetherResolutionEvent, TowerResolutionEvent, StatusEffectState } from '../shared/types';
 import { hasInput, createInput } from './input';
 import {
   applyInput,
@@ -12,6 +12,7 @@ import {
 import { render, initRenderer } from './renderer';
 import { updateDebugPanel } from './debugPanel';
 import { logCombat } from './combatLog';
+import { addTowerExplosion } from './mechanics/towerExplosion';
 
 // Game state
 let socket: Socket | null = null;
@@ -207,6 +208,13 @@ export function startGame(
       } catch (e) {
         console.error('Tether resolution callback error:', e);
       }
+    }
+  });
+
+  // Set up tower resolution listener - trigger explosion on failure
+  socket.on('tower:resolved', (event: TowerResolutionEvent) => {
+    if (!event.success) {
+      addTowerExplosion(event.x, event.y, currentGameState.timestamp);
     }
   });
 
