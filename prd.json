@@ -100,7 +100,7 @@
         "Use Playwright browser_snapshot to verify .debug-mechanic[data-type='chariot'] exists",
         "Wait 3 seconds, take another snapshot to verify mechanic resolved (element gone)"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "id": "MECH-009",

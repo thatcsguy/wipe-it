@@ -66,3 +66,15 @@ Deleted src/client/mechanics.ts - all code now lives in mechanics/ directory.
 
 Files: src/client/mechanics.ts (deleted)
 Build: passes
+
+## MECH-008 - Verify chariot mechanic (Playwright)
+
+Verified chariot mechanic renders correctly in browser:
+- Navigated to http://localhost:3000?debug=1
+- Player auto-joins (no name entry required in current build)
+- Clicked #spawn-chariot-btn
+- Confirmed .debug-mechanic[data-type="chariot"] element exists with data-mechanic-id, data-expires attrs
+- After 3s, mechanic resolved: element gone, player took 25 damage
+
+Files: none (integration test only)
+Result: passes
