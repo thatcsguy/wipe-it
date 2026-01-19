@@ -104,9 +104,9 @@ export function setChangeNameCallback(callback: () => void): void {
 // Expose for testing
 (window as any).__adminTest = {
   getSocket: () => adminSocket,
-  emitSpawnChariot: () => {
+  emitSpawnChariot: (params?: { duration?: number }) => {
     if (adminSocket) {
-      adminSocket.emit('admin:spawnMechanic', { type: 'chariot' });
+      adminSocket.emit('admin:spawnChariot', params);
     }
   },
   emitSpawnSpreads: () => {

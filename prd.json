@@ -12,7 +12,7 @@
       "Verify debug panel shows mechanic with ~10000ms until expiry (check data-expires attribute)",
       "Verify default still works: `__adminTest.emitSpawnChariot()` creates ~3000ms mechanic"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "id": "TEST-002",

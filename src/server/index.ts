@@ -66,6 +66,17 @@ io.on('connection', (socket) => {
   });
 
   // Handle admin commands
+  socket.on('admin:spawnChariot', (params?: { duration?: number }) => {
+    const radius = ARENA_HEIGHT * 0.2;
+    const padding = radius + 20;
+    const x = padding + Math.random() * (ARENA_WIDTH - 2 * padding);
+    const y = padding + Math.random() * (ARENA_HEIGHT - 2 * padding);
+    const duration = params?.duration ?? 3000;
+    const effects = [{ type: 'damage' as const, amount: 25 }];
+    game.spawnChariot(x, y, radius, duration, effects);
+    console.log(`Admin spawned chariot at (${x.toFixed(0)}, ${y.toFixed(0)})`);
+  });
+
   socket.on('admin:spawnMechanic', (data: { type: string }) => {
     if (data.type === 'chariot') {
       const radius = ARENA_HEIGHT * 0.2;

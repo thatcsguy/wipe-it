@@ -1,0 +1,7 @@
+## TEST-001 - admin:spawnChariot duration param
+
+- Added dedicated `admin:spawnChariot` handler accepting `(params?: { duration?: number })`
+- Uses `params?.duration ?? 3000` for default
+- Client `emitSpawnChariot` updated to accept+forward params
+- Validated: 10000ms override shows ~9013ms, default shows ~2000ms remaining
+- Files: src/server/index.ts, src/client/admin.ts
