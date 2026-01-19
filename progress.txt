@@ -6,3 +6,9 @@
 - Updated MechanicType and MechanicState unions
 - Files: src/shared/types.ts
 - Build passes
+
+=== KB-004 - easeOutCubic Function ===
+- Created src/shared/knockback.ts with easeOutCubic(t) = 1 - (1-t)^3
+- Verified: easeOutCubic(0)=0, easeOutCubic(1)=1, easeOutCubic(0.5)=0.875
+- Files: src/shared/knockback.ts
+- Build passes

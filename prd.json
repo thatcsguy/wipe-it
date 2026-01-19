@@ -48,7 +48,7 @@
         "Verify easeOutCubic(1) returns 1",
         "Verify easeOutCubic(0.5) returns approximately 0.875 (fast start, slow end)"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "id": "KB-005",
