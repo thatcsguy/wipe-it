@@ -27,3 +27,12 @@ TETHER-004 (Client - admin buttons) - DONE
 - Added __adminTest helpers for programmatic testing
 - Verified w/ Playwright: buttons exist, clicking them creates correct tether mechanics
 - Files: public/index.html, src/client/admin.ts
+
+TETHER-005 (Client - tether rendering) - DONE
+- Added renderTether() fn in src/client/mechanics.ts
+- Unstretched (distance < requiredDistance): 6px pink (#ff66aa) line w/ chevrons pointing toward closer endpoint
+- Stretched (distance >= requiredDistance): 2px orange (#ffcc00) line w/ shadowBlur glow
+- Chevron spacing scales proportionally w/ distance
+- Uses getEndpointPosition() helper for player/point lookup
+- Verified w/ Playwright: pink line when close, orange glow when far, transitions correctly
+- File: src/client/mechanics.ts

@@ -58,7 +58,7 @@
                 "Using Playwright: move player far from top center (>75% arena width), take screenshot, verify line changes to thin orange/yellow with glow",
                 "Using Playwright: move player back close to top center, verify line changes back to pink with chevrons"
             ],
-            "passes": false
+            "passes": true
         },
         {
             "id": "TETHER-006",

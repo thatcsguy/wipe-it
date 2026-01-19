@@ -1,4 +1,4 @@
-import { MechanicState, ChariotMechanicState, SpreadMechanicState, PlayerState } from '../shared/types';
+import { MechanicState, ChariotMechanicState, SpreadMechanicState, TetherMechanicState, TetherEndpoint, PlayerState } from '../shared/types';
 
 // Chariot color (orange-yellow)
 const CHARIOT_COLOR = '#ff9f40';
@@ -8,6 +8,10 @@ const CHARIOT_INNER_ALPHA = 0.5;
 // Spread colors (FFXIV-style pink/purple)
 const SPREAD_OUTER_COLOR = 'rgba(255, 128, 255, 0.3)';
 const SPREAD_BORDER_COLOR = 'rgba(200, 100, 200, 0.8)';
+
+// Tether colors
+const TETHER_UNSTRETCHED_COLOR = '#ff66aa'; // Pink/magenta when close
+const TETHER_STRETCHED_COLOR = '#ffcc00';   // Orange/yellow when stretched
 
 // Position lookup data for spread mechanics
 export interface PlayerPositionData {
@@ -117,6 +121,123 @@ function renderSpread(
   }
 }
 
+// Get endpoint position (player or fixed point)
+function getEndpointPosition(endpoint: TetherEndpoint, posData: PlayerPositionData): { x: number; y: number } | null {
+  if (endpoint.type === 'point') {
+    return { x: endpoint.x, y: endpoint.y };
+  }
+  return getPlayerPosition(endpoint.playerId, posData);
+}
+
+// Render a tether mechanic - line between two endpoints with visual state based on distance
+function renderTether(
+  ctx: CanvasRenderingContext2D,
+  mechanic: TetherMechanicState,
+  posData: PlayerPositionData
+): void {
+  const { endpointA, endpointB, requiredDistance } = mechanic;
+
+  // Get positions for both endpoints
+  const posA = getEndpointPosition(endpointA, posData);
+  const posB = getEndpointPosition(endpointB, posData);
+  if (!posA || !posB) return;
+
+  // Calculate current distance
+  const dx = posB.x - posA.x;
+  const dy = posB.y - posA.y;
+  const distance = Math.sqrt(dx * dx + dy * dy);
+
+  // Determine if tether is stretched (safe) or unstretched (danger)
+  const isStretched = distance >= requiredDistance;
+
+  ctx.save();
+
+  if (isStretched) {
+    // STRETCHED STATE: thin orange/yellow line with glow
+    ctx.strokeStyle = TETHER_STRETCHED_COLOR;
+    ctx.lineWidth = 2;
+    ctx.shadowColor = TETHER_STRETCHED_COLOR;
+    ctx.shadowBlur = 15;
+
+    ctx.beginPath();
+    ctx.moveTo(posA.x, posA.y);
+    ctx.lineTo(posB.x, posB.y);
+    ctx.stroke();
+
+    // Draw second pass for stronger glow
+    ctx.shadowBlur = 25;
+    ctx.stroke();
+  } else {
+    // UNSTRETCHED STATE: thick pink line with chevrons
+    ctx.strokeStyle = TETHER_UNSTRETCHED_COLOR;
+    ctx.lineWidth = 6;
+    ctx.shadowColor = TETHER_UNSTRETCHED_COLOR;
+    ctx.shadowBlur = 5;
+
+    // Draw the main line
+    ctx.beginPath();
+    ctx.moveTo(posA.x, posA.y);
+    ctx.lineTo(posB.x, posB.y);
+    ctx.stroke();
+
+    // Draw chevrons along the line pointing toward the closer endpoint
+    ctx.shadowBlur = 0;
+    ctx.fillStyle = TETHER_UNSTRETCHED_COLOR;
+
+    // Normalize direction vector
+    const len = distance || 1;
+    const dirX = dx / len;
+    const dirY = dy / len;
+
+    // Perpendicular vector for chevron width
+    const perpX = -dirY;
+    const perpY = dirX;
+
+    // Chevron properties - spacing scales with distance
+    const chevronSize = 12;
+    const baseSpacing = 30;
+    const maxSpacing = 60;
+    // Spacing increases as distance increases (further apart when stretched more)
+    const spacingRatio = Math.min(distance / requiredDistance, 1);
+    const chevronSpacing = baseSpacing + (maxSpacing - baseSpacing) * spacingRatio;
+
+    // Calculate number of chevrons that fit
+    const numChevrons = Math.max(1, Math.floor(distance / chevronSpacing));
+
+    for (let i = 1; i <= numChevrons; i++) {
+      const t = i / (numChevrons + 1);
+      const cx = posA.x + dx * t;
+      const cy = posA.y + dy * t;
+
+      // Chevron points toward the closer endpoint (A if t < 0.5, B if t > 0.5)
+      // Direction: if closer to A, point toward A (negative direction); if closer to B, point toward B
+      const pointTowardA = t < 0.5;
+      const chevronDir = pointTowardA ? -1 : 1;
+
+      // Draw chevron (triangle pointing along the line)
+      ctx.beginPath();
+      // Tip of chevron
+      const tipX = cx + dirX * chevronSize * 0.5 * chevronDir;
+      const tipY = cy + dirY * chevronSize * 0.5 * chevronDir;
+      // Base corners of chevron
+      const baseX = cx - dirX * chevronSize * 0.5 * chevronDir;
+      const baseY = cy - dirY * chevronSize * 0.5 * chevronDir;
+      const corner1X = baseX + perpX * chevronSize * 0.4;
+      const corner1Y = baseY + perpY * chevronSize * 0.4;
+      const corner2X = baseX - perpX * chevronSize * 0.4;
+      const corner2Y = baseY - perpY * chevronSize * 0.4;
+
+      ctx.moveTo(tipX, tipY);
+      ctx.lineTo(corner1X, corner1Y);
+      ctx.lineTo(corner2X, corner2Y);
+      ctx.closePath();
+      ctx.fill();
+    }
+  }
+
+  ctx.restore();
+}
+
 // Render all mechanics
 export function renderMechanics(
   ctx: CanvasRenderingContext2D,
@@ -129,6 +250,8 @@ export function renderMechanics(
       renderChariot(ctx, mechanic, serverTime);
     } else if (mechanic.type === 'spread' && posData) {
       renderSpread(ctx, mechanic, serverTime, posData);
+    } else if (mechanic.type === 'tether' && posData) {
+      renderTether(ctx, mechanic, posData);
     }
   }
 }
