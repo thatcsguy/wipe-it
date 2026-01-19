@@ -87,7 +87,7 @@
         "After 3 seconds, the toast element is removed from DOM",
         "Adding 6 toasts rapidly results in only 5 being visible"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "id": "TOAST-003",

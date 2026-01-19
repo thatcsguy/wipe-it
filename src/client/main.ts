@@ -2,6 +2,7 @@ import { io, Socket } from 'socket.io-client';
 import { getInputState, createInput, getSequenceNumber, hasInput } from './input';
 import { startGame } from './game';
 import { initAdmin, setChangeNameCallback } from './admin';
+import './toast'; // Initialize toast system
 
 // DOM elements
 const modal = document.getElementById('modal') as HTMLDivElement;

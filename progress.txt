@@ -3,3 +3,13 @@
 - Added CSS: fixed position bottom-left, flex column, pointer-events:none so it won't block clicks
 - Verified #action-log exists in DOM via Playwright
 - Files: public/index.html, public/css/style.css
+
+## TOAST-002 - Toast module with showToast function
+- Created src/client/toast.ts with showToast(message) function
+- Appends .toast div to #action-log, auto-removes after 3s with fade-out animation
+- Max 5 toasts enforced (oldest removed first)
+- Exposed __toastTest.showToast on window for testing
+- Added toast CSS styles (slide-in animation, fade-out on removal)
+- Imported toast module in main.ts to initialize
+- Validated: toast creation, auto-removal after 3s, max 5 limit
+- Files: src/client/toast.ts, src/client/main.ts, public/css/style.css
