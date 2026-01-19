@@ -59,7 +59,7 @@
         "Verify computed style has overflow-y: auto or scroll",
         "Verify element is visible and positioned to the right of the canvas (check bounding rect)"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "id": "CLOG-006",

@@ -20,3 +20,11 @@
 - CLOG-015: __toastTest gone (toast.ts deleted), __combatLogTest exists
 - Files: src/client/game.ts, src/client/main.ts, src/client/admin.ts, deleted src/client/toast.ts
 - Remaining: CLOG-005 (positioning), CLOG-016 (docs)
+
+## CLOG-005 - Combat Log Positioning (COMPLETE)
+- Wrapped admin-panel and combat-log in .side-panel container
+- Side-panel uses flex column layout with gap
+- Combat log now appears below admin panel, right of canvas
+- Verified: overflow-y: auto, isRightOfCanvas, isBelowAdmin all pass
+- Files: public/index.html, public/css/style.css
+- Remaining: CLOG-016 (docs)
