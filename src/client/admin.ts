@@ -56,6 +56,16 @@ export function initAdmin(socket: Socket): void {
     });
   }
 
+  const spawnTowerBtn = document.getElementById('spawn-tower-btn');
+  if (spawnTowerBtn) {
+    spawnTowerBtn.addEventListener('click', () => {
+      if (adminSocket) {
+        adminSocket.emit('admin:spawnTower');
+        logCombat('Spawned tower');
+      }
+    });
+  }
+
   const healAllBtn = document.getElementById('heal-all-btn');
   if (healAllBtn) {
     healAllBtn.addEventListener('click', () => {
@@ -92,6 +102,11 @@ export function setChangeNameCallback(callback: () => void): void {
   emitSpawnPlayerTethers: () => {
     if (adminSocket) {
       adminSocket.emit('admin:spawnMechanic', { type: 'playerTethers' });
+    }
+  },
+  emitSpawnTower: () => {
+    if (adminSocket) {
+      adminSocket.emit('admin:spawnTower');
     }
   },
   emitHealAll: () => {

@@ -75,3 +75,13 @@ TOWER-009 (tower:resolved listener) - DONE
 - TowerResolutionEvent already has x,y from TOWER-001
 - File: src/client/game.ts
 - Build passes
+
+TOWER-010 (admin panel) - DONE
+- Added #spawn-tower-btn button to HTML admin panel
+- Added click handler in admin.ts emitting 'admin:spawnTower'
+- Added __adminTest.emitSpawnTower() for testing
+- Server handles admin:spawnTower in index.ts, spawns tower at center (500,500), radius 80, 5s duration, requires 2 players
+- failureEffects: 50 damage, successEffects: empty
+- Playwright verified: button exists, tower spawns, failure damage applied (100->50 HP)
+- Files: public/index.html, src/client/admin.ts, src/server/index.ts
+- Build passes

@@ -123,6 +123,20 @@ io.on('connection', (socket) => {
     }
   });
 
+  // Handle admin tower spawn
+  socket.on('admin:spawnTower', () => {
+    // Test values: center of arena, radius 80, duration 5000ms, requires 2 players
+    const x = ARENA_WIDTH / 2;
+    const y = ARENA_HEIGHT / 2;
+    const radius = 80;
+    const duration = 5000;
+    const requiredPlayers = 2;
+    const failureEffects = [{ type: 'damage' as const, amount: 50 }];
+    const successEffects: { type: 'damage'; amount: number }[] = [];
+    game.spawnTower(x, y, radius, duration, requiredPlayers, failureEffects, successEffects);
+    console.log(`Admin spawned tower at (${x}, ${y})`);
+  });
+
   // Apply vulnerability to a random player (for testing)
   socket.on('admin:applyVulnerability', () => {
     const players = Array.from(game.getPlayers().keys());

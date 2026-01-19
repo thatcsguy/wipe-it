@@ -127,7 +127,7 @@
         "Server handles admin:spawnTower and spawns tower mechanic",
         "Run: npm run build - compiles without errors"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "id": "TOWER-011",
