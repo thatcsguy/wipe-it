@@ -66,3 +66,10 @@ SPREAD-002: COMPLETE
 - Updated BaseMechanic interface: resolve() now accepts optional statusManager
 - Updated types.ts to re-export Effect from shared/types (supports damage + status variants)
 Files: src/server/mechanics/spread.ts, src/server/mechanics/types.ts
+
+SPREAD-003: COMPLETE
+- Updated MechanicManager.tick() to accept statusEffectManager as 3rd parameter
+- tick() now passes statusManager to mechanic.resolve(players, statusManager)
+- Updated Game.tick() to pass this.statusEffectManager to mechanicManager.tick()
+- Enables SpreadMechanic (and future mechanics) to apply status effects on resolve
+Files: src/server/mechanics/manager.ts, src/server/game.ts

@@ -100,7 +100,7 @@ export class Game {
     }
 
     // Update mechanics (tick + resolve expired)
-    this.mechanicManager.tick(now, this.players);
+    this.mechanicManager.tick(now, this.players, this.statusEffectManager);
 
     // Update status effects
     this.statusEffectManager.tick(now, this.players);

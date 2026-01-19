@@ -141,7 +141,7 @@
                 "Verify resolve() method receives or has access to statusEffectManager",
                 "Verify statusEffectManager is passed when calling mechanic.resolve()"
             ],
-            "passes": false
+            "passes": true
         },
         {
             "id": "SPREAD-004",

@@ -1,4 +1,5 @@
 import { Player } from '../player';
+import { StatusEffectManager } from '../statusEffectManager';
 import { BaseMechanic, MechanicState } from './types';
 
 export class MechanicManager {
@@ -8,12 +9,12 @@ export class MechanicManager {
     this.mechanics.set(mechanic.id, mechanic);
   }
 
-  tick(now: number, players: Map<string, Player>): void {
+  tick(now: number, players: Map<string, Player>, statusManager: StatusEffectManager): void {
     for (const [id, mechanic] of this.mechanics) {
       mechanic.tick(now);
 
       if (mechanic.isExpired(now)) {
-        mechanic.resolve(players);
+        mechanic.resolve(players, statusManager);
         this.mechanics.delete(id);
       }
     }
