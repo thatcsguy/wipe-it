@@ -1,190 +1,118 @@
 {
-  "feature": "Combat Log",
-  "description": "Replace toast notifications with a persistent scrollable combat log showing damage and status effect changes",
+  "feature": "Refactor client mechanics into per-mechanic files",
+  "description": "Split src/client/mechanics.ts into a mechanics/ directory with individual files per mechanic type, matching the server-side organization pattern",
   "items": [
     {
-      "id": "CLOG-001",
-      "category": "core",
-      "description": "Create src/client/combatLog.ts with logCombat(message: string) function that appends entries to a #combat-log container. Each entry should be a div with class 'combat-entry'.",
+      "id": "MECH-001",
+      "category": "refactor",
+      "description": "Create src/client/mechanics/shared.ts with common constants and helpers. Extract from src/client/mechanics.ts: all color constants (CHARIOT_COLOR, CHARIOT_FILL_ALPHA, CHARIOT_INNER_ALPHA, SPREAD_OUTER_COLOR, SPREAD_BORDER_COLOR, TETHER_UNSTRETCHED_COLOR, TETHER_STRETCHED_COLOR), the PlayerPositionData interface, getPlayerPosition() function, and getEndpointPosition() function. Export all of them.",
       "stepsToVerify": [
-        "File src/client/combatLog.ts exists",
-        "File exports logCombat function",
-        "Use Playwright: navigate to localhost:3000, join game, run __combatLogTest.log('test message') in browser console",
-        "Verify #combat-log container exists and contains a .combat-entry with 'test message' text"
+        "File src/client/mechanics/shared.ts exists",
+        "File contains and exports all 7 color constants",
+        "File exports PlayerPositionData interface",
+        "File exports getPlayerPosition function",
+        "File exports getEndpointPosition function",
+        "Run: npm run build - compiles without errors"
       ],
-      "passes": true
+      "passes": false
     },
     {
-      "id": "CLOG-002",
-      "category": "core",
-      "description": "Each combat log entry must be prefixed with timestamp in [HH:MM:SS] format using browser's local timezone. Format: '[HH:MM:SS] message'",
+      "id": "MECH-002",
+      "category": "refactor",
+      "description": "Create src/client/mechanics/chariot.ts with renderChariot function. Import CHARIOT_COLOR, CHARIOT_FILL_ALPHA, CHARIOT_INNER_ALPHA from ./shared. Import ChariotMechanicState from '../../shared/types'. Export renderChariot(ctx: CanvasRenderingContext2D, mechanic: ChariotMechanicState, serverTime: number): void.",
       "stepsToVerify": [
-        "Use Playwright: navigate to localhost:3000, join game",
-        "Run __combatLogTest.log('test') in console",
-        "Verify .combat-entry text matches pattern /^\\[\\d{2}:\\d{2}:\\d{2}\\] test$/"
+        "File src/client/mechanics/chariot.ts exists",
+        "File imports color constants from ./shared",
+        "File imports ChariotMechanicState from ../../shared/types",
+        "File exports renderChariot function",
+        "Run: npm run build - compiles without errors"
       ],
-      "passes": true
+      "passes": false
     },
     {
-      "id": "CLOG-003",
-      "category": "core",
-      "description": "Combat log must limit entries to 100 maximum. When a new entry is added and count exceeds 100, remove the oldest entry (first child).",
+      "id": "MECH-003",
+      "category": "refactor",
+      "description": "Create src/client/mechanics/spread.ts with renderSpread function. Import SPREAD_OUTER_COLOR, SPREAD_BORDER_COLOR, PlayerPositionData, getPlayerPosition from ./shared. Import SpreadMechanicState from '../../shared/types'. Export renderSpread(ctx: CanvasRenderingContext2D, mechanic: SpreadMechanicState, serverTime: number, posData: PlayerPositionData): void.",
       "stepsToVerify": [
-        "Use Playwright: navigate to localhost:3000, join game",
-        "Run loop to add 105 entries: for(let i=0;i<105;i++) __combatLogTest.log('msg'+i)",
-        "Verify #combat-log contains exactly 100 .combat-entry elements",
-        "Verify first entry contains 'msg5' (oldest 5 were pruned)",
-        "Verify last entry contains 'msg104'"
+        "File src/client/mechanics/spread.ts exists",
+        "File imports color constants and helpers from ./shared",
+        "File imports SpreadMechanicState from ../../shared/types",
+        "File exports renderSpread function",
+        "Run: npm run build - compiles without errors"
       ],
-      "passes": true
+      "passes": false
     },
     {
-      "id": "CLOG-004",
-      "category": "core",
-      "description": "Combat log must auto-scroll to bottom when new entries are added. The container should have overflow-y scroll/auto and scrollTop should equal scrollHeight - clientHeight after adding entry.",
+      "id": "MECH-004",
+      "category": "refactor",
+      "description": "Create src/client/mechanics/tether.ts with renderTether function. Import TETHER_UNSTRETCHED_COLOR, TETHER_STRETCHED_COLOR, PlayerPositionData, getEndpointPosition from ./shared. Import TetherMechanicState from '../../shared/types'. Export renderTether(ctx: CanvasRenderingContext2D, mechanic: TetherMechanicState, posData: PlayerPositionData): void.",
       "stepsToVerify": [
-        "Use Playwright: navigate to localhost:3000, join game",
-        "Add 20+ entries to fill container: for(let i=0;i<25;i++) __combatLogTest.log('msg'+i)",
-        "Verify container is scrolled to bottom: Math.abs(el.scrollTop - (el.scrollHeight - el.clientHeight)) < 2"
+        "File src/client/mechanics/tether.ts exists",
+        "File imports color constants and helpers from ./shared",
+        "File imports TetherMechanicState from ../../shared/types",
+        "File exports renderTether function",
+        "Run: npm run build - compiles without errors"
       ],
-      "passes": true
+      "passes": false
     },
     {
-      "id": "CLOG-005",
-      "category": "ui",
-      "description": "Combat log container must be positioned on the right side of the screen, below the admin panel. It should be a fixed/absolute positioned element with a max-height and scrollable overflow.",
+      "id": "MECH-005",
+      "category": "refactor",
+      "description": "Create src/client/mechanics/index.ts as the main entry point. Import render functions from ./chariot, ./spread, ./tether. Re-export PlayerPositionData from ./shared. Implement and export renderMechanics(ctx, mechanics, serverTime, posData?) that dispatches to appropriate render function based on mechanic.type. Attach __mechanicsTest to window with renderMechanics.",
       "stepsToVerify": [
-        "Use Playwright: navigate to localhost:3000, join game",
-        "Verify #combat-log element exists in DOM",
-        "Verify computed style has overflow-y: auto or scroll",
-        "Verify element is visible and positioned to the right of the canvas (check bounding rect)"
+        "File src/client/mechanics/index.ts exists",
+        "File exports renderMechanics function",
+        "File exports PlayerPositionData interface",
+        "File attaches __mechanicsTest to window",
+        "Run: npm run build - compiles without errors"
       ],
-      "passes": true
+      "passes": false
     },
     {
-      "id": "CLOG-006",
-      "category": "ui",
-      "description": "Update public/index.html: replace the action-log div with combat-log div (id='combat-log', class='combat-log').",
+      "id": "MECH-006",
+      "category": "refactor",
+      "description": "Update src/client/game.ts import path from './mechanics' to './mechanics/index' (or './mechanics' if TypeScript resolves index.ts). Ensure PlayerPositionData and renderMechanics are still imported correctly.",
       "stepsToVerify": [
-        "File public/index.html contains <div id=\"combat-log\"",
-        "File public/index.html does NOT contain id=\"action-log\""
+        "src/client/game.ts imports renderMechanics and PlayerPositionData from mechanics directory",
+        "Run: npm run build - compiles without errors"
       ],
-      "passes": true
+      "passes": false
     },
     {
-      "id": "CLOG-007",
-      "category": "ui",
-      "description": "Update public/css/style.css: add .combat-log and .combat-entry styles. Remove all .action-log and .toast related styles (including animations).",
-      "stepsToVerify": [
-        "File public/css/style.css contains .combat-log selector",
-        "File public/css/style.css contains .combat-entry selector",
-        "File public/css/style.css does NOT contain .action-log selector",
-        "File public/css/style.css does NOT contain .toast selector",
-        "File public/css/style.css does NOT contain toast-slide-in or toast-fade-out"
-      ],
-      "passes": true
-    },
-    {
-      "id": "CLOG-008",
-      "category": "feature",
-      "description": "Detect player damage by diffing GameState on each 'state' socket event. When a player's HP decreases, call logCombat with format: 'PlayerName took X damage' where X is the damage amount (oldHp - newHp).",
-      "stepsToVerify": [
-        "Use Playwright: navigate to localhost:3000, join game with name 'TestPlayer'",
-        "Click #spawn-chariot-btn to spawn a chariot mechanic",
-        "Wait for mechanic to resolve and damage to occur",
-        "Verify #combat-log contains entry matching 'TestPlayer took \\d+ damage'"
-      ],
-      "passes": true
-    },
-    {
-      "id": "CLOG-009",
-      "category": "feature",
-      "description": "Detect status effect gains by diffing GameState. When a player gains a status effect not present in previous state, call logCombat with format: 'PlayerName gained EffectType'.",
-      "stepsToVerify": [
-        "Use Playwright: navigate to localhost:3000, join game with name 'TestPlayer'",
-        "Trigger a mechanic that applies a status effect (e.g., vulnerability from chariot)",
-        "Verify #combat-log contains entry matching 'TestPlayer gained' followed by effect name"
-      ],
-      "passes": true
-    },
-    {
-      "id": "CLOG-010",
-      "category": "feature",
-      "description": "Detect status effect losses by diffing GameState. When a player loses a status effect present in previous state but not in new state, call logCombat with format: 'PlayerName lost EffectType'.",
-      "stepsToVerify": [
-        "Use Playwright: navigate to localhost:3000, join game",
-        "Trigger a status effect, then wait for it to expire",
-        "Verify #combat-log contains entry matching 'PlayerName lost' followed by effect name"
-      ],
-      "passes": true
-    },
-    {
-      "id": "CLOG-011",
-      "category": "integration",
-      "description": "Replace showToast call in src/client/main.ts for name changes. When player changes name, log 'Changed name to X' to combat log instead of showing toast.",
-      "stepsToVerify": [
-        "File src/client/main.ts imports logCombat from './combatLog'",
-        "File src/client/main.ts does NOT import showToast",
-        "Use Playwright: join game, click #change-name-btn, enter new name",
-        "Verify #combat-log contains 'Changed name to' entry"
-      ],
-      "passes": true
-    },
-    {
-      "id": "CLOG-012",
-      "category": "integration",
-      "description": "Remove tether resolution toast code from src/client/main.ts. The tether:resolved event handler that showed 'Tether stretched!' or 'Tether snapped!' toasts should be removed entirely.",
-      "stepsToVerify": [
-        "File src/client/main.ts does NOT contain 'Tether stretched'",
-        "File src/client/main.ts does NOT contain 'Tether snapped'",
-        "File src/client/main.ts does NOT contain 'onTetherResolution'"
-      ],
-      "passes": true
-    },
-    {
-      "id": "CLOG-013",
-      "category": "integration",
-      "description": "Replace all showToast calls in src/client/admin.ts with logCombat calls. Messages: 'Spawned chariot', 'Spawned spreads', 'Spawned point tethers', 'Spawned player tethers', 'Healed all players'.",
-      "stepsToVerify": [
-        "File src/client/admin.ts imports logCombat from './combatLog'",
-        "File src/client/admin.ts does NOT import showToast",
-        "File src/client/admin.ts does NOT contain 'showToast'",
-        "Use Playwright: join game, click #spawn-chariot-btn",
-        "Verify #combat-log contains 'Spawned chariot' entry"
-      ],
-      "passes": true
-    },
-    {
-      "id": "CLOG-014",
+      "id": "MECH-007",
       "category": "cleanup",
-      "description": "Delete src/client/toast.ts file entirely.",
+      "description": "Delete the old src/client/mechanics.ts file after all code has been migrated to the new directory structure.",
       "stepsToVerify": [
-        "File src/client/toast.ts does NOT exist"
+        "File src/client/mechanics.ts does NOT exist",
+        "Run: npm run build - compiles without errors"
       ],
-      "passes": true
+      "passes": false
     },
     {
-      "id": "CLOG-015",
-      "category": "cleanup",
-      "description": "Expose test API on window: (window as any).__combatLogTest = { log: logCombat }. Remove __toastTest global.",
+      "id": "MECH-008",
+      "category": "integration",
+      "description": "Verify chariot mechanic renders correctly in browser using Playwright.",
       "stepsToVerify": [
-        "Use Playwright: navigate to localhost:3000, join game",
-        "Verify window.__combatLogTest exists and has log function",
-        "Verify window.__toastTest is undefined"
+        "Start dev server: npm run dev",
+        "Use Playwright browser_navigate to http://localhost:3000",
+        "Use Playwright to type a name and click Join button",
+        "Use Playwright to click #spawn-chariot-btn",
+        "Use Playwright browser_snapshot to verify .debug-mechanic[data-type='chariot'] exists",
+        "Wait 3 seconds, take another snapshot to verify mechanic resolved (element gone)"
       ],
-      "passes": true
+      "passes": false
     },
     {
-      "id": "CLOG-016",
-      "category": "docs",
-      "description": "Update CLAUDE.md: replace all toast documentation with combat log documentation. Update test selectors (.toast -> .combat-entry), update __toastTest -> __combatLogTest, update examples.",
+      "id": "MECH-009",
+      "category": "integration",
+      "description": "Verify spread mechanic renders correctly in browser using Playwright.",
       "stepsToVerify": [
-        "File CLAUDE.md does NOT contain '__toastTest'",
-        "File CLAUDE.md does NOT contain '.toast' selector references",
-        "File CLAUDE.md contains '__combatLogTest'",
-        "File CLAUDE.md contains '.combat-entry' or '#combat-log' selector references"
+        "With dev server running and player joined",
+        "Use Playwright to click #spawn-spreads-btn",
+        "Use Playwright browser_snapshot to verify .debug-mechanic[data-type='spread'] exists",
+        "Wait for mechanic to resolve, verify element gone"
       ],
-      "passes": true
+      "passes": false
     }
   ]
 }
