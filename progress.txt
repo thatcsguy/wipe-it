@@ -32,3 +32,12 @@ TOWER-004 (client colors) - DONE
 - All three exported
 - File: src/client/mechanics/shared.ts
 - Build passes
+
+TOWER-005 (tower renderer) - DONE
+- Created src/client/mechanics/tower.ts with renderTower function
+- Draws outer circle with TOWER_COLOR, semi-transparent fill (0.3 alpha), solid stroke (0.8 alpha)
+- 6 rotating tick marks (triangles) around perimeter, rotation uses serverTime * 0.002
+- Large centered number showing requiredPlayers, ~45% of radius font size
+- Number has white fill with black stroke outline for readability
+- File: src/client/mechanics/tower.ts
+- Build passes
