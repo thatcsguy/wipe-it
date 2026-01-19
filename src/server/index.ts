@@ -92,6 +92,16 @@ io.on('connection', (socket) => {
     }
   });
 
+  socket.on('admin:spawnRadialKnockback', (params?: { delay?: number, knockbackDuration?: number }) => {
+    const originX = ARENA_WIDTH / 2;
+    const originY = ARENA_HEIGHT / 2;
+    const delay = params?.delay ?? 2000;
+    const knockbackDistance = 150;
+    const knockbackDuration = params?.knockbackDuration ?? 500;
+    game.spawnRadialKnockback(originX, originY, delay, knockbackDistance, knockbackDuration);
+    console.log(`Admin spawned radial knockback at (${originX}, ${originY}) delay=${delay}ms kbDuration=${knockbackDuration}ms`);
+  });
+
   socket.on('admin:spawnMechanic', (data: { type: string }) => {
     if (data.type === 'chariot') {
       const radius = ARENA_HEIGHT * 0.2;

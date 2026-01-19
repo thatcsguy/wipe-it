@@ -43,7 +43,7 @@
       "Test knockbackDuration override: `__adminTest.emitSpawnRadialKnockback({ delay: 100, knockbackDuration: 2000 })`",
       "After resolve, player knockback animation should last ~2 seconds (not 500ms)"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "id": "TEST-004",
