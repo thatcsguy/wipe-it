@@ -9,6 +9,8 @@ import { TetherMechanic } from './mechanics/tether';
 import { TowerMechanic } from './mechanics/tower';
 import { RadialKnockbackMechanic } from './mechanics/radialKnockback';
 import { LinearKnockbackMechanic } from './mechanics/linearKnockback';
+import { LineAoeMechanic } from './mechanics/lineAoe';
+import { ConalAoeMechanic } from './mechanics/conalAoe';
 import { Effect } from './mechanics/types';
 import { TetherEndpoint } from '../shared/types';
 import { StatusEffectManager } from './statusEffectManager';
@@ -264,6 +266,32 @@ export class Game {
       knockbackDistance,
       knockbackDuration
     );
+    this.mechanicManager.add(mechanic);
+  }
+
+  spawnLineAoe(
+    startX: number,
+    startY: number,
+    endX: number,
+    endY: number,
+    width: number,
+    duration: number,
+    effects: Effect[]
+  ): void {
+    const mechanic = new LineAoeMechanic(startX, startY, endX, endY, width, duration, effects);
+    this.mechanicManager.add(mechanic);
+  }
+
+  spawnConalAoe(
+    centerX: number,
+    centerY: number,
+    endpointX: number,
+    endpointY: number,
+    angle: number,
+    duration: number,
+    effects: Effect[]
+  ): void {
+    const mechanic = new ConalAoeMechanic(centerX, centerY, endpointX, endpointY, angle, duration, effects);
     this.mechanicManager.add(mechanic);
   }
 

@@ -25,3 +25,10 @@ AOE-003 COMPLETE: Created ConalAoe server mechanic
 - toState() returns ConalAoeMechanicState
 - Build passes
 Files: src/server/mechanics/conalAoe.ts
+
+AOE-004 COMPLETE: Added spawnLineAoe and spawnConalAoe to Game class
+- spawnLineAoe(startX, startY, endX, endY, width, duration, effects): creates LineAoeMechanic, adds to manager
+- spawnConalAoe(centerX, centerY, endpointX, endpointY, angle, duration, effects): creates ConalAoeMechanic, adds to manager
+- No default effects (required param per PRD)
+- Build passes
+Files: src/server/game.ts

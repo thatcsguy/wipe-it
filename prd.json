@@ -59,7 +59,7 @@
       "Verify effects parameter has no default value (must be explicitly passed)",
       "Run npm run build - should pass"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "id": "AOE-005",
