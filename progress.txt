@@ -18,3 +18,14 @@ Created src/client/mechanics/chariot.ts with:
 
 Files: src/client/mechanics/chariot.ts (new)
 Build: passes
+
+## MECH-003 - Create spread.ts
+
+Created src/client/mechanics/spread.ts with:
+- renderSpread function extracted from mechanics.ts
+- Imports SPREAD_BORDER_COLOR, PlayerPositionData, getPlayerPosition from ./shared
+- Imports SpreadMechanicState from ../../shared/types
+- Note: SPREAD_OUTER_COLOR not used directly (gradient colors inline)
+
+Files: src/client/mechanics/spread.ts (new)
+Build: passes
