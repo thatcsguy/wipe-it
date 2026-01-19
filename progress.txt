@@ -112,3 +112,11 @@
 - Validated: __debugTest.isVisible() returns correct boolean
 - Validated: __debugTest.getElement() returns #debug-panel element
 - Files: src/client/debugPanel.ts (no changes - already working)
+
+## TOAST-004, STYLE-001, INTEGRATION-001 - Verified passing
+- All three features already implemented in previous work
+- TOAST-004: Toast styling complete - bg rgba(74,74,106,0.95), padding 12px 16px, border-radius 6px, fade-out animation via toast-fade-out class, pointer-events:none
+- STYLE-001: Debug panel styling complete - fixed right, dark bg rgba(15,15,26,0.95), light text, overflow-y:auto, pointer-events:none, health bar gradient red→green
+- INTEGRATION-001: Both systems work together - toasts + debug panel update simultaneously, no console errors
+- Validated via Playwright: computed styles, click-through, console error check
+- Files: public/css/style.css, src/client/toast.ts (no changes needed)

@@ -112,7 +112,7 @@
         "Toasts animate out (fade or slide) before removal",
         "Can still click on canvas and admin buttons with toasts visible"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "id": "EVENT-001",
@@ -171,7 +171,7 @@
         "Canvas is still clickable/interactable",
         "Health bars show color gradient (green=full, red=low)"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "id": "INTEGRATION-001",
@@ -182,7 +182,7 @@
         "Check browser console for errors during 30 seconds of gameplay",
         "Use Playwright: navigate with debug=1, spawn mechanics, heal, verify no console errors logged"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "id": "INTEGRATION-002",
