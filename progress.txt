@@ -27,3 +27,9 @@
 - getLinearKnockbackDirection: perpendicular using (lineY/len, -lineX/len) - righthand side
 - Files: src/shared/knockback.ts
 - Build passes
+
+=== KB-007 - isOnKnockbackSide Function ===
+- Cross product: (bx-ax)*(py-ay) - (by-ay)*(px-ax)
+- Returns true when cross < 0 (right side walking A to B = knockback side)
+- Files: src/shared/knockback.ts
+- Build passes

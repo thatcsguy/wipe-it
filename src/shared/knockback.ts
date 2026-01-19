@@ -98,3 +98,24 @@ export function getLinearKnockbackDirection(
   // Perpendicular to line, righthand side: (lineY/len, -lineX/len)
   return { x: lineY / len, y: -lineX / len };
 }
+
+/**
+ * Check if a player is on the knockback side of a linear knockback line
+ * Uses cross product to determine which side of the line the player is on
+ * Returns true when player is on the right side (walking from A to B)
+ * Cross product formula: (bx-ax)*(py-ay) - (by-ay)*(px-ax)
+ * Negative cross product = right side = knockback side
+ */
+export function isOnKnockbackSide(
+  lineStartX: number,
+  lineStartY: number,
+  lineEndX: number,
+  lineEndY: number,
+  playerX: number,
+  playerY: number
+): boolean {
+  const cross =
+    (lineEndX - lineStartX) * (playerY - lineStartY) -
+    (lineEndY - lineStartY) * (playerX - lineStartX);
+  return cross < 0;
+}

@@ -85,7 +85,7 @@
         "Verify uses cross product formula correctly",
         "Verify returns true when cross product < 0 (right side)"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "id": "KB-008",
