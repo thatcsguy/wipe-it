@@ -80,7 +80,7 @@ TOWER-010 (admin panel) - DONE
 - Added #spawn-tower-btn button to HTML admin panel
 - Added click handler in admin.ts emitting 'admin:spawnTower'
 - Added __adminTest.emitSpawnTower() for testing
-- Server handles admin:spawnTower in index.ts, spawns tower at center (500,500), radius 80, 5s duration, requires 2 players
+- Server handles admin:spawnTower in index.ts, spawns tower at center (400,400), radius 80, 5s duration, requires 2 players
 - failureEffects: 50 damage, successEffects: empty
 - Playwright verified: button exists, tower spawns, failure damage applied (100->50 HP)
 - Files: public/index.html, src/client/admin.ts, src/server/index.ts
@@ -109,4 +109,14 @@ TOWER-013 (integration - failure verification) - DONE
 - Verified tower mechanic element gone from debug panel
 - Verified player HP decreased from 100 to 50 (failureEffects applied)
 - Combat log shows "Player 1 took 50 damage"
+- No code changes needed - test-only verification
+
+TOWER-014 (integration - success verification) - DONE
+- Playwright verified tower success with 2 players
+- Opened 2 browser tabs, joined as Player 2 and Player 3
+- Moved both players to tower center (400,400) - within radius 80
+- Spawned tower, waited 6 seconds for expiration
+- Verified both players still at 100 HP (no damage taken)
+- Verified tower mechanic gone from debug panel
+- No explosion animation played (success case)
 - No code changes needed - test-only verification

@@ -178,12 +178,12 @@
         "Open two browser tabs to localhost:3000?debug=1",
         "Join with both players",
         "Click #spawn-tower-btn",
-        "Move both players to tower center (arena center 400,300)",
+        "Move both players to tower center (arena center 400,400)",
         "Wait for tower to expire",
         "Verify neither player took damage (HP unchanged)",
         "Verify no explosion animation played"
       ],
-      "passes": false
+      "passes": true
     }
   ]
 }
