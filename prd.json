@@ -135,7 +135,7 @@
         "Verify Game class has spawnLinearKnockback(lineStartX, lineStartY, lineEndX, lineEndY, startDelay, knockbackDistance, knockbackDuration) method",
         "Verify mechanic state is properly broadcast to clients"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "id": "KB-012",

@@ -68,3 +68,12 @@
 - toState() returns LinearKnockbackMechanicState
 - Files: src/server/mechanics/linearKnockback.ts
 - Build passes
+
+=== KB-011 - Register Knockback Mechanics + Spawn Methods ===
+- Added imports for RadialKnockbackMechanic and LinearKnockbackMechanic in game.ts
+- Added spawnRadialKnockback(originX, originY, startDelay, knockbackDistance, knockbackDuration)
+- Added spawnLinearKnockback(lineStartX/Y, lineEndX/Y, startDelay, knockbackDistance, knockbackDuration)
+- MechanicManager already type-agnostic (uses BaseMechanic interface), no changes needed
+- Mechanic state broadcast via existing getStates() → broadcast() path
+- Files: src/server/game.ts
+- Build passes

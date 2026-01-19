@@ -6,6 +6,8 @@ import { ChariotMechanic } from './mechanics/chariot';
 import { SpreadMechanic } from './mechanics/spread';
 import { TetherMechanic } from './mechanics/tether';
 import { TowerMechanic } from './mechanics/tower';
+import { RadialKnockbackMechanic } from './mechanics/radialKnockback';
+import { LinearKnockbackMechanic } from './mechanics/linearKnockback';
 import { Effect } from './mechanics/types';
 import { TetherEndpoint } from '../shared/types';
 import { StatusEffectManager } from './statusEffectManager';
@@ -204,6 +206,44 @@ export class Game {
       requiredPlayers,
       failureEffects,
       successEffects
+    );
+    this.mechanicManager.add(mechanic);
+  }
+
+  spawnRadialKnockback(
+    originX: number,
+    originY: number,
+    startDelay: number,
+    knockbackDistance: number,
+    knockbackDuration: number
+  ): void {
+    const mechanic = new RadialKnockbackMechanic(
+      originX,
+      originY,
+      startDelay,
+      knockbackDistance,
+      knockbackDuration
+    );
+    this.mechanicManager.add(mechanic);
+  }
+
+  spawnLinearKnockback(
+    lineStartX: number,
+    lineStartY: number,
+    lineEndX: number,
+    lineEndY: number,
+    startDelay: number,
+    knockbackDistance: number,
+    knockbackDuration: number
+  ): void {
+    const mechanic = new LinearKnockbackMechanic(
+      lineStartX,
+      lineStartY,
+      lineEndX,
+      lineEndY,
+      startDelay,
+      knockbackDistance,
+      knockbackDuration
     );
     this.mechanicManager.add(mechanic);
   }
