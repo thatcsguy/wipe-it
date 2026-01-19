@@ -135,3 +135,14 @@
 - Verified with Playwright: attribute appears during active knockback, removed after
 - Files: src/client/debugPanel.ts
 - Build passes
+
+=== KB-017 - Radial Knockback Visualization ===
+- Created src/client/mechanics/radialKnockback.ts with animated double chevron rings
+- 10 chevrons per ring (36 degrees apart), 4 rings at different animation phases
+- Rings spawn from origin, move outward during startTime→endTime
+- Chevrons grow larger (15→40px) and fade (alpha 0.8→0.24) as they expand
+- Double chevron >> pattern implemented with ctx.stroke lines
+- Registered renderer in mechanics/index.ts
+- Verified with Playwright: chevrons visible, animation works
+- Files: src/client/mechanics/radialKnockback.ts, src/client/mechanics/index.ts
+- Build passes

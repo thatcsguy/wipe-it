@@ -217,7 +217,7 @@
         "Verify chevrons are more transparent near edge",
         "Wait for endTime and verify animation disappears"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "id": "KB-018",

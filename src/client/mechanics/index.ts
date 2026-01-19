@@ -3,6 +3,7 @@ import { renderChariot } from './chariot';
 import { renderSpread } from './spread';
 import { renderTether } from './tether';
 import { renderTower } from './tower';
+import { renderRadialKnockback } from './radialKnockback';
 export { PlayerPositionData } from './shared';
 import type { PlayerPositionData } from './shared';
 
@@ -22,6 +23,8 @@ export function renderMechanics(
       renderTether(ctx, mechanic, posData);
     } else if (mechanic.type === 'tower') {
       renderTower(ctx, mechanic, serverTime);
+    } else if (mechanic.type === 'radialKnockback') {
+      renderRadialKnockback(ctx, mechanic, serverTime);
     }
   }
 }
