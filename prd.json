@@ -73,7 +73,7 @@
         "Verify radial returns normalized(playerPos - origin)",
         "Verify linear returns perpendicular vector using (lineY/len, -lineX/len)"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "id": "KB-007",

@@ -47,3 +47,54 @@ export function getKnockbackPosition(
 
   return { x, y, active: true };
 }
+
+export interface KnockbackDirection {
+  x: number;
+  y: number;
+}
+
+/**
+ * Calculate knockback direction for radial knockback (from origin toward player)
+ * Returns normalized direction vector
+ */
+export function getRadialKnockbackDirection(
+  originX: number,
+  originY: number,
+  playerX: number,
+  playerY: number
+): KnockbackDirection {
+  const dx = playerX - originX;
+  const dy = playerY - originY;
+  const len = Math.sqrt(dx * dx + dy * dy);
+
+  // If player at origin, push in arbitrary direction (up)
+  if (len === 0) {
+    return { x: 0, y: -1 };
+  }
+
+  return { x: dx / len, y: dy / len };
+}
+
+/**
+ * Calculate knockback direction for linear knockback (perpendicular to line)
+ * Direction is to the right side when walking from lineStart to lineEnd
+ * Formula: perpendicular = (lineY/len, -lineX/len)
+ */
+export function getLinearKnockbackDirection(
+  lineStartX: number,
+  lineStartY: number,
+  lineEndX: number,
+  lineEndY: number
+): KnockbackDirection {
+  const lineX = lineEndX - lineStartX;
+  const lineY = lineEndY - lineStartY;
+  const len = Math.sqrt(lineX * lineX + lineY * lineY);
+
+  // If line has zero length, default direction (down)
+  if (len === 0) {
+    return { x: 0, y: 1 };
+  }
+
+  // Perpendicular to line, righthand side: (lineY/len, -lineX/len)
+  return { x: lineY / len, y: -lineX / len };
+}

@@ -20,3 +20,10 @@
 - Uses easeOutCubic for interpolation between start/end positions
 - Files: src/shared/knockback.ts
 - Build passes
+
+=== KB-006 - getKnockbackDirection Function ===
+- Added KnockbackDirection interface {x, y}
+- getRadialKnockbackDirection: normalized(playerPos - origin), handles player-at-origin edge case
+- getLinearKnockbackDirection: perpendicular using (lineY/len, -lineX/len) - righthand side
+- Files: src/shared/knockback.ts
+- Build passes
