@@ -74,3 +74,13 @@
 - Validated: callback fires with MechanicState (id, type, x, y, radius, startTime, endTime)
 - Validated: unsubscribe stops callbacks, only fires for new mechanics
 - Files: src/client/game.ts
+
+## EVENT-003 - onMechanicResolve callback in __gameTest API
+- Added mechanicResolveCallbacks Set and onMechanicResolve(callback) function
+- Extended checkMechanicSpawns() to detect resolved mechanics (in previous, not in current)
+- Callback receives mechanic id string when mechanic disappears from game state
+- Returns unsubscribe function that removes callback from Set
+- Added onMechanicResolve to __gameTest API
+- Validated: callback fires with mechanic id string after chariot expires (~3s)
+- Validated: unsubscribe stops callbacks
+- Files: src/client/game.ts

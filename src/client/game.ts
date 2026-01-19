@@ -33,6 +33,10 @@ const stateChangeCallbacks = new Set<StateChangeCallback>();
 type MechanicSpawnCallback = (mechanic: MechanicState) => void;
 const mechanicSpawnCallbacks = new Set<MechanicSpawnCallback>();
 
+// Mechanic resolve callbacks
+type MechanicResolveCallback = (mechanicId: string) => void;
+const mechanicResolveCallbacks = new Set<MechanicResolveCallback>();
+
 // Register a callback for state changes, returns unsubscribe function
 function onStateChange(callback: StateChangeCallback): () => void {
   stateChangeCallbacks.add(callback);
@@ -49,6 +53,14 @@ function onMechanicSpawn(callback: MechanicSpawnCallback): () => void {
   };
 }
 
+// Register a callback for mechanic resolves, returns unsubscribe function
+function onMechanicResolve(callback: MechanicResolveCallback): () => void {
+  mechanicResolveCallbacks.add(callback);
+  return () => {
+    mechanicResolveCallbacks.delete(callback);
+  };
+}
+
 // Notify all state change callbacks
 function notifyStateChange(state: GameState): void {
   for (const callback of stateChangeCallbacks) {
@@ -60,7 +72,7 @@ function notifyStateChange(state: GameState): void {
   }
 }
 
-// Check for new mechanics and notify spawn callbacks
+// Check for new mechanics and notify spawn callbacks, check for resolved mechanics
 function checkMechanicSpawns(state: GameState): void {
   const currentIds = new Set<string>();
   for (const mechanic of state.mechanics) {
@@ -72,6 +84,19 @@ function checkMechanicSpawns(state: GameState): void {
           callback(mechanic);
         } catch (e) {
           console.error('Mechanic spawn callback error:', e);
+        }
+      }
+    }
+  }
+  // Check for resolved mechanics (were in previous, not in current)
+  for (const prevId of previousMechanicIds) {
+    if (!currentIds.has(prevId)) {
+      // Mechanic resolved
+      for (const callback of mechanicResolveCallbacks) {
+        try {
+          callback(prevId);
+        } catch (e) {
+          console.error('Mechanic resolve callback error:', e);
         }
       }
     }
@@ -203,4 +228,5 @@ export function isGameRunning(): boolean {
   isGameRunning,
   onStateChange,
   onMechanicSpawn,
+  onMechanicResolve,
 };

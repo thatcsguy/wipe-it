@@ -147,7 +147,7 @@
         "Verify callback receives the mechanic id string",
         "Use Playwright: spawn mechanic, then await page.evaluate(() => new Promise(resolve => { __gameTest.onMechanicResolve(id => resolve(id)); })); verify resolves after ~3 seconds"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "id": "EVENT-004",
