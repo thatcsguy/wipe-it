@@ -114,14 +114,14 @@ export function setChangeNameCallback(callback: () => void): void {
       adminSocket.emit('admin:spawnSpreads', params);
     }
   },
-  emitSpawnPointTethers: () => {
+  emitSpawnPointTethers: (params?: { duration?: number }) => {
     if (adminSocket) {
-      adminSocket.emit('admin:spawnMechanic', { type: 'pointTethers' });
+      adminSocket.emit('admin:spawnPointTethers', params);
     }
   },
-  emitSpawnPlayerTethers: () => {
+  emitSpawnPlayerTethers: (params?: { duration?: number }) => {
     if (adminSocket) {
-      adminSocket.emit('admin:spawnMechanic', { type: 'playerTethers' });
+      adminSocket.emit('admin:spawnPlayerTethers', params);
     }
   },
   emitSpawnTower: () => {

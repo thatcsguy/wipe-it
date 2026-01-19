@@ -74,7 +74,7 @@
       "Test player tethers: `__adminTest.emitSpawnPlayerTethers({ duration: 10000 })`",
       "Verify default still works with ~3000ms duration"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "id": "TEST-006",
