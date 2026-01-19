@@ -66,7 +66,7 @@
         "File attaches __mechanicsTest to window",
         "Run: npm run build - compiles without errors"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "id": "MECH-006",

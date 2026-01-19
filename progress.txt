@@ -39,3 +39,14 @@ Created src/client/mechanics/tether.ts with:
 
 Files: src/client/mechanics/tether.ts (new)
 Build: passes
+
+## MECH-005 - Create index.ts entry point
+
+Created src/client/mechanics/index.ts with:
+- Imports renderChariot, renderSpread, renderTether from individual files
+- Re-exports PlayerPositionData from ./shared
+- Implements renderMechanics dispatcher (same logic as original)
+- Attaches __mechanicsTest to window
+
+Files: src/client/mechanics/index.ts (new)
+Build: passes
