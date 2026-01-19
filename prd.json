@@ -168,7 +168,7 @@
         "Verify player HP decreased by 50 (check .debug-player data-hp attribute)",
         "Optional: capture screenshot during explosion animation"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "id": "TOWER-014",

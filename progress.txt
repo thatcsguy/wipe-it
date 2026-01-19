@@ -101,3 +101,12 @@ TOWER-012 (integration - render verification) - DONE
 - Screenshot confirms visual: yellow-orange circle, 6 rotating triangular tick marks, large "2" in center
 - Number has white fill with black outline for readability
 - Mechanics render below players (correct z-order)
+
+TOWER-013 (integration - failure verification) - DONE
+- Playwright verified tower failure behavior with single player
+- Spawned tower requiring 2 players, only 1 player in game
+- Waited 6 seconds for tower to expire
+- Verified tower mechanic element gone from debug panel
+- Verified player HP decreased from 100 to 50 (failureEffects applied)
+- Combat log shows "Player 1 took 50 damage"
+- No code changes needed - test-only verification
