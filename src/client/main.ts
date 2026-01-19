@@ -2,7 +2,7 @@ import { io, Socket } from 'socket.io-client';
 import { getInputState, createInput, getSequenceNumber, hasInput } from './input';
 import { startGame } from './game';
 import { initAdmin, setChangeNameCallback } from './admin';
-import './toast'; // Initialize toast system
+import { showToast } from './toast';
 
 // DOM elements
 const modal = document.getElementById('modal') as HTMLDivElement;
@@ -41,6 +41,7 @@ joinBtn.addEventListener('click', () => {
     modal.classList.add('hidden');
     joinBtn.disabled = false;
     isChangingName = false;
+    showToast(`Changed name to ${name}`);
   } else {
     // Initial join
     socket.emit('join', { name });

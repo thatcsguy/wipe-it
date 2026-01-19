@@ -13,3 +13,10 @@
 - Imported toast module in main.ts to initialize
 - Validated: toast creation, auto-removal after 3s, max 5 limit
 - Files: src/client/toast.ts, src/client/main.ts, public/css/style.css
+
+## TOAST-003 - Admin actions trigger toast notifications
+- Imported showToast in admin.ts, added calls after each emit
+- Chariot: "Spawned chariot", Spreads: "Spawned spreads", Heal: "Healed all players"
+- Name change handled in main.ts: "Changed name to {name}"
+- Validated all 4 toasts via Playwright
+- Files: src/client/admin.ts, src/client/main.ts

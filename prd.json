@@ -100,7 +100,7 @@
         "Use Playwright: await page.click('#heal-all-btn'); await expect(page.locator('.toast', { hasText: 'Healed all players' })).toBeVisible()",
         "Use Playwright: await page.click('#spawn-chariot-btn'); await expect(page.locator('.toast', { hasText: 'Spawned chariot' })).toBeVisible()"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "id": "TOAST-004",

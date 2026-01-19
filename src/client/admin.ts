@@ -1,4 +1,5 @@
 import { Socket } from 'socket.io-client';
+import { showToast } from './toast';
 
 let adminSocket: Socket | null = null;
 let onChangeName: (() => void) | null = null;
@@ -20,6 +21,7 @@ export function initAdmin(socket: Socket): void {
     spawnChariotBtn.addEventListener('click', () => {
       if (adminSocket) {
         adminSocket.emit('admin:spawnMechanic', { type: 'chariot' });
+        showToast('Spawned chariot');
       }
     });
   }
@@ -29,6 +31,7 @@ export function initAdmin(socket: Socket): void {
     spawnSpreadBtn.addEventListener('click', () => {
       if (adminSocket) {
         adminSocket.emit('admin:spawnMechanic', { type: 'spreads' });
+        showToast('Spawned spreads');
       }
     });
   }
@@ -38,6 +41,7 @@ export function initAdmin(socket: Socket): void {
     healAllBtn.addEventListener('click', () => {
       if (adminSocket) {
         adminSocket.emit('admin:healAll');
+        showToast('Healed all players');
       }
     });
   }
