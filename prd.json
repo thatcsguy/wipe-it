@@ -277,7 +277,7 @@
         "Click #spawn-radial-kb-btn, verify radial knockback mechanic spawns (check debug panel)",
         "Click #spawn-linear-kb-btn, verify linear knockback mechanic spawns (check debug panel)"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "id": "KB-022",

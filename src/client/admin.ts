@@ -75,6 +75,26 @@ export function initAdmin(socket: Socket): void {
       }
     });
   }
+
+  const spawnRadialKbBtn = document.getElementById('spawn-radial-kb-btn');
+  if (spawnRadialKbBtn) {
+    spawnRadialKbBtn.addEventListener('click', () => {
+      if (adminSocket) {
+        adminSocket.emit('admin:spawnMechanic', { type: 'radialKnockback' });
+        logCombat('Spawned radial knockback');
+      }
+    });
+  }
+
+  const spawnLinearKbBtn = document.getElementById('spawn-linear-kb-btn');
+  if (spawnLinearKbBtn) {
+    spawnLinearKbBtn.addEventListener('click', () => {
+      if (adminSocket) {
+        adminSocket.emit('admin:spawnMechanic', { type: 'linearKnockback' });
+        logCombat('Spawned linear knockback');
+      }
+    });
+  }
 }
 
 export function setChangeNameCallback(callback: () => void): void {

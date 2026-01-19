@@ -111,3 +111,11 @@
 - Tested with Playwright: radial knockback moves player away from center, linear only affects correct side
 - Files: src/client/network.ts, src/client/admin.ts, src/server/index.ts
 - Build passes
+
+=== KB-021 - Admin Buttons for Knockback Mechanics ===
+- Added #spawn-radial-kb-btn and #spawn-linear-kb-btn buttons to admin panel in index.html
+- Added click event handlers in admin.ts that emit admin:spawnMechanic with type radialKnockback/linearKnockback
+- Radial spawns at arena center (400,400), linear spawns horizontal line through center with southward knockback
+- Verified with Playwright: both buttons visible, clicking spawns mechanics shown in debug panel
+- Files: public/index.html, src/client/admin.ts
+- Build passes
