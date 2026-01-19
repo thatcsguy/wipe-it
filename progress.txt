@@ -110,3 +110,9 @@ HEAL-002: COMPLETE
 - Added click handler for heal-all-btn that emits 'admin:healAll' socket event
 - Added emitHealAll() test helper to __adminTest
 Files: src/client/admin.ts
+
+HEAL-003: COMPLETE
+- Added admin:healAll socket event handler in index.ts
+- Added healAllPlayers() method to Game class - sets all players hp to MAX_HP
+- Verified w/ Playwright: player took damage (100->75), Heal All restored to 100
+Files: src/server/index.ts, src/server/game.ts

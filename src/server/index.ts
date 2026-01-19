@@ -90,6 +90,12 @@ io.on('connection', (socket) => {
       console.log(`Admin applied vulnerability to player ${targetId} (status id: ${status.id})`);
     }
   });
+
+  // Heal all players to max HP
+  socket.on('admin:healAll', () => {
+    game.healAllPlayers();
+    console.log('Admin healed all players');
+  });
 });
 
 httpServer.listen(PORT, () => {

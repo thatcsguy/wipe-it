@@ -30,7 +30,7 @@
                 "Read src/server/game.ts and verify healAllPlayers() method exists and sets all player hp to MAX_HP",
                 "Use Playwright: join game, take damage (if possible), click Heal All button, verify player health restored"
             ],
-            "passes": false
+            "passes": true
         },
         {
             "id": "STATUS-001",

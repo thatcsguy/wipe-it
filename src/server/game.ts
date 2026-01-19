@@ -1,6 +1,6 @@
 import { Server } from 'socket.io';
 import { Player } from './player';
-import { GameState, PlayerInput, TICK_RATE, BROADCAST_RATE, MAX_PLAYERS } from '../shared/types';
+import { GameState, PlayerInput, TICK_RATE, BROADCAST_RATE, MAX_PLAYERS, MAX_HP } from '../shared/types';
 import { MechanicManager } from './mechanics/manager';
 import { ChariotMechanic } from './mechanics/chariot';
 import { SpreadMechanic } from './mechanics/spread';
@@ -139,5 +139,11 @@ export class Game {
 
   getPlayers(): Map<string, Player> {
     return this.players;
+  }
+
+  healAllPlayers(): void {
+    for (const player of this.players.values()) {
+      player.hp = MAX_HP;
+    }
   }
 }
