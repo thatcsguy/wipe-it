@@ -263,7 +263,7 @@
         "Wait for knockback duration to complete",
         "Verify data-knockback-active is removed or set to 'false'"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "id": "KB-021",

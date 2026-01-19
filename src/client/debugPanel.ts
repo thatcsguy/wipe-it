@@ -75,6 +75,13 @@ function updatePlayersSection(players: PlayerState[], localPlayerId: string | nu
     playerDiv.setAttribute('data-x', String(Math.round(player.x)));
     playerDiv.setAttribute('data-y', String(Math.round(player.y)));
 
+    // Knockback state - KB-020
+    if (player.knockback) {
+      playerDiv.setAttribute('data-knockback-active', 'true');
+    } else {
+      playerDiv.removeAttribute('data-knockback-active');
+    }
+
     // Build status effects HTML
     const statusHtml = player.statusEffects.map(effect =>
       `<span class="debug-status" data-effect="${effect.type}">${effect.type}</span>`

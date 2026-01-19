@@ -128,3 +128,10 @@
 - Verified with Playwright: both mechanic types show correct attributes in debug panel
 - Files: src/client/debugPanel.ts
 - Build passes
+
+=== KB-020 - Debug Data Attribute for Player Knockback State ===
+- Added data-knockback-active attribute to .debug-player in updatePlayersSection()
+- Set to 'true' when player.knockback exists, removed when undefined
+- Verified with Playwright: attribute appears during active knockback, removed after
+- Files: src/client/debugPanel.ts
+- Build passes
