@@ -61,7 +61,7 @@
         "Verify it returns endX/endY when knockback complete",
         "Verify position interpolates using easeOutCubic curve"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "id": "KB-006",

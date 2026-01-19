@@ -12,3 +12,11 @@
 - Verified: easeOutCubic(0)=0, easeOutCubic(1)=1, easeOutCubic(0.5)=0.875
 - Files: src/shared/knockback.ts
 - Build passes
+
+=== KB-005 - getKnockbackPosition Function ===
+- Added KnockbackPositionResult interface {x, y, active}
+- Implemented getKnockbackPosition(knockback, currentTime)
+- Returns active=false + endX/Y when elapsed >= duration
+- Uses easeOutCubic for interpolation between start/end positions
+- Files: src/shared/knockback.ts
+- Build passes
