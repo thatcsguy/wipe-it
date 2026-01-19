@@ -16,7 +16,7 @@ function getIcon(iconPath: string): HTMLImageElement | null {
   return null; // Return null until loaded
 }
 
-// Render status effect icons centered above a player
+// Render status effect icons centered in the player's body (circle)
 export function renderStatusEffects(
   ctx: CanvasRenderingContext2D,
   x: number,
@@ -25,29 +25,40 @@ export function renderStatusEffects(
 ): void {
   if (statuses.length === 0) return;
 
-  const iconSize = 24;
-  const spacing = 4;
-  const totalWidth = statuses.length * iconSize + (statuses.length - 1) * spacing;
+  // Max size that fits inside the player circle
+  const maxSize = PLAYER_RADIUS * 1.2;
 
-  // Position icons above player name (name is at y - PLAYER_RADIUS - 10)
-  const startX = x - totalWidth / 2;
-  const iconY = y - PLAYER_RADIUS - 28; // Above the name
+  // For multiple statuses, arrange in a small grid centered on the player
+  // For now, just show the first status centered
+  const status = statuses[0];
 
-  for (let i = 0; i < statuses.length; i++) {
-    const status = statuses[i];
-    const iconX = startX + i * (iconSize + spacing);
-
-    // Try to draw the icon if loaded
-    const icon = getIcon(status.iconPath);
-    if (icon) {
-      ctx.drawImage(icon, iconX, iconY, iconSize, iconSize);
+  // Try to draw the icon if loaded
+  const icon = getIcon(status.iconPath);
+  if (icon) {
+    // Preserve aspect ratio: scale to fit within maxSize
+    const aspectRatio = icon.naturalWidth / icon.naturalHeight;
+    let drawWidth: number;
+    let drawHeight: number;
+    if (aspectRatio > 1) {
+      // Wider than tall
+      drawWidth = maxSize;
+      drawHeight = maxSize / aspectRatio;
     } else {
-      // Draw fallback colored square while loading
-      ctx.fillStyle = '#ff4444'; // Red for vulnerability
-      ctx.fillRect(iconX, iconY, iconSize, iconSize);
-      ctx.strokeStyle = '#ffffff';
-      ctx.lineWidth = 1;
-      ctx.strokeRect(iconX, iconY, iconSize, iconSize);
+      // Taller than wide (or square)
+      drawHeight = maxSize;
+      drawWidth = maxSize * aspectRatio;
     }
+    const iconX = x - drawWidth / 2;
+    const iconY = y - drawHeight / 2;
+    ctx.drawImage(icon, iconX, iconY, drawWidth, drawHeight);
+  } else {
+    // Draw fallback square while loading
+    const iconX = x - maxSize / 2;
+    const iconY = y - maxSize / 2;
+    ctx.fillStyle = '#ff4444';
+    ctx.fillRect(iconX, iconY, maxSize, maxSize);
+    ctx.strokeStyle = '#ffffff';
+    ctx.lineWidth = 1;
+    ctx.strokeRect(iconX, iconY, maxSize, maxSize);
   }
 }
