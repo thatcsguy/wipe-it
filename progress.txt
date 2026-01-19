@@ -20,3 +20,10 @@
 - Name change handled in main.ts: "Changed name to {name}"
 - Validated all 4 toasts via Playwright
 - Files: src/client/admin.ts, src/client/main.ts
+
+## DEBUG-001 - Debug panel container with ?debug=1 toggle
+- Added <div id="debug-panel" class="debug-panel hidden"> to index.html
+- CSS: fixed right side, dark bg, scrollable, z-index 900
+- main.ts checks URLSearchParams for debug=1, removes hidden class if present
+- Verified: panel hidden without param, visible with ?debug=1
+- Files: public/index.html, public/css/style.css, src/client/main.ts

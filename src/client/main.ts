@@ -4,6 +4,13 @@ import { startGame } from './game';
 import { initAdmin, setChangeNameCallback } from './admin';
 import { showToast } from './toast';
 
+// Initialize debug panel visibility based on query param
+const debugPanel = document.getElementById('debug-panel') as HTMLDivElement;
+const urlParams = new URLSearchParams(window.location.search);
+if (urlParams.get('debug') === '1') {
+  debugPanel.classList.remove('hidden');
+}
+
 // DOM elements
 const modal = document.getElementById('modal') as HTMLDivElement;
 const modalTitle = modal.querySelector('h2') as HTMLHeadingElement;

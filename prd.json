@@ -12,7 +12,7 @@
         "Use Playwright: await page.goto('http://localhost:3000?debug=1'); await expect(page.locator('#debug-panel')).toBeVisible()",
         "Use Playwright: await page.goto('http://localhost:3000'); await expect(page.locator('#debug-panel')).not.toBeVisible()"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "id": "DEBUG-002",

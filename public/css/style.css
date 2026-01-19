@@ -183,3 +183,24 @@ body {
     transform: translateX(-1rem);
   }
 }
+
+/* Debug Panel */
+.debug-panel {
+  position: fixed;
+  top: 1rem;
+  right: 1rem;
+  width: 280px;
+  max-height: calc(100vh - 2rem);
+  overflow-y: auto;
+  background: rgba(15, 15, 26, 0.95);
+  border: 1px solid #4a4a6a;
+  border-radius: 8px;
+  padding: 1rem;
+  color: #e0e0e0;
+  font-size: 0.875rem;
+  z-index: 900;
+}
+
+.debug-panel.hidden {
+  display: none;
+}
