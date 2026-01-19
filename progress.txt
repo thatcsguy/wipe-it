@@ -97,3 +97,10 @@ AOE-010 COMPLETE: Verified Line AOE collision and damage
 - Miss case verified: player moved from (400,400) to (~500,400) before resolve, no damage taken
 - Note: ARENA_WIDTH=800, so line spawns at x=400 (not 500)
 Files: (integration test only, no code changes)
+
+AOE-011 COMPLETE: Verified Conal AOE collision and damage
+- HIT case: Player at cone center (400,400) took 25 damage (100→75 HP)
+- MISS case 1 (wrong angle): Player at (20,400) behind cone pointing right, no damage
+- MISS case 2 (too far): Player at (780,400), 380 units from center > 200 radius, no damage
+- Collision correctly checks both distance AND angle constraints
+Files: (integration test only, no code changes)

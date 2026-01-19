@@ -177,7 +177,7 @@
       "Test miss case 1: spawn cone pointing away from player, verify no damage",
       "Test miss case 2: spawn cone with small radius, player far away, verify no damage"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "id": "AOE-012",
