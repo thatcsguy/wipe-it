@@ -130,7 +130,7 @@
                 "Verify resolve() applies vulnerability status with 1000ms duration",
                 "Verify toState() returns SpreadMechanicState with targetPlayerId"
             ],
-            "passes": false
+            "passes": true
         },
         {
             "id": "SPREAD-003",

@@ -56,3 +56,13 @@ SPREAD-001: COMPLETE
 - MechanicState now discriminated union of both
 - Updated client mechanics.ts to use ChariotMechanicState for type safety
 Files: src/shared/types.ts, src/client/mechanics.ts
+
+SPREAD-002: COMPLETE
+- Created SpreadMechanic class w/ properties: id, targetPlayerId, radius, startTime, endTime, effects
+- tick(now) is no-op (position from player)
+- isExpired(now) returns now >= endTime
+- resolve(players, statusManager) finds target player, damages all in radius, applies vulnerability (1000ms)
+- toState() returns SpreadMechanicState w/ targetPlayerId
+- Updated BaseMechanic interface: resolve() now accepts optional statusManager
+- Updated types.ts to re-export Effect from shared/types (supports damage + status variants)
+Files: src/server/mechanics/spread.ts, src/server/mechanics/types.ts

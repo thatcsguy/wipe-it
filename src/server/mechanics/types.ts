@@ -1,20 +1,15 @@
 import { Player } from '../player';
-import { MechanicState } from '../../shared/types';
-
-// Effect applied when mechanic resolves
-export interface Effect {
-  type: 'damage';
-  amount: number;
-}
+import { StatusEffectManager } from '../statusEffectManager';
+import { MechanicState, Effect } from '../../shared/types';
 
 // Re-export for convenience
-export { MechanicState };
+export { MechanicState, Effect };
 
 // Base interface all mechanics implement
 export interface BaseMechanic {
   id: string;
   tick(now: number): void;
   isExpired(now: number): boolean;
-  resolve(players: Map<string, Player>): void;
+  resolve(players: Map<string, Player>, statusManager?: StatusEffectManager): void;
   toState(): MechanicState;
 }
