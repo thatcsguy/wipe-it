@@ -23,8 +23,6 @@ claude --permission-mode acceptEdits "$(cat <<'EOF'
      - If a task feels too large, break it into subtasks
      - Prefer multiple small commits over one large commit
 
-If you started a playwright server, ensure it is cleaned up before ending.
-
 If, while implementing the feature, you notice that all work in the PRD is complete, output <promise>COMPLETE</promise>.
 EOF
 )"
