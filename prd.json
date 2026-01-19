@@ -162,7 +162,7 @@
       "Verify combat log shows damage entry",
       "Test miss case: spawn line AOE, immediately move player far away with WASD input, verify no damage taken"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "id": "AOE-011",

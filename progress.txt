@@ -90,3 +90,10 @@ AOE-013 COMPLETE: Added 'Spawn Conal AOE' admin button
 - Combat log shows "Spawned conal AOE"
 - Verified with Playwright: button visible, click spawns conalAoe mechanic
 Files: public/index.html, src/client/admin.ts
+
+AOE-010 COMPLETE: Verified Line AOE collision and damage
+- Player at (400,400) inside line AOE (centered at x=400, width 100): took 25 damage (100→75 HP)
+- Combat log shows "Player took 25 damage"
+- Miss case verified: player moved from (400,400) to (~500,400) before resolve, no damage taken
+- Note: ARENA_WIDTH=800, so line spawns at x=400 (not 500)
+Files: (integration test only, no code changes)
