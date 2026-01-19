@@ -1,123 +1,190 @@
 {
-    "feature": "Stretch Tether Mechanic",
-    "items": [
-        {
-            "id": "TETHER-001",
-            "category": "Types",
-            "description": "Add TetherEndpoint and TetherMechanicState types to src/shared/types.ts. TetherEndpoint is a discriminated union: { type: 'player'; playerId: string } | { type: 'point'; x: number; y: number }. TetherMechanicState has: type: 'tether', id: string, endpointA: TetherEndpoint, endpointB: TetherEndpoint, requiredDistance: number, damage: number, startTime: number, endTime: number. Add TetherMechanicState to the MechanicState union type.",
-            "stepsToVerify": [
-                "Run 'npm run build' and confirm no TypeScript errors",
-                "Verify TetherEndpoint type exists with both 'player' and 'point' variants",
-                "Verify TetherMechanicState interface has all required fields",
-                "Verify MechanicState union includes TetherMechanicState"
-            ],
-            "passes": true
-        },
-        {
-            "id": "TETHER-002",
-            "category": "Server",
-            "description": "Create src/server/mechanics/tether.ts implementing BaseMechanic interface. Constructor takes: id, endpointA, endpointB, requiredDistance, damage, startTime, endTime. tick() is no-op. isExpired(now) returns true when now >= endTime. resolve() method: 1) Resolve each endpoint position (if player type, lookup player position; if point type, use x/y directly), 2) Calculate Euclidean distance between endpoints, 3) If distance < requiredDistance, call takeDamage(damage) on all players connected to this tether (any endpoint with type='player'). toState() returns TetherMechanicState object.",
-            "stepsToVerify": [
-                "Run 'npm run build' and confirm no TypeScript errors",
-                "Verify tether.ts exports a class implementing BaseMechanic",
-                "Verify resolve() correctly identifies player endpoints and applies damage only when distance < requiredDistance",
-                "Verify toState() returns properly typed TetherMechanicState"
-            ],
-            "passes": true
-        },
-        {
-            "id": "TETHER-003",
-            "category": "Server",
-            "description": "Add admin:spawnMechanic handlers in src/server/index.ts for 'pointTethers' and 'playerTethers' types. For 'pointTethers': create one tether per player, connecting each player to point {x: ARENA_WIDTH/2, y: 0} (top center). For 'playerTethers': if fewer than 2 players, do nothing; otherwise pick 2 random different players and create 1 tether between them. Both use: requiredDistance = ARENA_WIDTH * 0.75, duration = 3000ms, damage = 100. Register created tethers with mechanicsManager.",
-            "stepsToVerify": [
-                "Run 'npm run build' and confirm no TypeScript errors",
-                "Using Playwright: join 2 players, click spawn point tethers button, verify __gameTest.getGameState().mechanics contains 2 tether mechanics with point endpoints at arena top center",
-                "Using Playwright: join 2 players, click spawn player tethers button, verify __gameTest.getGameState().mechanics contains 1 tether mechanic with both endpoints as player type"
-            ],
-            "passes": true
-        },
-        {
-            "id": "TETHER-004",
-            "category": "Client",
-            "description": "Add two admin buttons to public/index.html in the admin panel: 1) id='spawn-point-tethers-btn' with text 'Create Point Tethers', 2) id='spawn-player-tethers-btn' with text 'Create Player Tethers'. In src/client/admin.ts, add click handlers that emit 'admin:spawnMechanic' with type='pointTethers' and type='playerTethers' respectively.",
-            "stepsToVerify": [
-                "Run 'npm run build' and confirm no TypeScript errors",
-                "Using Playwright: navigate to game, verify button #spawn-point-tethers-btn exists with correct text",
-                "Using Playwright: verify button #spawn-player-tethers-btn exists with correct text",
-                "Using Playwright: click each button and verify socket emits correct event (check network or game state changes)"
-            ],
-            "passes": true
-        },
-        {
-            "id": "TETHER-005",
-            "category": "Client",
-            "description": "Add renderTether() function in src/client/mechanics.ts. Calculate current distance between endpoints using interpolated/predicted player positions. UNSTRETCHED STATE (distance < requiredDistance): Draw thick (~6px) pink/magenta line (#ff66aa) between endpoints. Draw static chevron/thorn shapes along the line pointing toward the closer endpoint. Chevron spacing should scale proportionally with distance (further apart as tether stretches). STRETCHED STATE (distance >= requiredDistance): Draw thin (~2px) bright orange/yellow line (#ffcc00) with prominent glow effect (use canvas shadowBlur). No chevrons. Visual must update in real-time every frame based on current distance.",
-            "stepsToVerify": [
-                "Run 'npm run build' and confirm no TypeScript errors",
-                "Using Playwright: join a player, spawn point tethers, take screenshot, verify pink line visible from player toward top center",
-                "Using Playwright: move player far from top center (>75% arena width), take screenshot, verify line changes to thin orange/yellow with glow",
-                "Using Playwright: move player back close to top center, verify line changes back to pink with chevrons"
-            ],
-            "passes": true
-        },
-        {
-            "id": "TETHER-006",
-            "category": "Client",
-            "description": "Add tether mechanic display to debug panel in src/client/debug.ts. Tether mechanics should appear as .debug-mechanic elements with data-type='tether'. Include data attributes for mechanic id, endpoint info, and required distance.",
-            "stepsToVerify": [
-                "Run 'npm run build' and confirm no TypeScript errors",
-                "Using Playwright: navigate with ?debug=1, join player, spawn point tethers",
-                "Verify .debug-mechanic[data-type='tether'] element exists in debug panel"
-            ],
-            "passes": true
-        },
-        {
-            "id": "TETHER-007",
-            "category": "Server",
-            "description": "When tether mechanic resolves, emit a socket event to notify clients of the result. Event should include: mechanic id, success (boolean - true if stretched enough, false if not), and list of affected player ids (those who took damage). This enables client-side toast feedback.",
-            "stepsToVerify": [
-                "Run 'npm run build' and confirm no TypeScript errors",
-                "Verify server emits tether resolution event when mechanic expires",
-                "Event payload includes mechanicId, success boolean, and affectedPlayerIds array"
-            ],
-            "passes": true
-        },
-        {
-            "id": "TETHER-008",
-            "category": "Client",
-            "description": "Listen for tether resolution events on the client. When received, show toast: 'Tether snapped!' if success=false (tether was not stretched enough), or 'Tether stretched!' if success=true. Use existing toast system (__toastTest.showToast or equivalent).",
-            "stepsToVerify": [
-                "Run 'npm run build' and confirm no TypeScript errors",
-                "Using Playwright: join player, spawn point tethers, stay close to top center, wait 3 seconds for resolve",
-                "Verify toast 'Tether snapped!' appears",
-                "Using Playwright: join player, spawn point tethers, move far from top center, wait for resolve",
-                "Verify toast 'Tether stretched!' appears"
-            ],
-            "passes": true
-        },
-        {
-            "id": "TETHER-009",
-            "category": "Integration",
-            "description": "End-to-end damage test: When tether resolves and distance < requiredDistance (75% arena width), all players attached to that tether take 100 damage. When distance >= requiredDistance, no damage is dealt.",
-            "stepsToVerify": [
-                "Using Playwright: join player (starts at 100 HP), spawn point tether, stay near top center (distance < 75% arena)",
-                "Wait for tether to resolve (3 seconds), verify player HP is now 0 (100 - 100 damage)",
-                "Using Playwright: heal player, spawn new point tether, move player far from top center (distance >= 75% arena)",
-                "Wait for tether to resolve, verify player HP remains 100 (no damage taken)"
-            ],
-            "passes": true
-        },
-        {
-            "id": "TETHER-010",
-            "category": "Integration",
-            "description": "Player-to-player tether test: When playerTethers is spawned with 2+ players, creates exactly one tether between two random players. Both connected players take damage if they don't stretch the tether far enough apart.",
-            "stepsToVerify": [
-                "Using Playwright: open 2 browser contexts, join 2 different players",
-                "Click spawn player tethers button, verify exactly 1 tether mechanic exists",
-                "Verify tether connects the two different players (both endpoints are player type with different playerIds)",
-                "Keep both players close together, wait for resolve, verify both players took 100 damage"
-            ],
-            "passes": true
-        }
-    ]
+  "feature": "Combat Log",
+  "description": "Replace toast notifications with a persistent scrollable combat log showing damage and status effect changes",
+  "items": [
+    {
+      "id": "CLOG-001",
+      "category": "core",
+      "description": "Create src/client/combatLog.ts with logCombat(message: string) function that appends entries to a #combat-log container. Each entry should be a div with class 'combat-entry'.",
+      "stepsToVerify": [
+        "File src/client/combatLog.ts exists",
+        "File exports logCombat function",
+        "Use Playwright: navigate to localhost:3000, join game, run __combatLogTest.log('test message') in browser console",
+        "Verify #combat-log container exists and contains a .combat-entry with 'test message' text"
+      ],
+      "passes": false
+    },
+    {
+      "id": "CLOG-002",
+      "category": "core",
+      "description": "Each combat log entry must be prefixed with timestamp in [HH:MM:SS] format using browser's local timezone. Format: '[HH:MM:SS] message'",
+      "stepsToVerify": [
+        "Use Playwright: navigate to localhost:3000, join game",
+        "Run __combatLogTest.log('test') in console",
+        "Verify .combat-entry text matches pattern /^\\[\\d{2}:\\d{2}:\\d{2}\\] test$/"
+      ],
+      "passes": false
+    },
+    {
+      "id": "CLOG-003",
+      "category": "core",
+      "description": "Combat log must limit entries to 100 maximum. When a new entry is added and count exceeds 100, remove the oldest entry (first child).",
+      "stepsToVerify": [
+        "Use Playwright: navigate to localhost:3000, join game",
+        "Run loop to add 105 entries: for(let i=0;i<105;i++) __combatLogTest.log('msg'+i)",
+        "Verify #combat-log contains exactly 100 .combat-entry elements",
+        "Verify first entry contains 'msg5' (oldest 5 were pruned)",
+        "Verify last entry contains 'msg104'"
+      ],
+      "passes": false
+    },
+    {
+      "id": "CLOG-004",
+      "category": "core",
+      "description": "Combat log must auto-scroll to bottom when new entries are added. The container should have overflow-y scroll/auto and scrollTop should equal scrollHeight - clientHeight after adding entry.",
+      "stepsToVerify": [
+        "Use Playwright: navigate to localhost:3000, join game",
+        "Add 20+ entries to fill container: for(let i=0;i<25;i++) __combatLogTest.log('msg'+i)",
+        "Verify container is scrolled to bottom: Math.abs(el.scrollTop - (el.scrollHeight - el.clientHeight)) < 2"
+      ],
+      "passes": false
+    },
+    {
+      "id": "CLOG-005",
+      "category": "ui",
+      "description": "Combat log container must be positioned on the right side of the screen, below the admin panel. It should be a fixed/absolute positioned element with a max-height and scrollable overflow.",
+      "stepsToVerify": [
+        "Use Playwright: navigate to localhost:3000, join game",
+        "Verify #combat-log element exists in DOM",
+        "Verify computed style has overflow-y: auto or scroll",
+        "Verify element is visible and positioned to the right of the canvas (check bounding rect)"
+      ],
+      "passes": false
+    },
+    {
+      "id": "CLOG-006",
+      "category": "ui",
+      "description": "Update public/index.html: replace the action-log div with combat-log div (id='combat-log', class='combat-log').",
+      "stepsToVerify": [
+        "File public/index.html contains <div id=\"combat-log\"",
+        "File public/index.html does NOT contain id=\"action-log\""
+      ],
+      "passes": false
+    },
+    {
+      "id": "CLOG-007",
+      "category": "ui",
+      "description": "Update public/css/style.css: add .combat-log and .combat-entry styles. Remove all .action-log and .toast related styles (including animations).",
+      "stepsToVerify": [
+        "File public/css/style.css contains .combat-log selector",
+        "File public/css/style.css contains .combat-entry selector",
+        "File public/css/style.css does NOT contain .action-log selector",
+        "File public/css/style.css does NOT contain .toast selector",
+        "File public/css/style.css does NOT contain toast-slide-in or toast-fade-out"
+      ],
+      "passes": false
+    },
+    {
+      "id": "CLOG-008",
+      "category": "feature",
+      "description": "Detect player damage by diffing GameState on each 'state' socket event. When a player's HP decreases, call logCombat with format: 'PlayerName took X damage' where X is the damage amount (oldHp - newHp).",
+      "stepsToVerify": [
+        "Use Playwright: navigate to localhost:3000, join game with name 'TestPlayer'",
+        "Click #spawn-chariot-btn to spawn a chariot mechanic",
+        "Wait for mechanic to resolve and damage to occur",
+        "Verify #combat-log contains entry matching 'TestPlayer took \\d+ damage'"
+      ],
+      "passes": false
+    },
+    {
+      "id": "CLOG-009",
+      "category": "feature",
+      "description": "Detect status effect gains by diffing GameState. When a player gains a status effect not present in previous state, call logCombat with format: 'PlayerName gained EffectType'.",
+      "stepsToVerify": [
+        "Use Playwright: navigate to localhost:3000, join game with name 'TestPlayer'",
+        "Trigger a mechanic that applies a status effect (e.g., vulnerability from chariot)",
+        "Verify #combat-log contains entry matching 'TestPlayer gained' followed by effect name"
+      ],
+      "passes": false
+    },
+    {
+      "id": "CLOG-010",
+      "category": "feature",
+      "description": "Detect status effect losses by diffing GameState. When a player loses a status effect present in previous state but not in new state, call logCombat with format: 'PlayerName lost EffectType'.",
+      "stepsToVerify": [
+        "Use Playwright: navigate to localhost:3000, join game",
+        "Trigger a status effect, then wait for it to expire",
+        "Verify #combat-log contains entry matching 'PlayerName lost' followed by effect name"
+      ],
+      "passes": false
+    },
+    {
+      "id": "CLOG-011",
+      "category": "integration",
+      "description": "Replace showToast call in src/client/main.ts for name changes. When player changes name, log 'Changed name to X' to combat log instead of showing toast.",
+      "stepsToVerify": [
+        "File src/client/main.ts imports logCombat from './combatLog'",
+        "File src/client/main.ts does NOT import showToast",
+        "Use Playwright: join game, click #change-name-btn, enter new name",
+        "Verify #combat-log contains 'Changed name to' entry"
+      ],
+      "passes": false
+    },
+    {
+      "id": "CLOG-012",
+      "category": "integration",
+      "description": "Remove tether resolution toast code from src/client/main.ts. The tether:resolved event handler that showed 'Tether stretched!' or 'Tether snapped!' toasts should be removed entirely.",
+      "stepsToVerify": [
+        "File src/client/main.ts does NOT contain 'Tether stretched'",
+        "File src/client/main.ts does NOT contain 'Tether snapped'",
+        "File src/client/main.ts does NOT contain 'onTetherResolution'"
+      ],
+      "passes": false
+    },
+    {
+      "id": "CLOG-013",
+      "category": "integration",
+      "description": "Replace all showToast calls in src/client/admin.ts with logCombat calls. Messages: 'Spawned chariot', 'Spawned spreads', 'Spawned point tethers', 'Spawned player tethers', 'Healed all players'.",
+      "stepsToVerify": [
+        "File src/client/admin.ts imports logCombat from './combatLog'",
+        "File src/client/admin.ts does NOT import showToast",
+        "File src/client/admin.ts does NOT contain 'showToast'",
+        "Use Playwright: join game, click #spawn-chariot-btn",
+        "Verify #combat-log contains 'Spawned chariot' entry"
+      ],
+      "passes": false
+    },
+    {
+      "id": "CLOG-014",
+      "category": "cleanup",
+      "description": "Delete src/client/toast.ts file entirely.",
+      "stepsToVerify": [
+        "File src/client/toast.ts does NOT exist"
+      ],
+      "passes": false
+    },
+    {
+      "id": "CLOG-015",
+      "category": "cleanup",
+      "description": "Expose test API on window: (window as any).__combatLogTest = { log: logCombat }. Remove __toastTest global.",
+      "stepsToVerify": [
+        "Use Playwright: navigate to localhost:3000, join game",
+        "Verify window.__combatLogTest exists and has log function",
+        "Verify window.__toastTest is undefined"
+      ],
+      "passes": false
+    },
+    {
+      "id": "CLOG-016",
+      "category": "docs",
+      "description": "Update CLAUDE.md: replace all toast documentation with combat log documentation. Update test selectors (.toast -> .combat-entry), update __toastTest -> __combatLogTest, update examples.",
+      "stepsToVerify": [
+        "File CLAUDE.md does NOT contain '__toastTest'",
+        "File CLAUDE.md does NOT contain '.toast' selector references",
+        "File CLAUDE.md contains '__combatLogTest'",
+        "File CLAUDE.md contains '.combat-entry' or '#combat-log' selector references"
+      ],
+      "passes": false
+    }
+  ]
 }
