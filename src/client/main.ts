@@ -4,6 +4,7 @@ import { startGame, onTetherResolution } from './game';
 import { initAdmin, setChangeNameCallback } from './admin';
 import { showToast } from './toast';
 import { initDebugPanel } from './debugPanel';
+import './combatLog'; // Register __combatLogTest global
 
 // Initialize debug panel
 initDebugPanel();

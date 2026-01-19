@@ -1,0 +1,9 @@
+## CLOG-001 - Core combatLog.ts (COMPLETE)
+- Created src/client/combatLog.ts with logCombat(message)
+- Entries: div.combat-entry with [HH:MM:SS] timestamp prefix
+- Max 100 entries, auto-prunes oldest
+- Auto-scrolls to bottom on new entry
+- Exposed __combatLogTest.log for testing
+- Also updated HTML (CLOG-006) and CSS (partial CLOG-007) as dependencies for testing
+- Files: src/client/combatLog.ts, src/client/main.ts (import), public/index.html, public/css/style.css
+- Note: CLOG-002/003/004 also pass - implemented in same file. Toast styles not yet removed from CSS.

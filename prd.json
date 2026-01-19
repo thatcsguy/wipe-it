@@ -12,7 +12,7 @@
         "Use Playwright: navigate to localhost:3000, join game, run __combatLogTest.log('test message') in browser console",
         "Verify #combat-log container exists and contains a .combat-entry with 'test message' text"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "id": "CLOG-002",
@@ -23,7 +23,7 @@
         "Run __combatLogTest.log('test') in console",
         "Verify .combat-entry text matches pattern /^\\[\\d{2}:\\d{2}:\\d{2}\\] test$/"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "id": "CLOG-003",
@@ -36,7 +36,7 @@
         "Verify first entry contains 'msg5' (oldest 5 were pruned)",
         "Verify last entry contains 'msg104'"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "id": "CLOG-004",
@@ -47,7 +47,7 @@
         "Add 20+ entries to fill container: for(let i=0;i<25;i++) __combatLogTest.log('msg'+i)",
         "Verify container is scrolled to bottom: Math.abs(el.scrollTop - (el.scrollHeight - el.clientHeight)) < 2"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "id": "CLOG-005",
@@ -69,7 +69,7 @@
         "File public/index.html contains <div id=\"combat-log\"",
         "File public/index.html does NOT contain id=\"action-log\""
       ],
-      "passes": false
+      "passes": true
     },
     {
       "id": "CLOG-007",
