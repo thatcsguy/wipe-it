@@ -38,3 +38,11 @@
 - Client `emitSpawnPointTethers` and `emitSpawnPlayerTethers` updated to accept+forward params
 - Validated: 10000ms override shows ~9790ms, default shows ~2795ms remaining
 - Files: src/server/index.ts, src/client/admin.ts
+
+## TEST-006 - admin:spawnTower duration param
+
+- Updated `admin:spawnTower` handler to accept `(params?: { duration?: number })`
+- Uses `params?.duration ?? 5000` for default
+- Client `emitSpawnTower` updated to accept+forward params
+- Validated: 15000ms override shows ~14020ms, default shows ~4016ms remaining
+- Files: src/server/index.ts, src/client/admin.ts

@@ -89,7 +89,7 @@
       "Verify debug panel shows tower mechanic with ~15000ms until expiry",
       "Verify default still works: `__adminTest.emitSpawnTower()` creates ~5000ms mechanic"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "id": "TEST-007",

@@ -124,9 +124,9 @@ export function setChangeNameCallback(callback: () => void): void {
       adminSocket.emit('admin:spawnPlayerTethers', params);
     }
   },
-  emitSpawnTower: () => {
+  emitSpawnTower: (params?: { duration?: number }) => {
     if (adminSocket) {
-      adminSocket.emit('admin:spawnTower');
+      adminSocket.emit('admin:spawnTower', params);
     }
   },
   emitHealAll: () => {
