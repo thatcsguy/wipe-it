@@ -84,3 +84,13 @@
 - Validated: callback fires with mechanic id string after chariot expires (~3s)
 - Validated: unsubscribe stops callbacks
 - Files: src/client/game.ts
+
+## EVENT-004 - waitForMechanicResolve(mechanicId) in __gameTest API
+- Added waitForMechanicResolve(mechanicId) function returning Promise<void>
+- If mechanic doesn't exist in currentGameState, resolves immediately
+- Otherwise subscribes to onMechanicResolve, resolves when matching id fires
+- Auto-unsubscribes after resolution
+- Added to __gameTest API
+- Validated: nonexistent id resolves in 0ms
+- Validated: chariot id waits ~3s then resolves
+- Files: src/client/game.ts

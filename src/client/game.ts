@@ -61,6 +61,26 @@ function onMechanicResolve(callback: MechanicResolveCallback): () => void {
   };
 }
 
+// Wait for a specific mechanic to resolve (disappear from game state)
+// Returns immediately if mechanic doesn't exist
+function waitForMechanicResolve(mechanicId: string): Promise<void> {
+  return new Promise((resolve) => {
+    // Check if mechanic exists in current state
+    const exists = currentGameState.mechanics.some(m => m.id === mechanicId);
+    if (!exists) {
+      resolve();
+      return;
+    }
+    // Wait for mechanic to resolve
+    const unsub = onMechanicResolve((resolvedId) => {
+      if (resolvedId === mechanicId) {
+        unsub();
+        resolve();
+      }
+    });
+  });
+}
+
 // Notify all state change callbacks
 function notifyStateChange(state: GameState): void {
   for (const callback of stateChangeCallbacks) {
@@ -229,4 +249,5 @@ export function isGameRunning(): boolean {
   onStateChange,
   onMechanicSpawn,
   onMechanicResolve,
+  waitForMechanicResolve,
 };

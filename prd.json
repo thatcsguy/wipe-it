@@ -158,7 +158,7 @@
         "Call waitForMechanicResolve('nonexistent'), verify resolves immediately",
         "Use Playwright: await page.evaluate(async () => { const state = __gameTest.getGameState(); const id = state.mechanics[0]?.id; if(id) await __gameTest.waitForMechanicResolve(id); return true; })"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "id": "STYLE-001",
