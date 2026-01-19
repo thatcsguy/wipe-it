@@ -1,201 +1,123 @@
 {
-  "project": "Agent-Friendly Testing Infrastructure",
-  "description": "Add DOM-accessible debug panel, toast notifications, and event-based APIs to enable Playwright-based testing without canvas evaluation",
-  "items": [
-    {
-      "id": "DEBUG-001",
-      "category": "Debug Panel",
-      "description": "Create debug panel container in HTML that is hidden by default and shown when URL contains ?debug=1 query parameter. Add <div id=\"debug-panel\" class=\"debug-panel\"> to index.html. Panel should be positioned fixed on the right side of the screen, not overlapping the canvas.",
-      "steps_to_verify": [
-        "Open browser to http://localhost:3000 - debug panel should NOT be visible",
-        "Open browser to http://localhost:3000?debug=1 - debug panel SHOULD be visible",
-        "Use Playwright: await page.goto('http://localhost:3000?debug=1'); await expect(page.locator('#debug-panel')).toBeVisible()",
-        "Use Playwright: await page.goto('http://localhost:3000'); await expect(page.locator('#debug-panel')).not.toBeVisible()"
-      ],
-      "passes": true
-    },
-    {
-      "id": "DEBUG-002",
-      "category": "Debug Panel",
-      "description": "Create src/client/debugPanel.ts module that exports initDebugPanel() and updateDebugPanel(gameState, localPlayerId) functions. initDebugPanel() should check for ?debug=1 and set up the panel structure. updateDebugPanel() should be called each frame from the game loop in game.ts to refresh displayed data.",
-      "steps_to_verify": [
-        "File src/client/debugPanel.ts exists",
-        "Module exports initDebugPanel and updateDebugPanel functions",
-        "initDebugPanel is called from main.ts or game.ts on startup",
-        "updateDebugPanel is called in the game loop in game.ts"
-      ],
-      "passes": true
-    },
-    {
-      "id": "DEBUG-003",
-      "category": "Debug Panel",
-      "description": "Debug panel displays all connected players with data attributes. Each player shown as <div class=\"debug-player\" data-player-id=\"{id}\" data-hp=\"{hp}\" data-x=\"{x}\" data-y=\"{y}\">{name}: {hp}HP</div>. Values must update in real-time as game state changes. Include visual health bar inside each player div.",
-      "steps_to_verify": [
-        "Join game with ?debug=1, verify your player appears in debug panel",
-        "Use Playwright: const player = page.locator('.debug-player').first(); await expect(player).toHaveAttribute('data-hp', /\\d+/)",
-        "Use Playwright: verify data-x and data-y attributes update when player moves using WASD",
-        "Take damage from a mechanic, verify data-hp attribute decreases",
-        "Health bar visual width should correspond to HP percentage"
-      ],
-      "passes": true
-    },
-    {
-      "id": "DEBUG-004",
-      "category": "Debug Panel",
-      "description": "Debug panel displays all active mechanics with data attributes. Each mechanic shown as <div class=\"debug-mechanic\" data-mechanic-id=\"{id}\" data-type=\"{type}\" data-expires=\"{expiresAt}\">{type} - expires {timeRemaining}ms</div>. Mechanics should be added when spawned and removed when resolved/expired.",
-      "steps_to_verify": [
-        "Join game with ?debug=1, click 'Spawn Chariot' admin button",
-        "Verify mechanic appears in debug panel with data-type=\"chariot\"",
-        "Use Playwright: await page.click('#spawn-chariot-btn'); await expect(page.locator('.debug-mechanic[data-type=\"chariot\"]')).toBeVisible()",
-        "Wait 3 seconds, verify mechanic element is removed from debug panel",
-        "Use Playwright: await expect(page.locator('.debug-mechanic[data-type=\"chariot\"]')).not.toBeVisible({ timeout: 5000 })"
-      ],
-      "passes": true
-    },
-    {
-      "id": "DEBUG-005",
-      "category": "Debug Panel",
-      "description": "Debug panel displays status effects per player. Within each .debug-player div, show status effects as <span class=\"debug-status\" data-effect=\"{effectType}\">{effectType}</span>. Status effects appear when applied and disappear when expired.",
-      "steps_to_verify": [
-        "Join game with ?debug=1 and another player",
-        "Spawn spreads, have players overlap to trigger vulnerability",
-        "Verify data-effect=\"vulnerability\" span appears inside affected player's debug-player div",
-        "Use Playwright: await expect(page.locator('.debug-player .debug-status[data-effect=\"vulnerability\"]')).toBeVisible()",
-        "Wait for effect to expire, verify span is removed"
-      ],
-      "passes": true
-    },
-    {
-      "id": "TOAST-001",
-      "category": "Toast System",
-      "description": "Create toast notification container in HTML. Add <div id=\"action-log\" class=\"action-log\"></div> to index.html. Position fixed at bottom-left or bottom-center of screen, above any UI elements. Should always be visible (not dependent on debug mode).",
-      "steps_to_verify": [
-        "Open browser to http://localhost:3000",
-        "Verify #action-log element exists in DOM (can be empty)",
-        "Use Playwright: await expect(page.locator('#action-log')).toBeAttached()"
-      ],
-      "passes": true
-    },
-    {
-      "id": "TOAST-002",
-      "category": "Toast System",
-      "description": "Create src/client/toast.ts module that exports showToast(message: string) function. Each call appends <div class=\"toast\">{message}</div> to #action-log. Toast should auto-remove after 3 seconds. Maximum 5 toasts visible at once (oldest removed first if exceeded).",
-      "steps_to_verify": [
-        "File src/client/toast.ts exists",
-        "Module exports showToast function",
-        "Calling showToast('Test') adds a .toast element with text 'Test'",
-        "After 3 seconds, the toast element is removed from DOM",
-        "Adding 6 toasts rapidly results in only 5 being visible"
-      ],
-      "passes": true
-    },
-    {
-      "id": "TOAST-003",
-      "category": "Toast System",
-      "description": "Admin actions trigger toast notifications. Modify src/client/admin.ts to call showToast() after each admin emit. Messages: 'Spawned chariot' for chariot, 'Spawned spreads' for spreads, 'Healed all players' for heal all, 'Changed name to {name}' for name change.",
-      "steps_to_verify": [
-        "Click 'Spawn Chariot' button, verify toast 'Spawned chariot' appears",
-        "Click 'Spawn Spreads' button, verify toast 'Spawned spreads' appears",
-        "Click 'Heal All' button, verify toast 'Healed all players' appears",
-        "Use Playwright: await page.click('#heal-all-btn'); await expect(page.locator('.toast', { hasText: 'Healed all players' })).toBeVisible()",
-        "Use Playwright: await page.click('#spawn-chariot-btn'); await expect(page.locator('.toast', { hasText: 'Spawned chariot' })).toBeVisible()"
-      ],
-      "passes": true
-    },
-    {
-      "id": "TOAST-004",
-      "category": "Toast System",
-      "description": "Style toast notifications with CSS in public/css/style.css. Toasts should have visible background color, padding, border-radius, and fade-out animation before removal. Action log container should not interfere with game interaction.",
-      "steps_to_verify": [
-        "Toasts are visually distinct from background (contrasting color)",
-        "Toasts have padding and rounded corners",
-        "Toasts animate out (fade or slide) before removal",
-        "Can still click on canvas and admin buttons with toasts visible"
-      ],
-      "passes": true
-    },
-    {
-      "id": "EVENT-001",
-      "category": "Event API",
-      "description": "Add onStateChange(callback) to __gameTest API in src/client/game.ts. Callback receives full GameState on every state update from server. Returns unsubscribe function. Multiple callbacks can be registered.",
-      "steps_to_verify": [
-        "Use browser console: let count = 0; __gameTest.onStateChange(() => count++); then verify count increases over time",
-        "Verify callback receives GameState object with players, mechanics, statusEffects, timestamp",
-        "Verify unsubscribe function stops callbacks: const unsub = __gameTest.onStateChange(cb); unsub(); verify cb no longer called",
-        "Use Playwright: await page.evaluate(() => new Promise(resolve => { __gameTest.onStateChange(state => { if(state.players.length > 0) resolve(true); }); }))"
-      ],
-      "passes": true
-    },
-    {
-      "id": "EVENT-002",
-      "category": "Event API",
-      "description": "Add onMechanicSpawn(callback) to __gameTest API. Callback fires when a new mechanic appears in game state (not present in previous state). Callback receives the new MechanicState object. Returns unsubscribe function.",
-      "steps_to_verify": [
-        "Register callback, click 'Spawn Chariot', verify callback fires with mechanic data",
-        "Verify callback receives object with id, type, x, y, radius, expiresAt properties",
-        "Use Playwright: await page.evaluate(() => new Promise(resolve => { __gameTest.onMechanicSpawn(m => resolve(m)); })); await page.click('#spawn-chariot-btn'); verify promise resolves with mechanic",
-        "Verify callback does not fire for mechanics already present (only new ones)"
-      ],
-      "passes": true
-    },
-    {
-      "id": "EVENT-003",
-      "category": "Event API",
-      "description": "Add onMechanicResolve(callback) to __gameTest API. Callback fires when a mechanic disappears from game state (was present, now gone). Callback receives the mechanic id that resolved. Returns unsubscribe function.",
-      "steps_to_verify": [
-        "Register callback, spawn chariot, wait for expiration, verify callback fires",
-        "Verify callback receives the mechanic id string",
-        "Use Playwright: spawn mechanic, then await page.evaluate(() => new Promise(resolve => { __gameTest.onMechanicResolve(id => resolve(id)); })); verify resolves after ~3 seconds"
-      ],
-      "passes": true
-    },
-    {
-      "id": "EVENT-004",
-      "category": "Event API",
-      "description": "Add waitForMechanicResolve(mechanicId) to __gameTest API. Returns a Promise that resolves when the specified mechanic is no longer in game state. If mechanic doesn't exist, resolve immediately. Useful for tests that need to wait for mechanic completion.",
-      "steps_to_verify": [
-        "Spawn chariot, get its id, call waitForMechanicResolve(id), verify promise resolves after ~3 seconds",
-        "Call waitForMechanicResolve('nonexistent'), verify resolves immediately",
-        "Use Playwright: await page.evaluate(async () => { const state = __gameTest.getGameState(); const id = state.mechanics[0]?.id; if(id) await __gameTest.waitForMechanicResolve(id); return true; })"
-      ],
-      "passes": true
-    },
-    {
-      "id": "STYLE-001",
-      "category": "Styling",
-      "description": "Add CSS styles for debug panel in public/css/style.css. Panel should be fixed position on right side, dark semi-transparent background, light text, scrollable if content overflows. Should not block canvas interaction. Health bars should be colored (green to red gradient based on HP).",
-      "steps_to_verify": [
-        "Debug panel is positioned on right side of screen",
-        "Panel has dark background with readable light text",
-        "Panel scrolls if many players/mechanics present",
-        "Canvas is still clickable/interactable",
-        "Health bars show color gradient (green=full, red=low)"
-      ],
-      "passes": true
-    },
-    {
-      "id": "INTEGRATION-001",
-      "category": "Integration",
-      "description": "Ensure debug panel and toast system work together without conflicts. Both should initialize on page load. Debug panel controlled by query param, toasts always active. No console errors during normal gameplay with both systems active.",
-      "steps_to_verify": [
-        "Load game with ?debug=1, perform admin actions, verify both debug panel updates and toasts appear",
-        "Check browser console for errors during 30 seconds of gameplay",
-        "Use Playwright: navigate with debug=1, spawn mechanics, heal, verify no console errors logged"
-      ],
-      "passes": true
-    },
-    {
-      "id": "INTEGRATION-002",
-      "category": "Integration",
-      "description": "Expose debug panel functions on window for testing. Add __debugTest object with show(), hide(), isVisible(), and getElement() methods. Allows programmatic control of debug panel visibility regardless of query param.",
-      "steps_to_verify": [
-        "window.__debugTest exists after page load",
-        "__debugTest.show() makes panel visible even without ?debug=1",
-        "__debugTest.hide() hides panel",
-        "__debugTest.isVisible() returns correct boolean",
-        "__debugTest.getElement() returns the #debug-panel DOM element"
-      ],
-      "passes": true
-    }
-  ]
+    "feature": "Stretch Tether Mechanic",
+    "items": [
+        {
+            "id": "TETHER-001",
+            "category": "Types",
+            "description": "Add TetherEndpoint and TetherMechanicState types to src/shared/types.ts. TetherEndpoint is a discriminated union: { type: 'player'; playerId: string } | { type: 'point'; x: number; y: number }. TetherMechanicState has: type: 'tether', id: string, endpointA: TetherEndpoint, endpointB: TetherEndpoint, requiredDistance: number, damage: number, startTime: number, endTime: number. Add TetherMechanicState to the MechanicState union type.",
+            "stepsToVerify": [
+                "Run 'npm run build' and confirm no TypeScript errors",
+                "Verify TetherEndpoint type exists with both 'player' and 'point' variants",
+                "Verify TetherMechanicState interface has all required fields",
+                "Verify MechanicState union includes TetherMechanicState"
+            ],
+            "passes": false
+        },
+        {
+            "id": "TETHER-002",
+            "category": "Server",
+            "description": "Create src/server/mechanics/tether.ts implementing BaseMechanic interface. Constructor takes: id, endpointA, endpointB, requiredDistance, damage, startTime, endTime. tick() is no-op. isExpired(now) returns true when now >= endTime. resolve() method: 1) Resolve each endpoint position (if player type, lookup player position; if point type, use x/y directly), 2) Calculate Euclidean distance between endpoints, 3) If distance < requiredDistance, call takeDamage(damage) on all players connected to this tether (any endpoint with type='player'). toState() returns TetherMechanicState object.",
+            "stepsToVerify": [
+                "Run 'npm run build' and confirm no TypeScript errors",
+                "Verify tether.ts exports a class implementing BaseMechanic",
+                "Verify resolve() correctly identifies player endpoints and applies damage only when distance < requiredDistance",
+                "Verify toState() returns properly typed TetherMechanicState"
+            ],
+            "passes": false
+        },
+        {
+            "id": "TETHER-003",
+            "category": "Server",
+            "description": "Add admin:spawnMechanic handlers in src/server/index.ts for 'pointTethers' and 'playerTethers' types. For 'pointTethers': create one tether per player, connecting each player to point {x: ARENA_WIDTH/2, y: 0} (top center). For 'playerTethers': if fewer than 2 players, do nothing; otherwise pick 2 random different players and create 1 tether between them. Both use: requiredDistance = ARENA_WIDTH * 0.75, duration = 3000ms, damage = 100. Register created tethers with mechanicsManager.",
+            "stepsToVerify": [
+                "Run 'npm run build' and confirm no TypeScript errors",
+                "Using Playwright: join 2 players, click spawn point tethers button, verify __gameTest.getGameState().mechanics contains 2 tether mechanics with point endpoints at arena top center",
+                "Using Playwright: join 2 players, click spawn player tethers button, verify __gameTest.getGameState().mechanics contains 1 tether mechanic with both endpoints as player type"
+            ],
+            "passes": false
+        },
+        {
+            "id": "TETHER-004",
+            "category": "Client",
+            "description": "Add two admin buttons to public/index.html in the admin panel: 1) id='spawn-point-tethers-btn' with text 'Create Point Tethers', 2) id='spawn-player-tethers-btn' with text 'Create Player Tethers'. In src/client/admin.ts, add click handlers that emit 'admin:spawnMechanic' with type='pointTethers' and type='playerTethers' respectively.",
+            "stepsToVerify": [
+                "Run 'npm run build' and confirm no TypeScript errors",
+                "Using Playwright: navigate to game, verify button #spawn-point-tethers-btn exists with correct text",
+                "Using Playwright: verify button #spawn-player-tethers-btn exists with correct text",
+                "Using Playwright: click each button and verify socket emits correct event (check network or game state changes)"
+            ],
+            "passes": false
+        },
+        {
+            "id": "TETHER-005",
+            "category": "Client",
+            "description": "Add renderTether() function in src/client/mechanics.ts. Calculate current distance between endpoints using interpolated/predicted player positions. UNSTRETCHED STATE (distance < requiredDistance): Draw thick (~6px) pink/magenta line (#ff66aa) between endpoints. Draw static chevron/thorn shapes along the line pointing toward the closer endpoint. Chevron spacing should scale proportionally with distance (further apart as tether stretches). STRETCHED STATE (distance >= requiredDistance): Draw thin (~2px) bright orange/yellow line (#ffcc00) with prominent glow effect (use canvas shadowBlur). No chevrons. Visual must update in real-time every frame based on current distance.",
+            "stepsToVerify": [
+                "Run 'npm run build' and confirm no TypeScript errors",
+                "Using Playwright: join a player, spawn point tethers, take screenshot, verify pink line visible from player toward top center",
+                "Using Playwright: move player far from top center (>75% arena width), take screenshot, verify line changes to thin orange/yellow with glow",
+                "Using Playwright: move player back close to top center, verify line changes back to pink with chevrons"
+            ],
+            "passes": false
+        },
+        {
+            "id": "TETHER-006",
+            "category": "Client",
+            "description": "Add tether mechanic display to debug panel in src/client/debug.ts. Tether mechanics should appear as .debug-mechanic elements with data-type='tether'. Include data attributes for mechanic id, endpoint info, and required distance.",
+            "stepsToVerify": [
+                "Run 'npm run build' and confirm no TypeScript errors",
+                "Using Playwright: navigate with ?debug=1, join player, spawn point tethers",
+                "Verify .debug-mechanic[data-type='tether'] element exists in debug panel"
+            ],
+            "passes": false
+        },
+        {
+            "id": "TETHER-007",
+            "category": "Server",
+            "description": "When tether mechanic resolves, emit a socket event to notify clients of the result. Event should include: mechanic id, success (boolean - true if stretched enough, false if not), and list of affected player ids (those who took damage). This enables client-side toast feedback.",
+            "stepsToVerify": [
+                "Run 'npm run build' and confirm no TypeScript errors",
+                "Verify server emits tether resolution event when mechanic expires",
+                "Event payload includes mechanicId, success boolean, and affectedPlayerIds array"
+            ],
+            "passes": false
+        },
+        {
+            "id": "TETHER-008",
+            "category": "Client",
+            "description": "Listen for tether resolution events on the client. When received, show toast: 'Tether snapped!' if success=false (tether was not stretched enough), or 'Tether stretched!' if success=true. Use existing toast system (__toastTest.showToast or equivalent).",
+            "stepsToVerify": [
+                "Run 'npm run build' and confirm no TypeScript errors",
+                "Using Playwright: join player, spawn point tethers, stay close to top center, wait 3 seconds for resolve",
+                "Verify toast 'Tether snapped!' appears",
+                "Using Playwright: join player, spawn point tethers, move far from top center, wait for resolve",
+                "Verify toast 'Tether stretched!' appears"
+            ],
+            "passes": false
+        },
+        {
+            "id": "TETHER-009",
+            "category": "Integration",
+            "description": "End-to-end damage test: When tether resolves and distance < requiredDistance (75% arena width), all players attached to that tether take 100 damage. When distance >= requiredDistance, no damage is dealt.",
+            "stepsToVerify": [
+                "Using Playwright: join player (starts at 100 HP), spawn point tether, stay near top center (distance < 75% arena)",
+                "Wait for tether to resolve (3 seconds), verify player HP is now 0 (100 - 100 damage)",
+                "Using Playwright: heal player, spawn new point tether, move player far from top center (distance >= 75% arena)",
+                "Wait for tether to resolve, verify player HP remains 100 (no damage taken)"
+            ],
+            "passes": false
+        },
+        {
+            "id": "TETHER-010",
+            "category": "Integration",
+            "description": "Player-to-player tether test: When playerTethers is spawned with 2+ players, creates exactly one tether between two random players. Both connected players take damage if they don't stretch the tether far enough apart.",
+            "stepsToVerify": [
+                "Using Playwright: open 2 browser contexts, join 2 different players",
+                "Click spawn player tethers button, verify exactly 1 tether mechanic exists",
+                "Verify tether connects the two different players (both endpoints are player type with different playerIds)",
+                "Keep both players close together, wait for resolve, verify both players took 100 damage"
+            ],
+            "passes": false
+        }
+    ]
 }
