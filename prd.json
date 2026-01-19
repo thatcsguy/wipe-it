@@ -81,7 +81,7 @@
         "Old explosions are cleaned up after 500ms",
         "Run: npm run build - compiles without errors"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "id": "TOWER-007",

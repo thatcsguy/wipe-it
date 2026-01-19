@@ -41,3 +41,15 @@ TOWER-005 (tower renderer) - DONE
 - Number has white fill with black stroke outline for readability
 - File: src/client/mechanics/tower.ts
 - Build passes
+
+TOWER-006 (tower explosion) - DONE
+- Created src/client/mechanics/towerExplosion.ts
+- Module maintains array of active explosions: { centerX, centerY, startTime }[]
+- addTowerExplosion(x, y, serverTime) adds new explosion
+- renderTowerExplosions(ctx, serverTime) draws expanding rings
+- Ring expands to 1000px over 500ms, 20px stroke width
+- Red/orange color (rgba 255,100,0), alpha fades linearly as ring expands
+- Old explosions auto-removed after 500ms
+- clearExplosions() for cleanup
+- File: src/client/mechanics/towerExplosion.ts
+- Build passes
