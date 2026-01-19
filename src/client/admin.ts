@@ -95,6 +95,26 @@ export function initAdmin(socket: Socket): void {
       }
     });
   }
+
+  const spawnLineAoeBtn = document.getElementById('spawn-line-aoe-btn');
+  if (spawnLineAoeBtn) {
+    spawnLineAoeBtn.addEventListener('click', () => {
+      if (adminSocket) {
+        adminSocket.emit('admin:spawnLineAoe');
+        logCombat('Spawned line AOE');
+      }
+    });
+  }
+
+  const spawnConalAoeBtn = document.getElementById('spawn-conal-aoe-btn');
+  if (spawnConalAoeBtn) {
+    spawnConalAoeBtn.addEventListener('click', () => {
+      if (adminSocket) {
+        adminSocket.emit('admin:spawnConalAoe');
+        logCombat('Spawned conal AOE');
+      }
+    });
+  }
 }
 
 export function setChangeNameCallback(callback: () => void): void {

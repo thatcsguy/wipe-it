@@ -194,7 +194,7 @@
       "Verify orange vertical line AOE appears on canvas",
       "Verify debug panel shows mechanic with data-type='lineAoe'"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "id": "AOE-013",
@@ -211,7 +211,7 @@
       "Verify orange cone AOE appears on canvas pointing right from center",
       "Verify debug panel shows mechanic with data-type='conalAoe'"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "id": "AOE-014",

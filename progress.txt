@@ -76,3 +76,17 @@ AOE-009 COMPLETE: Updated mechanic dispatcher
 - Build passes
 - Both lineAoe and conalAoe now render via dispatcher
 Files: src/client/mechanics/index.ts
+
+AOE-012 COMPLETE: Added 'Spawn Line AOE' admin button
+- Added button #spawn-line-aoe-btn to admin-controls in index.html
+- Click handler emits 'admin:spawnLineAoe' (uses server defaults)
+- Combat log shows "Spawned line AOE"
+- Verified with Playwright: button visible, click spawns lineAoe mechanic
+Files: public/index.html, src/client/admin.ts
+
+AOE-013 COMPLETE: Added 'Spawn Conal AOE' admin button
+- Added button #spawn-conal-aoe-btn to admin-controls in index.html
+- Click handler emits 'admin:spawnConalAoe' (uses server defaults)
+- Combat log shows "Spawned conal AOE"
+- Verified with Playwright: button visible, click spawns conalAoe mechanic
+Files: public/index.html, src/client/admin.ts
