@@ -33,3 +33,10 @@
 - Returns true when cross < 0 (right side walking A to B = knockback side)
 - Files: src/shared/knockback.ts
 - Build passes
+
+=== KB-008 - calculateKnockbackEndpoint Function ===
+- Added KnockbackEndpoint interface {x, y}
+- Calculates theoretical endpoint: start + direction * distance
+- Clamps to arena bounds: PLAYER_RADIUS to ARENA_SIZE - PLAYER_RADIUS
+- Files: src/shared/knockback.ts
+- Build passes

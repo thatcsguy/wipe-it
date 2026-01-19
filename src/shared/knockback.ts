@@ -1,4 +1,4 @@
-import { KnockbackState } from './types';
+import { KnockbackState, PLAYER_RADIUS, ARENA_WIDTH, ARENA_HEIGHT } from './types';
 
 /**
  * Ease-out cubic function: 1 - (1 - t)^3
@@ -118,4 +118,40 @@ export function isOnKnockbackSide(
     (lineEndX - lineStartX) * (playerY - lineStartY) -
     (lineEndY - lineStartY) * (playerX - lineStartX);
   return cross < 0;
+}
+
+export interface KnockbackEndpoint {
+  x: number;
+  y: number;
+}
+
+/**
+ * Calculate knockback endpoint accounting for arena wall collisions
+ * @param startX Player starting X position
+ * @param startY Player starting Y position
+ * @param dirX Normalized knockback direction X
+ * @param dirY Normalized knockback direction Y
+ * @param distance Knockback distance in pixels
+ * @returns Clamped endpoint position
+ */
+export function calculateKnockbackEndpoint(
+  startX: number,
+  startY: number,
+  dirX: number,
+  dirY: number,
+  distance: number
+): KnockbackEndpoint {
+  // Calculate theoretical endpoint
+  const theoreticalX = startX + dirX * distance;
+  const theoreticalY = startY + dirY * distance;
+
+  // Clamp to arena bounds (PLAYER_RADIUS to ARENA_SIZE - PLAYER_RADIUS)
+  const minBound = PLAYER_RADIUS;
+  const maxBoundX = ARENA_WIDTH - PLAYER_RADIUS;
+  const maxBoundY = ARENA_HEIGHT - PLAYER_RADIUS;
+
+  const clampedX = Math.max(minBound, Math.min(maxBoundX, theoreticalX));
+  const clampedY = Math.max(minBound, Math.min(maxBoundY, theoreticalY));
+
+  return { x: clampedX, y: clampedY };
 }

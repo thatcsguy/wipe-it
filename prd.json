@@ -97,7 +97,7 @@
         "Verify it calculates theoretical endpoint: start + direction * distance",
         "Verify it clamps result to arena bounds (PLAYER_RADIUS to ARENA_SIZE - PLAYER_RADIUS)"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "id": "KB-009",
