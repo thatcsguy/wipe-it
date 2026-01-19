@@ -22,6 +22,29 @@ let gameRunning = false;
 // Current game state from server
 let currentGameState: GameState = { players: [], mechanics: [], statusEffects: [], timestamp: 0 };
 
+// State change callbacks
+type StateChangeCallback = (state: GameState) => void;
+const stateChangeCallbacks = new Set<StateChangeCallback>();
+
+// Register a callback for state changes, returns unsubscribe function
+function onStateChange(callback: StateChangeCallback): () => void {
+  stateChangeCallbacks.add(callback);
+  return () => {
+    stateChangeCallbacks.delete(callback);
+  };
+}
+
+// Notify all state change callbacks
+function notifyStateChange(state: GameState): void {
+  for (const callback of stateChangeCallbacks) {
+    try {
+      callback(state);
+    } catch (e) {
+      console.error('State change callback error:', e);
+    }
+  }
+}
+
 // Timing
 let lastFrameTime = 0;
 
@@ -42,6 +65,9 @@ export function startGame(
   // Set up state listener
   socket.on('state', (state: GameState) => {
     currentGameState = state;
+
+    // Notify state change callbacks
+    notifyStateChange(state);
 
     // Buffer positions for all players (used for interpolation)
     const timestamp = performance.now();
@@ -138,4 +164,5 @@ export function isGameRunning(): boolean {
   stopGame,
   getGameState,
   isGameRunning,
+  onStateChange,
 };

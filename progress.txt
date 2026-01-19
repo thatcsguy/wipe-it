@@ -52,3 +52,14 @@
 - Validated: mechanic attrs (data-mechanic-id, data-type, data-expires) present
 - Validated: mechanic removed from DOM after expiration
 - Files: public/css/style.css
+
+## EVENT-001 - onStateChange callback in __gameTest API
+- Added stateChangeCallbacks Set and onStateChange(callback) function to game.ts
+- Callback receives full GameState on every server state update
+- Returns unsubscribe function that removes callback from Set
+- Multiple callbacks supported via Set
+- notifyStateChange() called in socket 'state' handler
+- Added onStateChange to __gameTest API
+- Validated: callback fires with valid GameState (players, mechanics, statusEffects, timestamp)
+- Validated: unsubscribe stops callbacks, multiple callbacks work
+- Files: src/client/game.ts

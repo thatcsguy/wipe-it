@@ -124,7 +124,7 @@
         "Verify unsubscribe function stops callbacks: const unsub = __gameTest.onStateChange(cb); unsub(); verify cb no longer called",
         "Use Playwright: await page.evaluate(() => new Promise(resolve => { __gameTest.onStateChange(state => { if(state.players.length > 0) resolve(true); }); }))"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "id": "EVENT-002",
