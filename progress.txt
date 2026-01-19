@@ -93,3 +93,11 @@ TOWER-011 (debug panel) - DONE
 - Playwright verified: .debug-mechanic[data-type="tower"] has data-required-players="2"
 - File: src/client/debugPanel.ts
 - Build passes
+
+TOWER-012 (integration - render verification) - DONE
+- Playwright verified tower visual rendering
+- Navigated to localhost:3000?debug=1, joined game, clicked #spawn-tower-btn
+- Verified .debug-mechanic[data-type="tower"] exists with data-required-players="2"
+- Screenshot confirms visual: yellow-orange circle, 6 rotating triangular tick marks, large "2" in center
+- Number has white fill with black outline for readability
+- Mechanics render below players (correct z-order)
