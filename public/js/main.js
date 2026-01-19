@@ -3660,6 +3660,42 @@ window.__mechanicsTest = {
   renderMechanics
 };
 
+// dist/client/client/statusEffects.js
+var iconCache = /* @__PURE__ */ new Map();
+function getIcon(iconPath) {
+  if (iconCache.has(iconPath)) {
+    const img2 = iconCache.get(iconPath);
+    return img2.complete ? img2 : null;
+  }
+  const img = new Image();
+  img.src = iconPath;
+  iconCache.set(iconPath, img);
+  return null;
+}
+function renderStatusEffects(ctx2, x, y, statuses) {
+  if (statuses.length === 0)
+    return;
+  const iconSize = 24;
+  const spacing = 4;
+  const totalWidth = statuses.length * iconSize + (statuses.length - 1) * spacing;
+  const startX = x - totalWidth / 2;
+  const iconY = y - PLAYER_RADIUS - 28;
+  for (let i = 0; i < statuses.length; i++) {
+    const status = statuses[i];
+    const iconX = startX + i * (iconSize + spacing);
+    const icon = getIcon(status.iconPath);
+    if (icon) {
+      ctx2.drawImage(icon, iconX, iconY, iconSize, iconSize);
+    } else {
+      ctx2.fillStyle = "#ff4444";
+      ctx2.fillRect(iconX, iconY, iconSize, iconSize);
+      ctx2.strokeStyle = "#ffffff";
+      ctx2.lineWidth = 1;
+      ctx2.strokeRect(iconX, iconY, iconSize, iconSize);
+    }
+  }
+}
+
 // dist/client/client/renderer.js
 var canvas = null;
 var ctx = null;
@@ -3724,7 +3760,7 @@ function drawPlayer(player) {
   ctx.textBaseline = "bottom";
   ctx.fillText(name, x, y - PLAYER_RADIUS - 10);
 }
-function drawPlayerAt(x, y, color, name, hp) {
+function drawPlayerAt(x, y, color, name, hp, statusEffects) {
   if (!ctx)
     return;
   ctx.beginPath();
@@ -3754,14 +3790,31 @@ function render(players, localPlayerId3, localPosition, interpolatedPositions, m
   }
   for (const player of players) {
     if (localPlayerId3 && player.id === localPlayerId3 && localPosition) {
-      drawPlayerAt(localPosition.x, localPosition.y, player.color, player.name, player.hp);
+      drawPlayerAt(localPosition.x, localPosition.y, player.color, player.name, player.hp, player.statusEffects);
     } else {
       const interpolated = interpolatedPositions?.get(player.id);
       if (interpolated) {
-        drawPlayerAt(interpolated.x, interpolated.y, player.color, player.name, player.hp);
+        drawPlayerAt(interpolated.x, interpolated.y, player.color, player.name, player.hp, player.statusEffects);
       } else {
         drawPlayer(player);
       }
+    }
+  }
+  for (const player of players) {
+    if (player.statusEffects && player.statusEffects.length > 0) {
+      let px = player.x;
+      let py = player.y;
+      if (localPlayerId3 && player.id === localPlayerId3 && localPosition) {
+        px = localPosition.x;
+        py = localPosition.y;
+      } else {
+        const interpolated = interpolatedPositions?.get(player.id);
+        if (interpolated) {
+          px = interpolated.x;
+          py = interpolated.y;
+        }
+      }
+      renderStatusEffects(ctx, px, py, player.statusEffects);
     }
   }
 }

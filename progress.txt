@@ -38,3 +38,13 @@ STATUS-005: COMPLETE
 - Added admin:applyVulnerability socket event for testing
 - Verified w/ Playwright: player took 250 dmg (25*10) with vuln vs 25 without
 Files: src/server/player.ts, src/server/game.ts, src/server/index.ts
+
+STATUS-006: COMPLETE
+- Created statusEffects.ts w/ renderStatusEffects() function
+- Icon caching w/ getIcon(), fallback red square while loading
+- Icons rendered centered above player (y - PLAYER_RADIUS - 28)
+- Created vulnerability.svg icon (red shield w/ down arrow)
+- Integrated into renderer.ts render() - status icons drawn after all players for z-order
+- Uses player's actual position (local predicted, interpolated, or server)
+- Verified w/ Playwright: vulnerability icon visible above player after admin:applyVulnerability
+Files: src/client/statusEffects.ts, src/client/renderer.ts, public/images/vulnerability.svg

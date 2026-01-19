@@ -107,10 +107,16 @@ export class Game {
   }
 
   private broadcast(): void {
+    const allStatusEffects = this.statusEffectManager.getStates();
     const state: GameState = {
-      players: Array.from(this.players.values()).map(p => p.toState()),
+      players: Array.from(this.players.values()).map(p => {
+        const playerState = p.toState();
+        // Populate player-specific status effects for rendering
+        playerState.statusEffects = allStatusEffects.filter(s => s.playerId === p.id);
+        return playerState;
+      }),
       mechanics: this.mechanicManager.getStates(),
-      statusEffects: this.statusEffectManager.getStates(),
+      statusEffects: allStatusEffects,
       timestamp: Date.now(),
     };
     this.io.emit('state', state);

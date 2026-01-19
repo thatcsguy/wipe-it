@@ -1,5 +1,6 @@
-import { PlayerState, MechanicState, ARENA_WIDTH, ARENA_HEIGHT, PLAYER_RADIUS, MAX_HP } from '../shared/types';
+import { PlayerState, MechanicState, StatusEffectState, ARENA_WIDTH, ARENA_HEIGHT, PLAYER_RADIUS, MAX_HP } from '../shared/types';
 import { renderMechanics } from './mechanics';
+import { renderStatusEffects } from './statusEffects';
 
 // Canvas and context (initialized on first render call)
 let canvas: HTMLCanvasElement | null = null;
@@ -94,7 +95,8 @@ export function drawPlayerAt(
   y: number,
   color: string,
   name: string,
-  hp: number
+  hp: number,
+  statusEffects?: StatusEffectState[]
 ): void {
   if (!ctx) return;
 
@@ -144,19 +146,39 @@ export function render(
     renderMechanics(ctx, mechanics, serverTime);
   }
 
-  // Draw all players
+  // Draw all players (body, health bar, name)
   for (const player of players) {
     if (localPlayerId && player.id === localPlayerId && localPosition) {
       // Draw local player at predicted position
-      drawPlayerAt(localPosition.x, localPosition.y, player.color, player.name, player.hp);
+      drawPlayerAt(localPosition.x, localPosition.y, player.color, player.name, player.hp, player.statusEffects);
     } else {
       // Draw other players at interpolated position if available, else server position
       const interpolated = interpolatedPositions?.get(player.id);
       if (interpolated) {
-        drawPlayerAt(interpolated.x, interpolated.y, player.color, player.name, player.hp);
+        drawPlayerAt(interpolated.x, interpolated.y, player.color, player.name, player.hp, player.statusEffects);
       } else {
         drawPlayer(player);
       }
+    }
+  }
+
+  // Draw status effect icons AFTER all players (so they appear on top)
+  for (const player of players) {
+    if (player.statusEffects && player.statusEffects.length > 0) {
+      // Get the position used for this player
+      let px = player.x;
+      let py = player.y;
+      if (localPlayerId && player.id === localPlayerId && localPosition) {
+        px = localPosition.x;
+        py = localPosition.y;
+      } else {
+        const interpolated = interpolatedPositions?.get(player.id);
+        if (interpolated) {
+          px = interpolated.x;
+          py = interpolated.y;
+        }
+      }
+      renderStatusEffects(ctx, px, py, player.statusEffects);
     }
   }
 }

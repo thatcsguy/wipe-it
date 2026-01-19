@@ -72,9 +72,10 @@ io.on('connection', (socket) => {
     const players = Array.from(game.getPlayers().keys());
     if (players.length > 0) {
       const targetId = players[Math.floor(Math.random() * players.length)];
-      const status = new StatusEffect('vulnerability', targetId, 5000, [], []);
+      // 30 second duration for easier testing
+      const status = new StatusEffect('vulnerability', targetId, 30000, [], []);
       game.getStatusEffectManager().add(status);
-      console.log(`Admin applied vulnerability to player ${targetId}`);
+      console.log(`Admin applied vulnerability to player ${targetId} (status id: ${status.id})`);
     }
   });
 });
