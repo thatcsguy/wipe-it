@@ -27,4 +27,8 @@
 - Combat log now appears below admin panel, right of canvas
 - Verified: overflow-y: auto, isRightOfCanvas, isBelowAdmin all pass
 - Files: public/index.html, public/css/style.css
-- Remaining: CLOG-016 (docs)
+
+## CLOG-016 - Documentation Update (COMPLETE)
+- Replaced .toast selector with #combat-log and .combat-entry selectors
+- Replaced __toastTest API docs with __combatLogTest
+- Files: CLAUDE.md

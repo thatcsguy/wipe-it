@@ -78,9 +78,10 @@ page.locator('.debug-mechanic[data-type="chariot"]') // By type
 page.locator('.debug-player .debug-status[data-effect="vulnerability"]')
 ```
 
-**Toasts:**
+**Combat Log:**
 ```javascript
-page.locator('.toast', { hasText: 'Spawned chariot' })
+page.locator('#combat-log')                              // Combat log container
+page.locator('.combat-entry', { hasText: 'Spawned chariot' }) // Specific entry
 ```
 
 **Admin Buttons:**
@@ -100,9 +101,9 @@ onMechanicResolve(cb)             // cb(mechanicId) when mechanic disappears
 waitForMechanicResolve(id)        // Promise resolves when mechanic gone
 ```
 
-**__toastTest:**
+**__combatLogTest:**
 ```javascript
-showToast(message)  // Programmatically show toast
+log(message)  // Programmatically add combat log entry
 ```
 
 ### Playwright Examples

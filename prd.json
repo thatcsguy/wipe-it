@@ -184,7 +184,7 @@
         "File CLAUDE.md contains '__combatLogTest'",
         "File CLAUDE.md contains '.combat-entry' or '#combat-log' selector references"
       ],
-      "passes": false
+      "passes": true
     }
   ]
 }
