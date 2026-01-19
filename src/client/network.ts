@@ -50,6 +50,11 @@ export function isLocalKnockedBack(): boolean {
 
 // Apply input locally for prediction (same physics as server)
 export function applyInput(input: PlayerInput): void {
+  // During knockback, ignore WASD input (server ignores it too)
+  if (localKnockback) {
+    return;
+  }
+
   const { keys, dt } = input;
 
   // Calculate velocity based on input keys
