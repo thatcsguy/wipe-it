@@ -19,7 +19,7 @@
                 "Read src/client/admin.ts and verify it adds click listener to 'heal-all-btn'",
                 "Verify the click handler emits socket event 'admin:healAll'"
             ],
-            "passes": false
+            "passes": true
         },
         {
             "id": "HEAL-003",

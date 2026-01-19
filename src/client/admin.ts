@@ -22,6 +22,15 @@ export function initAdmin(socket: Socket): void {
       }
     });
   }
+
+  const healAllBtn = document.getElementById('heal-all-btn');
+  if (healAllBtn) {
+    healAllBtn.addEventListener('click', () => {
+      if (adminSocket) {
+        adminSocket.emit('admin:healAll');
+      }
+    });
+  }
 }
 
 // Expose for testing
@@ -35,6 +44,11 @@ export function initAdmin(socket: Socket): void {
   emitSpawnSpread: () => {
     if (adminSocket) {
       adminSocket.emit('admin:spawnMechanic', { type: 'spread' });
+    }
+  },
+  emitHealAll: () => {
+    if (adminSocket) {
+      adminSocket.emit('admin:healAll');
     }
   }
 };

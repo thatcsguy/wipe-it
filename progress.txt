@@ -105,3 +105,8 @@ HEAL-001: COMPLETE
 - Added <button id="heal-all-btn">Heal All</button> to admin panel
 - Verified w/ Playwright: button visible in admin panel
 Files: public/index.html
+
+HEAL-002: COMPLETE
+- Added click handler for heal-all-btn that emits 'admin:healAll' socket event
+- Added emitHealAll() test helper to __adminTest
+Files: src/client/admin.ts
