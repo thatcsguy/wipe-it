@@ -9,7 +9,7 @@
                 "Open public/index.html and verify a button with id 'heal-all-btn' and text 'Heal All' exists",
                 "Use Playwright to navigate to localhost:3000, verify button is visible in admin panel"
             ],
-            "passes": false
+            "passes": true
         },
         {
             "id": "HEAL-002",

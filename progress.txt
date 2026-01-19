@@ -100,3 +100,8 @@ SPREAD-006: COMPLETE
 - Updated renderer.ts to pass player position data to renderMechanics
 - Verified w/ Playwright: pink/purple AOE circle renders on player
 Files: src/client/mechanics.ts, src/client/renderer.ts
+
+HEAL-001: COMPLETE
+- Added <button id="heal-all-btn">Heal All</button> to admin panel
+- Verified w/ Playwright: button visible in admin panel
+Files: public/index.html
