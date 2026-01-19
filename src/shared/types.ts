@@ -51,16 +51,32 @@ export interface PlayerState {
   statusEffects: StatusEffectState[];
 }
 
-// Mechanic state sent to clients for rendering
-export interface MechanicState {
+// Mechanic types
+export type MechanicType = 'chariot' | 'spread';
+
+// Chariot mechanic - fixed position AOE
+export interface ChariotMechanicState {
+  type: 'chariot';
   id: string;
-  type: string;
   startTime: number;
   endTime: number;
   x: number;
   y: number;
   radius: number;
 }
+
+// Spread mechanic - follows a player, no x/y (position from player)
+export interface SpreadMechanicState {
+  type: 'spread';
+  id: string;
+  targetPlayerId: string;
+  radius: number;
+  startTime: number;
+  endTime: number;
+}
+
+// Union of all mechanic states
+export type MechanicState = ChariotMechanicState | SpreadMechanicState;
 
 // Game state broadcast from server to clients
 export interface GameState {

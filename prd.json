@@ -104,7 +104,7 @@
                 "Verify vulnerability icon exists in public/images/",
                 "Use Playwright: apply vulnerability to player, verify icon renders above player"
             ],
-            "passes": false
+            "passes": true
         },
         {
             "id": "SPREAD-001",
@@ -116,7 +116,7 @@
                 "Verify SpreadMechanicState interface exists with type, id, targetPlayerId, radius, startTime, endTime",
                 "Verify SpreadMechanicState does NOT have x/y position fields"
             ],
-            "passes": false
+            "passes": true
         },
         {
             "id": "SPREAD-002",

@@ -48,3 +48,11 @@ STATUS-006: COMPLETE
 - Uses player's actual position (local predicted, interpolated, or server)
 - Verified w/ Playwright: vulnerability icon visible above player after admin:applyVulnerability
 Files: src/client/statusEffects.ts, src/client/renderer.ts, public/images/vulnerability.svg
+
+SPREAD-001: COMPLETE
+- Added MechanicType union: 'chariot' | 'spread'
+- Created ChariotMechanicState interface (refactored from old MechanicState)
+- Created SpreadMechanicState interface w/ targetPlayerId, no x/y (position from player)
+- MechanicState now discriminated union of both
+- Updated client mechanics.ts to use ChariotMechanicState for type safety
+Files: src/shared/types.ts, src/client/mechanics.ts

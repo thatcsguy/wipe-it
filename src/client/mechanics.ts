@@ -1,4 +1,4 @@
-import { MechanicState } from '../shared/types';
+import { MechanicState, ChariotMechanicState } from '../shared/types';
 
 // Chariot color (orange-yellow)
 const CHARIOT_COLOR = '#ff9f40';
@@ -8,7 +8,7 @@ const CHARIOT_INNER_ALPHA = 0.5;
 // Render a chariot mechanic - expanding inner circle shows progress
 function renderChariot(
   ctx: CanvasRenderingContext2D,
-  mechanic: MechanicState,
+  mechanic: ChariotMechanicState,
   serverTime: number
 ): void {
   const { x, y, radius, startTime, endTime } = mechanic;
