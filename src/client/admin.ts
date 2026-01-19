@@ -13,6 +13,15 @@ export function initAdmin(socket: Socket): void {
       }
     });
   }
+
+  const spawnSpreadBtn = document.getElementById('spawn-spread-btn');
+  if (spawnSpreadBtn) {
+    spawnSpreadBtn.addEventListener('click', () => {
+      if (adminSocket) {
+        adminSocket.emit('admin:spawnMechanic', { type: 'spread' });
+      }
+    });
+  }
 }
 
 // Expose for testing
@@ -21,6 +30,11 @@ export function initAdmin(socket: Socket): void {
   emitSpawnChariot: () => {
     if (adminSocket) {
       adminSocket.emit('admin:spawnMechanic', { type: 'chariot' });
+    }
+  },
+  emitSpawnSpread: () => {
+    if (adminSocket) {
+      adminSocket.emit('admin:spawnMechanic', { type: 'spread' });
     }
   }
 };

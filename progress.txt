@@ -80,3 +80,11 @@ SPREAD-004: COMPLETE
 - Follows same pattern as existing spawnChariot()
 - Imported SpreadMechanic from mechanics/spread
 Files: src/server/game.ts
+
+SPREAD-005: COMPLETE
+- Added <button id="spawn-spread-btn">Spawn Spread</button> to admin panel
+- Added click handler in admin.ts emitting admin:spawnMechanic with type: 'spread'
+- Added test helper emitSpawnSpread() to __adminTest
+- Server handler picks random player from game.getPlayers(), spawns spread w/ radius=15% arena height, 3s duration
+- Verified w/ Playwright: spread mechanic created with correct targetPlayerId, radius, timing
+Files: public/index.html, src/client/admin.ts, src/server/index.ts

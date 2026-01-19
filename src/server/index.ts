@@ -64,6 +64,18 @@ io.on('connection', (socket) => {
       const effects = [{ type: 'damage' as const, amount: 25 }];
       game.spawnChariot(x, y, radius, duration, effects);
       console.log(`Admin spawned chariot at (${x.toFixed(0)}, ${y.toFixed(0)})`);
+    } else if (data.type === 'spread') {
+      const players = Array.from(game.getPlayers().keys());
+      if (players.length > 0) {
+        const targetId = players[Math.floor(Math.random() * players.length)];
+        const radius = ARENA_HEIGHT * 0.15;
+        const duration = 3000;
+        const effects = [{ type: 'damage' as const, amount: 25 }];
+        game.spawnSpread(targetId, radius, duration, effects);
+        console.log(`Admin spawned spread on player ${targetId}`);
+      } else {
+        console.log('Admin tried to spawn spread but no players in game');
+      }
     }
   });
 

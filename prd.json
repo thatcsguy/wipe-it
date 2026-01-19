@@ -166,7 +166,7 @@
                 "Verify server picks random player when spawning spread",
                 "Use Playwright: join game, click Spawn Spread, verify spread mechanic appears on a player"
             ],
-            "passes": false
+            "passes": true
         },
         {
             "id": "SPREAD-006",
