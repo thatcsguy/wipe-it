@@ -146,3 +146,15 @@
 - Verified with Playwright: chevrons visible, animation works
 - Files: src/client/mechanics/radialKnockback.ts, src/client/mechanics/index.ts
 - Build passes
+
+=== KB-018 - Linear Knockback Visualization ===
+- Created src/client/mechanics/linearKnockback.ts with animated chevron waves
+- Chevrons spaced ~100px along line, 4 staggered wave phases
+- Waves move perpendicular to line (knockback direction) during startTime→endTime
+- Chevrons fade (alpha 0.8→0.24) as they move away from line, constant size (25px)
+- Perpendicular direction calculated using (lineDirY, -lineDirX) - right side
+- Double chevron >> pattern matches radial knockback style
+- Registered renderer in mechanics/index.ts
+- Verified with Playwright: cyan chevron waves animate correctly perpendicular to line
+- Files: src/client/mechanics/linearKnockback.ts, src/client/mechanics/index.ts
+- Build passes

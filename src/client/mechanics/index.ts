@@ -4,6 +4,7 @@ import { renderSpread } from './spread';
 import { renderTether } from './tether';
 import { renderTower } from './tower';
 import { renderRadialKnockback } from './radialKnockback';
+import { renderLinearKnockback } from './linearKnockback';
 export { PlayerPositionData } from './shared';
 import type { PlayerPositionData } from './shared';
 
@@ -25,6 +26,8 @@ export function renderMechanics(
       renderTower(ctx, mechanic, serverTime);
     } else if (mechanic.type === 'radialKnockback') {
       renderRadialKnockback(ctx, mechanic, serverTime);
+    } else if (mechanic.type === 'linearKnockback') {
+      renderLinearKnockback(ctx, mechanic, serverTime);
     }
   }
 }
