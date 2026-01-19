@@ -29,3 +29,13 @@ Created src/client/mechanics/spread.ts with:
 
 Files: src/client/mechanics/spread.ts (new)
 Build: passes
+
+## MECH-004 - Create tether.ts
+
+Created src/client/mechanics/tether.ts with:
+- renderTether function extracted from mechanics.ts
+- Imports TETHER_UNSTRETCHED_COLOR, TETHER_STRETCHED_COLOR, PlayerPositionData, getEndpointPosition from ./shared
+- Imports TetherMechanicState from ../../shared/types
+
+Files: src/client/mechanics/tether.ts (new)
+Build: passes
