@@ -105,7 +105,7 @@
                 "Using Playwright: heal player, spawn new point tether, move player far from top center (distance >= 75% arena)",
                 "Wait for tether to resolve, verify player HP remains 100 (no damage taken)"
             ],
-            "passes": false
+            "passes": true
         },
         {
             "id": "TETHER-010",
@@ -117,7 +117,7 @@
                 "Verify tether connects the two different players (both endpoints are player type with different playerIds)",
                 "Keep both players close together, wait for resolve, verify both players took 100 damage"
             ],
-            "passes": false
+            "passes": true
         }
     ]
 }

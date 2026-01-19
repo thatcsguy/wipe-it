@@ -62,3 +62,16 @@ TETHER-006 (Client - debug panel) - DONE
 - Added formatEndpoint() helper fn
 - Verified w/ Playwright: all attributes correctly populated
 - File: src/client/debugPanel.ts
+
+TETHER-009 (Integration - damage test) - DONE
+- Verified w/ Playwright: player stays close to top center, tether resolves, HP drops 100→0
+- Verified w/ Playwright: player moves far (y=780), tether resolves, HP remains 100
+- Toast "Tether snapped!" when fail, "Tether stretched!" when success
+- No code changes, pure integration test
+
+TETHER-010 (Integration - player tethers) - DONE
+- Verified w/ Playwright: 2 browser tabs, 2 players joined
+- Click "Create Player Tethers" → exactly 1 tether mechanic created
+- Tether has endpointA={type:player,playerId:X} and endpointB={type:player,playerId:Y} w/ different IDs
+- Both players close together → both take 100 damage (HP 100→0)
+- No code changes, pure integration test
