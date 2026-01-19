@@ -1,0 +1,5 @@
+TETHER-001 (Types) - DONE
+- Added TetherEndpoint discriminated union (player | point)
+- Added TetherMechanicState interface w/ all required fields
+- Added 'tether' to MechanicType, TetherMechanicState to MechanicState union
+- File: src/shared/types.ts

@@ -54,7 +54,12 @@ export interface PlayerState {
 }
 
 // Mechanic types
-export type MechanicType = 'chariot' | 'spread';
+export type MechanicType = 'chariot' | 'spread' | 'tether';
+
+// Tether endpoint - either a player or a fixed point
+export type TetherEndpoint =
+  | { type: 'player'; playerId: string }
+  | { type: 'point'; x: number; y: number };
 
 // Chariot mechanic - fixed position AOE
 export interface ChariotMechanicState {
@@ -77,8 +82,20 @@ export interface SpreadMechanicState {
   endTime: number;
 }
 
+// Tether mechanic - connects two endpoints that must be stretched apart
+export interface TetherMechanicState {
+  type: 'tether';
+  id: string;
+  endpointA: TetherEndpoint;
+  endpointB: TetherEndpoint;
+  requiredDistance: number;
+  damage: number;
+  startTime: number;
+  endTime: number;
+}
+
 // Union of all mechanic states
-export type MechanicState = ChariotMechanicState | SpreadMechanicState;
+export type MechanicState = ChariotMechanicState | SpreadMechanicState | TetherMechanicState;
 
 // Game state broadcast from server to clients
 export interface GameState {

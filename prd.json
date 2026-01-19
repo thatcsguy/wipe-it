@@ -11,7 +11,7 @@
                 "Verify TetherMechanicState interface has all required fields",
                 "Verify MechanicState union includes TetherMechanicState"
             ],
-            "passes": false
+            "passes": true
         },
         {
             "id": "TETHER-002",
