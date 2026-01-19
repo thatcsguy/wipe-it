@@ -130,7 +130,7 @@ export class Game {
       if (queue) {
         while (queue.length > 0) {
           const input = queue.shift()!;
-          player.processInput(input);
+          player.processInput(input, now);
         }
       }
     }

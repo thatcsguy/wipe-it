@@ -9,7 +9,7 @@ import {
   ARENA_HEIGHT,
   MAX_HP,
 } from '../shared/types';
-import { calculateKnockbackEndpoint } from '../shared/knockback';
+import { calculateKnockbackEndpoint, getKnockbackPosition } from '../shared/knockback';
 import { StatusEffectManager } from './statusEffectManager';
 
 export class Player {
@@ -38,8 +38,26 @@ export class Player {
     this.statusEffectManager = manager;
   }
 
-  processInput(input: PlayerInput): void {
+  processInput(input: PlayerInput, now: number): void {
     const { keys, dt, seq } = input;
+
+    // ALWAYS update lastProcessedInput for reconciliation (even during knockback)
+    this.lastProcessedInput = seq;
+
+    // During knockback: update position via knockback physics, ignore WASD
+    if (this.knockback) {
+      const result = getKnockbackPosition(this.knockback, now);
+      this.x = result.x;
+      this.y = result.y;
+
+      // Clear knockback when complete
+      if (!result.active) {
+        this.knockback = undefined;
+      }
+
+      // Skip normal WASD movement during knockback
+      return;
+    }
 
     // Calculate velocity based on input keys
     let dx = 0;
@@ -64,9 +82,6 @@ export class Player {
     // Clamp to arena bounds
     this.x = Math.max(PLAYER_RADIUS, Math.min(ARENA_WIDTH - PLAYER_RADIUS, this.x));
     this.y = Math.max(PLAYER_RADIUS, Math.min(ARENA_HEIGHT - PLAYER_RADIUS, this.y));
-
-    // Track last processed input for client reconciliation
-    this.lastProcessedInput = seq;
   }
 
   takeDamage(amount: number): void {

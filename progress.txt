@@ -77,3 +77,13 @@
 - Mechanic state broadcast via existing getStates() → broadcast() path
 - Files: src/server/game.ts
 - Build passes
+
+=== KB-013 - processInput() Knockback Handling ===
+- Modified processInput(input, now) signature to accept current timestamp
+- ALWAYS sets lastProcessedInput = seq first (even during knockback)
+- Checks this.knockback: if active, updates position via getKnockbackPosition()
+- Clears knockback when active=false
+- Returns early during knockback (skips WASD processing)
+- Updated game.ts tick() to pass now param to processInput()
+- Files: src/server/player.ts, src/server/game.ts
+- Build passes

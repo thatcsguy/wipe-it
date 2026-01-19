@@ -162,7 +162,7 @@
         "Verify knockback cleared (set to undefined) when getKnockbackPosition returns active=false",
         "Verify function returns early during knockback (no WASD processing)"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "id": "KB-014",
