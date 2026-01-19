@@ -1,5 +1,5 @@
 import { Socket } from 'socket.io-client';
-import { showToast } from './toast';
+import { logCombat } from './combatLog';
 
 let adminSocket: Socket | null = null;
 let onChangeName: (() => void) | null = null;
@@ -21,7 +21,7 @@ export function initAdmin(socket: Socket): void {
     spawnChariotBtn.addEventListener('click', () => {
       if (adminSocket) {
         adminSocket.emit('admin:spawnMechanic', { type: 'chariot' });
-        showToast('Spawned chariot');
+        logCombat('Spawned chariot');
       }
     });
   }
@@ -31,7 +31,7 @@ export function initAdmin(socket: Socket): void {
     spawnSpreadBtn.addEventListener('click', () => {
       if (adminSocket) {
         adminSocket.emit('admin:spawnMechanic', { type: 'spreads' });
-        showToast('Spawned spreads');
+        logCombat('Spawned spreads');
       }
     });
   }
@@ -41,7 +41,7 @@ export function initAdmin(socket: Socket): void {
     spawnPointTethersBtn.addEventListener('click', () => {
       if (adminSocket) {
         adminSocket.emit('admin:spawnMechanic', { type: 'pointTethers' });
-        showToast('Spawned point tethers');
+        logCombat('Spawned point tethers');
       }
     });
   }
@@ -51,7 +51,7 @@ export function initAdmin(socket: Socket): void {
     spawnPlayerTethersBtn.addEventListener('click', () => {
       if (adminSocket) {
         adminSocket.emit('admin:spawnMechanic', { type: 'playerTethers' });
-        showToast('Spawned player tethers');
+        logCombat('Spawned player tethers');
       }
     });
   }
@@ -61,7 +61,7 @@ export function initAdmin(socket: Socket): void {
     healAllBtn.addEventListener('click', () => {
       if (adminSocket) {
         adminSocket.emit('admin:healAll');
-        showToast('Healed all players');
+        logCombat('Healed all players');
       }
     });
   }

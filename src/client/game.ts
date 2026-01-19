@@ -1,5 +1,5 @@
 import { Socket } from 'socket.io-client';
-import { GameState, PlayerState, MechanicState, TetherResolutionEvent } from '../shared/types';
+import { GameState, PlayerState, MechanicState, TetherResolutionEvent, StatusEffectState } from '../shared/types';
 import { hasInput, createInput } from './input';
 import {
   applyInput,
@@ -11,6 +11,7 @@ import {
 } from './network';
 import { render, initRenderer } from './renderer';
 import { updateDebugPanel } from './debugPanel';
+import { logCombat } from './combatLog';
 
 // Game state
 let socket: Socket | null = null;
@@ -24,6 +25,9 @@ let currentGameState: GameState = { players: [], mechanics: [], statusEffects: [
 
 // Track previous mechanic IDs for spawn detection
 let previousMechanicIds = new Set<string>();
+
+// Track previous player states for damage/effect detection
+let previousPlayerStates = new Map<string, PlayerState>();
 
 // State change callbacks
 type StateChangeCallback = (state: GameState) => void;
@@ -136,6 +140,48 @@ function checkMechanicSpawns(state: GameState): void {
   previousMechanicIds = currentIds;
 }
 
+// Detect player changes (damage, status effects) and log to combat log
+function checkPlayerChanges(state: GameState): void {
+  for (const player of state.players) {
+    const prev = previousPlayerStates.get(player.id);
+
+    if (prev) {
+      // Check for damage (HP decreased)
+      if (player.hp < prev.hp) {
+        const damage = prev.hp - player.hp;
+        logCombat(`${player.name} took ${damage} damage`);
+      }
+
+      // Check for gained status effects
+      const prevEffectTypes = new Set(prev.statusEffects.map(e => e.type));
+      for (const effect of player.statusEffects) {
+        if (!prevEffectTypes.has(effect.type)) {
+          logCombat(`${player.name} gained ${effect.type}`);
+        }
+      }
+
+      // Check for lost status effects
+      const currentEffectTypes = new Set(player.statusEffects.map(e => e.type));
+      for (const effect of prev.statusEffects) {
+        if (!currentEffectTypes.has(effect.type)) {
+          logCombat(`${player.name} lost ${effect.type}`);
+        }
+      }
+    }
+
+    // Update previous state
+    previousPlayerStates.set(player.id, { ...player, statusEffects: [...player.statusEffects] });
+  }
+
+  // Clean up players that left
+  const currentPlayerIds = new Set(state.players.map(p => p.id));
+  for (const [id] of previousPlayerStates) {
+    if (!currentPlayerIds.has(id)) {
+      previousPlayerStates.delete(id);
+    }
+  }
+}
+
 // Timing
 let lastFrameTime = 0;
 
@@ -168,6 +214,9 @@ export function startGame(
   socket.on('state', (state: GameState) => {
     // Check for new mechanics before updating state
     checkMechanicSpawns(state);
+
+    // Check for player changes (damage, status effects)
+    checkPlayerChanges(state);
 
     currentGameState = state;
 

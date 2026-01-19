@@ -82,7 +82,7 @@
         "File public/css/style.css does NOT contain .toast selector",
         "File public/css/style.css does NOT contain toast-slide-in or toast-fade-out"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "id": "CLOG-008",
@@ -94,7 +94,7 @@
         "Wait for mechanic to resolve and damage to occur",
         "Verify #combat-log contains entry matching 'TestPlayer took \\d+ damage'"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "id": "CLOG-009",
@@ -105,7 +105,7 @@
         "Trigger a mechanic that applies a status effect (e.g., vulnerability from chariot)",
         "Verify #combat-log contains entry matching 'TestPlayer gained' followed by effect name"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "id": "CLOG-010",
@@ -116,7 +116,7 @@
         "Trigger a status effect, then wait for it to expire",
         "Verify #combat-log contains entry matching 'PlayerName lost' followed by effect name"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "id": "CLOG-011",
@@ -128,7 +128,7 @@
         "Use Playwright: join game, click #change-name-btn, enter new name",
         "Verify #combat-log contains 'Changed name to' entry"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "id": "CLOG-012",
@@ -139,7 +139,7 @@
         "File src/client/main.ts does NOT contain 'Tether snapped'",
         "File src/client/main.ts does NOT contain 'onTetherResolution'"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "id": "CLOG-013",
@@ -152,7 +152,7 @@
         "Use Playwright: join game, click #spawn-chariot-btn",
         "Verify #combat-log contains 'Spawned chariot' entry"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "id": "CLOG-014",
@@ -161,7 +161,7 @@
       "stepsToVerify": [
         "File src/client/toast.ts does NOT exist"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "id": "CLOG-015",
@@ -172,7 +172,7 @@
         "Verify window.__combatLogTest exists and has log function",
         "Verify window.__toastTest is undefined"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "id": "CLOG-016",

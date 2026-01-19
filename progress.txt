@@ -7,3 +7,16 @@
 - Also updated HTML (CLOG-006) and CSS (partial CLOG-007) as dependencies for testing
 - Files: src/client/combatLog.ts, src/client/main.ts (import), public/index.html, public/css/style.css
 - Note: CLOG-002/003/004 also pass - implemented in same file. Toast styles not yet removed from CSS.
+
+## CLOG-007/008/009/010/011/012/013/014/015 - Toast→CombatLog Migration (COMPLETE)
+- CLOG-007: CSS already had no toast styles to remove
+- CLOG-008/009/010: Added checkPlayerChanges() in game.ts to diff GameState
+  - Tracks previousPlayerStates Map, logs damage/status gains/losses
+  - Imported logCombat in game.ts
+- CLOG-011: main.ts uses logCombat for name changes
+- CLOG-012: Removed onTetherResolution handler from main.ts
+- CLOG-013: admin.ts uses logCombat instead of showToast
+- CLOG-014: Deleted src/client/toast.ts
+- CLOG-015: __toastTest gone (toast.ts deleted), __combatLogTest exists
+- Files: src/client/game.ts, src/client/main.ts, src/client/admin.ts, deleted src/client/toast.ts
+- Remaining: CLOG-005 (positioning), CLOG-016 (docs)

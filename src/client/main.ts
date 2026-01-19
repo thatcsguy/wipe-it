@@ -1,10 +1,9 @@
 import { io, Socket } from 'socket.io-client';
 import { getInputState, createInput, getSequenceNumber, hasInput } from './input';
-import { startGame, onTetherResolution } from './game';
+import { startGame } from './game';
 import { initAdmin, setChangeNameCallback } from './admin';
-import { showToast } from './toast';
 import { initDebugPanel } from './debugPanel';
-import './combatLog'; // Register __combatLogTest global
+import { logCombat } from './combatLog';
 
 // Initialize debug panel
 initDebugPanel();
@@ -53,7 +52,7 @@ joinBtn.addEventListener('click', () => {
     modal.classList.add('hidden');
     joinBtn.disabled = false;
     isChangingName = false;
-    showToast(`Changed name to ${name}`);
+    logCombat(`Changed name to ${name}`);
   } else {
     // Initial join
     socket.emit('join', { name });
@@ -77,14 +76,6 @@ socket.on('joinResponse', (response: { success: boolean; playerId?: string; play
     console.log('Joined game with ID:', localPlayerId, 'as', localPlayerName);
     // Start the game loop
     startGame(socket, localPlayerId, localPlayerName);
-    // Listen for tether resolution events
-    onTetherResolution((event) => {
-      if (event.success) {
-        showToast('Tether stretched!');
-      } else {
-        showToast('Tether snapped!');
-      }
-    });
   } else {
     // Failed - show error
     showError(response.error || 'Failed to join');
