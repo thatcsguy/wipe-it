@@ -37,7 +37,7 @@
         "Take damage from a mechanic, verify data-hp attribute decreases",
         "Health bar visual width should correspond to HP percentage"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "id": "DEBUG-004",
@@ -50,7 +50,7 @@
         "Wait 3 seconds, verify mechanic element is removed from debug panel",
         "Use Playwright: await expect(page.locator('.debug-mechanic[data-type=\"chariot\"]')).not.toBeVisible({ timeout: 5000 })"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "id": "DEBUG-005",

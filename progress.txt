@@ -39,3 +39,16 @@
 - game.ts imports and calls updateDebugPanel() in gameLoop after render
 - Validated: player attrs update, mechanic attrs appear/disappear, __debugTest API works
 - Files: src/client/debugPanel.ts, src/client/main.ts, src/client/game.ts
+
+## DEBUG-003 & DEBUG-004 - Debug panel player/mechanic styling
+- Added CSS for .debug-player, .debug-player-info, .debug-player-name, .debug-player-pos
+- Added .debug-health-bar and .debug-health-fill with green-red gradient
+- Added .debug-status for status effects display
+- Added .debug-mechanic styling
+- Added pointer-events:none to .debug-panel to prevent blocking clicks
+- Validated via Playwright: data-player-id, data-hp, data-x, data-y attrs present
+- Validated: position updates on WASD movement, HP updates on damage
+- Validated: health bar width matches HP% (e.g., 75HP = 75% width)
+- Validated: mechanic attrs (data-mechanic-id, data-type, data-expires) present
+- Validated: mechanic removed from DOM after expiration
+- Files: public/css/style.css
