@@ -36,6 +36,26 @@ export function initAdmin(socket: Socket): void {
     });
   }
 
+  const spawnPointTethersBtn = document.getElementById('spawn-point-tethers-btn');
+  if (spawnPointTethersBtn) {
+    spawnPointTethersBtn.addEventListener('click', () => {
+      if (adminSocket) {
+        adminSocket.emit('admin:spawnMechanic', { type: 'pointTethers' });
+        showToast('Spawned point tethers');
+      }
+    });
+  }
+
+  const spawnPlayerTethersBtn = document.getElementById('spawn-player-tethers-btn');
+  if (spawnPlayerTethersBtn) {
+    spawnPlayerTethersBtn.addEventListener('click', () => {
+      if (adminSocket) {
+        adminSocket.emit('admin:spawnMechanic', { type: 'playerTethers' });
+        showToast('Spawned player tethers');
+      }
+    });
+  }
+
   const healAllBtn = document.getElementById('heal-all-btn');
   if (healAllBtn) {
     healAllBtn.addEventListener('click', () => {
@@ -62,6 +82,16 @@ export function setChangeNameCallback(callback: () => void): void {
   emitSpawnSpreads: () => {
     if (adminSocket) {
       adminSocket.emit('admin:spawnMechanic', { type: 'spreads' });
+    }
+  },
+  emitSpawnPointTethers: () => {
+    if (adminSocket) {
+      adminSocket.emit('admin:spawnMechanic', { type: 'pointTethers' });
+    }
+  },
+  emitSpawnPlayerTethers: () => {
+    if (adminSocket) {
+      adminSocket.emit('admin:spawnMechanic', { type: 'playerTethers' });
     }
   },
   emitHealAll: () => {

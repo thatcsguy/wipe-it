@@ -46,7 +46,7 @@
                 "Using Playwright: verify button #spawn-player-tethers-btn exists with correct text",
                 "Using Playwright: click each button and verify socket emits correct event (check network or game state changes)"
             ],
-            "passes": false
+            "passes": true
         },
         {
             "id": "TETHER-005",

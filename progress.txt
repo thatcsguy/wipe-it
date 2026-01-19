@@ -20,3 +20,10 @@ TETHER-003 (Server - admin handlers) - DONE
 - Verified w/ Playwright: point tethers create correct endpoint at top center
 - Verified w/ Playwright: player tethers create 1 tether between 2 different players
 - Files: src/server/game.ts, src/server/index.ts
+
+TETHER-004 (Client - admin buttons) - DONE
+- Added #spawn-point-tethers-btn and #spawn-player-tethers-btn to admin panel
+- Added click handlers emitting admin:spawnMechanic w/ type='pointTethers' and 'playerTethers'
+- Added __adminTest helpers for programmatic testing
+- Verified w/ Playwright: buttons exist, clicking them creates correct tether mechanics
+- Files: public/index.html, src/client/admin.ts
