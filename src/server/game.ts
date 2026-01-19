@@ -1,10 +1,11 @@
 import { Server } from 'socket.io';
 import { Player } from './player';
-import { GameState, PlayerInput, TICK_RATE, BROADCAST_RATE, MAX_PLAYERS, MAX_HP, TetherResolutionEvent } from '../shared/types';
+import { GameState, PlayerInput, TICK_RATE, BROADCAST_RATE, MAX_PLAYERS, MAX_HP, TetherResolutionEvent, TowerResolutionEvent } from '../shared/types';
 import { MechanicManager } from './mechanics/manager';
 import { ChariotMechanic } from './mechanics/chariot';
 import { SpreadMechanic } from './mechanics/spread';
 import { TetherMechanic } from './mechanics/tether';
+import { TowerMechanic } from './mechanics/tower';
 import { Effect } from './mechanics/types';
 import { TetherEndpoint } from '../shared/types';
 import { StatusEffectManager } from './statusEffectManager';
@@ -29,8 +30,13 @@ export class Game {
     // Register callback for mechanic resolution events
     this.mechanicManager.onResolution((result) => {
       if (result && 'mechanicId' in result) {
-        // This is a TetherResolutionEvent
-        this.io.emit('tether:resolved', result as TetherResolutionEvent);
+        // Check for TowerResolutionEvent (has 'required' field)
+        if ('required' in result) {
+          this.io.emit('tower:resolved', result as TowerResolutionEvent);
+        } else if ('affectedPlayerIds' in result) {
+          // TetherResolutionEvent
+          this.io.emit('tether:resolved', result as TetherResolutionEvent);
+        }
       }
     });
   }
@@ -173,6 +179,31 @@ export class Game {
       requiredDistance,
       damage,
       duration
+    );
+    this.mechanicManager.add(mechanic);
+  }
+
+  spawnTower(
+    x: number,
+    y: number,
+    radius: number,
+    duration: number,
+    requiredPlayers: number,
+    failureEffects: Effect[],
+    successEffects: Effect[]
+  ): void {
+    const now = Date.now();
+    const id = `tower-${now}-${Math.random().toString(36).substr(2, 9)}`;
+    const mechanic = new TowerMechanic(
+      id,
+      x,
+      y,
+      radius,
+      now,
+      now + duration,
+      requiredPlayers,
+      failureEffects,
+      successEffects
     );
     this.mechanicManager.add(mechanic);
   }

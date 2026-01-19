@@ -15,3 +15,12 @@ TOWER-002 (server) - DONE
 - Updated types.ts to include TowerResolutionEvent in MechanicResolutionResult union
 - Files: src/server/mechanics/tower.ts, src/server/mechanics/types.ts
 - Build passes
+
+TOWER-003 (server integration) - DONE
+- Imported TowerMechanic in src/server/game.ts
+- Added spawnTower(x, y, radius, duration, requiredPlayers, failureEffects, successEffects) method
+- spawnTower generates unique id, calculates startTime/endTime from now + duration
+- Updated resolution callback to detect TowerResolutionEvent (via 'required' field) and emit 'tower:resolved'
+- TowerMechanic already exported from tower.ts
+- File: src/server/game.ts
+- Build passes
