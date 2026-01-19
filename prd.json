@@ -108,11 +108,11 @@
       "description": "Verify spread mechanic renders correctly in browser using Playwright.",
       "stepsToVerify": [
         "With dev server running and player joined",
-        "Use Playwright to click #spawn-spreads-btn",
+        "Use Playwright to click #spawn-spread-btn",
         "Use Playwright browser_snapshot to verify .debug-mechanic[data-type='spread'] exists",
         "Wait for mechanic to resolve, verify element gone"
       ],
-      "passes": false
+      "passes": true
     }
   ]
 }

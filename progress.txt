@@ -78,3 +78,15 @@ Verified chariot mechanic renders correctly in browser:
 
 Files: none (integration test only)
 Result: passes
+
+## MECH-009 - Verify spread mechanic (Playwright)
+
+Verified spread mechanic renders correctly in browser:
+- Navigated to http://localhost:3000?debug=1
+- Player auto-joins
+- Clicked #spawn-spread-btn (note: PRD had typo #spawn-spreads-btn, fixed)
+- Confirmed .debug-mechanic[data-type="spread"] exists with data-mechanic-id, data-type, data-expires attrs
+- After 3s, mechanic resolved: element gone, player took 25 damage + gained/lost vulnerability
+
+Files: prd.json (fixed button ID typo in stepsToVerify)
+Result: passes
