@@ -59,3 +59,10 @@ TOWER-007 (client integration) - DONE
 - Added 'tower' case to renderMechanics dispatcher
 - File: src/client/mechanics/index.ts
 - Build passes
+
+TOWER-008 (explosion rendering integration) - DONE
+- Imported renderTowerExplosions from './mechanics/towerExplosion'
+- Called renderTowerExplosions(ctx, serverTime) after status effects, before ctx.restore()
+- Explosions render on top of all game elements
+- File: src/client/renderer.ts
+- Build passes

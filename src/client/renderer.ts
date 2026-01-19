@@ -1,6 +1,7 @@
 import { PlayerState, MechanicState, StatusEffectState, ARENA_WIDTH, ARENA_HEIGHT, PLAYER_RADIUS, MAX_HP, CANVAS_SIZE, ARENA_OFFSET } from '../shared/types';
 import { renderMechanics, PlayerPositionData } from './mechanics/index';
 import { renderStatusEffects } from './statusEffects';
+import { renderTowerExplosions } from './mechanics/towerExplosion';
 
 // Canvas and context (initialized on first render call)
 let canvas: HTMLCanvasElement | null = null;
@@ -195,6 +196,11 @@ export function render(
       }
       renderStatusEffects(ctx, px, py, player.statusEffects);
     }
+  }
+
+  // Draw tower explosions on top of everything
+  if (serverTime !== undefined) {
+    renderTowerExplosions(ctx, serverTime);
   }
 
   ctx.restore();
