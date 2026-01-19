@@ -94,3 +94,21 @@
 - Validated: nonexistent id resolves in 0ms
 - Validated: chariot id waits ~3s then resolves
 - Files: src/client/game.ts
+
+## DEBUG-005 - Status effects display in debug panel
+- Status effects already implemented in debugPanel.ts updatePlayersSection()
+- Displays <span class="debug-status" data-effect="{type}">{type}</span> for each effect
+- Validated via admin:applyVulnerability socket event (30s duration)
+- Note: spread mechanic vulnerability only 1000ms - hard to catch in testing
+- Validated: .debug-status[data-effect="vulnerability"] appears inside .debug-player div
+- Validated: effect disappears when expired
+- Files: src/client/debugPanel.ts (no changes - already working)
+
+## INTEGRATION-002 - __debugTest API for programmatic debug panel control
+- Already implemented in debugPanel.ts (lines 135-152)
+- Exposes show(), hide(), isVisible(), getElement() methods
+- Validated: __debugTest.show() makes panel visible without ?debug=1
+- Validated: __debugTest.hide() hides panel
+- Validated: __debugTest.isVisible() returns correct boolean
+- Validated: __debugTest.getElement() returns #debug-panel element
+- Files: src/client/debugPanel.ts (no changes - already working)

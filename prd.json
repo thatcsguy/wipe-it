@@ -63,7 +63,7 @@
         "Use Playwright: await expect(page.locator('.debug-player .debug-status[data-effect=\"vulnerability\"]')).toBeVisible()",
         "Wait for effect to expire, verify span is removed"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "id": "TOAST-001",
@@ -195,7 +195,7 @@
         "__debugTest.isVisible() returns correct boolean",
         "__debugTest.getElement() returns the #debug-panel DOM element"
       ],
-      "passes": false
+      "passes": true
     }
   ]
 }
