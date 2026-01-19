@@ -41,9 +41,87 @@ Build process: `tsc` (server) → `tsc -p tsconfig.client.json` (client) → `es
 
 ## Testing
 
-Run manually with Playwright:
-1. `npm run dev`
-2. Open multiple browser tabs
-3. Test as needed
+### Setup
+```bash
+npm run dev  # Start server on localhost:3000
+```
 
-Test utilities exposed on window: `__inputTest`, `__gameTest`, `__networkTest`, `__rendererTest`
+### Debug Panel
+Append `?debug=1` to URL to show debug panel. Displays real-time player/mechanic data via DOM attributes.
+
+```javascript
+// Programmatic control (works without ?debug=1)
+__debugTest.show()      // Show panel
+__debugTest.hide()      // Hide panel
+__debugTest.isVisible() // Returns boolean
+__debugTest.getElement() // Returns #debug-panel element
+```
+
+### DOM Selectors for Playwright
+
+**Players:**
+```javascript
+page.locator('.debug-player')                    // All players
+page.locator('.debug-player[data-player-id="X"]') // Specific player
+// Attributes: data-player-id, data-hp, data-x, data-y
+```
+
+**Mechanics:**
+```javascript
+page.locator('.debug-mechanic')                      // All mechanics
+page.locator('.debug-mechanic[data-type="chariot"]') // By type
+// Attributes: data-mechanic-id, data-type, data-expires
+```
+
+**Status Effects:**
+```javascript
+page.locator('.debug-player .debug-status[data-effect="vulnerability"]')
+```
+
+**Toasts:**
+```javascript
+page.locator('.toast', { hasText: 'Spawned chariot' })
+```
+
+**Admin Buttons:**
+- `#spawn-chariot-btn` - Spawns chariot mechanic
+- `#spawn-spreads-btn` - Spawns spread mechanics
+- `#heal-all-btn` - Heals all players
+
+### Test APIs (window globals)
+
+**__gameTest:**
+```javascript
+getGameState()                    // Returns current GameState
+getLocalPlayerId()                // Returns local player ID
+onStateChange(cb)                 // cb(GameState) on every update, returns unsubscribe fn
+onMechanicSpawn(cb)               // cb(MechanicState) when new mechanic appears
+onMechanicResolve(cb)             // cb(mechanicId) when mechanic disappears
+waitForMechanicResolve(id)        // Promise resolves when mechanic gone
+```
+
+**__toastTest:**
+```javascript
+showToast(message)  // Programmatically show toast
+```
+
+### Playwright Examples
+
+```javascript
+// Wait for player to exist
+await page.evaluate(() => new Promise(resolve => {
+  __gameTest.onStateChange(state => {
+    if (state.players.length > 0) resolve(true);
+  });
+}));
+
+// Spawn mechanic and wait for it to resolve
+await page.click('#spawn-chariot-btn');
+const mechanicId = await page.evaluate(() => __gameTest.getGameState().mechanics[0]?.id);
+await page.evaluate(id => __gameTest.waitForMechanicResolve(id), mechanicId);
+
+// Verify HP updates after damage
+const hpBefore = await page.locator('.debug-player').first().getAttribute('data-hp');
+// ... trigger damage ...
+await expect(page.locator('.debug-player').first()).not.toHaveAttribute('data-hp', hpBefore);
+```
