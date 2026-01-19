@@ -23,7 +23,7 @@
                 "Verify resolve() correctly identifies player endpoints and applies damage only when distance < requiredDistance",
                 "Verify toState() returns properly typed TetherMechanicState"
             ],
-            "passes": false
+            "passes": true
         },
         {
             "id": "TETHER-003",
