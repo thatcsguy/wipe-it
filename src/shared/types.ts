@@ -4,7 +4,9 @@ export const BROADCAST_RATE = 20;
 export const PLAYER_SPEED = 200;
 export const PLAYER_RADIUS = 20;
 export const ARENA_WIDTH = 800;
-export const ARENA_HEIGHT = 600;
+export const ARENA_HEIGHT = 800;
+export const CANVAS_SIZE = 1000;
+export const ARENA_OFFSET = 100;
 export const MAX_PLAYERS = 4;
 export const MAX_HP = 100;
 

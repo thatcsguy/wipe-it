@@ -1,4 +1,4 @@
-import { PlayerState, MechanicState, StatusEffectState, ARENA_WIDTH, ARENA_HEIGHT, PLAYER_RADIUS, MAX_HP } from '../shared/types';
+import { PlayerState, MechanicState, StatusEffectState, ARENA_WIDTH, ARENA_HEIGHT, PLAYER_RADIUS, MAX_HP, CANVAS_SIZE, ARENA_OFFSET } from '../shared/types';
 import { renderMechanics, PlayerPositionData } from './mechanics';
 import { renderStatusEffects } from './statusEffects';
 
@@ -16,10 +16,15 @@ export function initRenderer(): void {
   ctx = canvas.getContext('2d');
 }
 
-// Clear the canvas
+// Clear the canvas - dark grey margin, darker arena
 function clear(): void {
   if (!ctx || !canvas) return;
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  // Fill entire canvas with dark grey (margin area)
+  ctx.fillStyle = '#2a2a2a';
+  ctx.fillRect(0, 0, CANVAS_SIZE, CANVAS_SIZE);
+  // Fill arena area with darker background
+  ctx.fillStyle = '#1a1a2e';
+  ctx.fillRect(ARENA_OFFSET, ARENA_OFFSET, ARENA_WIDTH, ARENA_HEIGHT);
 }
 
 // Draw the arena border
@@ -138,6 +143,10 @@ export function render(
   // Clear canvas
   clear();
 
+  // Translate context to arena offset for all arena content
+  ctx.save();
+  ctx.translate(ARENA_OFFSET, ARENA_OFFSET);
+
   // Draw arena border
   drawArena();
 
@@ -187,6 +196,8 @@ export function render(
       renderStatusEffects(ctx, px, py, player.statusEffects);
     }
   }
+
+  ctx.restore();
 }
 
 // Expose for testing
