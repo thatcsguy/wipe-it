@@ -1,5 +1,5 @@
 import { PlayerState, MechanicState, StatusEffectState, ARENA_WIDTH, ARENA_HEIGHT, PLAYER_RADIUS, MAX_HP } from '../shared/types';
-import { renderMechanics } from './mechanics';
+import { renderMechanics, PlayerPositionData } from './mechanics';
 import { renderStatusEffects } from './statusEffects';
 
 // Canvas and context (initialized on first render call)
@@ -143,7 +143,13 @@ export function render(
 
   // Draw mechanics before players (so they appear below)
   if (mechanics && serverTime !== undefined) {
-    renderMechanics(ctx, mechanics, serverTime);
+    const posData: PlayerPositionData = {
+      players,
+      localPlayerId,
+      localPosition,
+      interpolatedPositions,
+    };
+    renderMechanics(ctx, mechanics, serverTime, posData);
   }
 
   // Draw all players (body, health bar, name)

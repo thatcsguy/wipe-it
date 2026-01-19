@@ -180,7 +180,7 @@
                 "Verify pulsing/glow effect based on mechanic progress",
                 "Use Playwright: spawn spread, take screenshot, verify pink/purple AOE circle renders on player"
             ],
-            "passes": false
+            "passes": true
         }
     ]
 }

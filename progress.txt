@@ -88,3 +88,15 @@ SPREAD-005: COMPLETE
 - Server handler picks random player from game.getPlayers(), spawns spread w/ radius=15% arena height, 3s duration
 - Verified w/ Playwright: spread mechanic created with correct targetPlayerId, radius, timing
 Files: public/index.html, src/client/admin.ts, src/server/index.ts
+
+SPREAD-006: COMPLETE
+- Added renderSpread() to mechanics.ts w/ FFXIV-style pink/purple gradient
+- Created PlayerPositionData interface for player position lookup
+- getPlayerPosition() handles local prediction, interpolation, server fallback
+- Radial gradient: pink center -> purple edge, pulsing intensity based on serverTime
+- Outer ring (8px, rgba(255,128,255,0.3)), inner border (2px, rgba(200,100,200,0.8))
+- Inner progress ring shrinks as mechanic approaches expiration
+- Updated renderMechanics() signature to accept optional posData
+- Updated renderer.ts to pass player position data to renderMechanics
+- Verified w/ Playwright: pink/purple AOE circle renders on player
+Files: src/client/mechanics.ts, src/client/renderer.ts
