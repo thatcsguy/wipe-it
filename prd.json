@@ -106,7 +106,7 @@
       "Verify all methods forward params to socket.emit()",
       "Run `npm run build` - should pass with no TypeScript errors"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "id": "TEST-008",

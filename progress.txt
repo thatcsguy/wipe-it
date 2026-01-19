@@ -46,3 +46,12 @@
 - Client `emitSpawnTower` updated to accept+forward params
 - Validated: 15000ms override shows ~14020ms, default shows ~4016ms remaining
 - Files: src/server/index.ts, src/client/admin.ts
+
+## TEST-007 - __adminTest emit methods TypeScript types
+
+- All 7 emit methods in src/client/admin.ts already have proper TypeScript types from TEST-001-006
+- emitSpawnChariot, emitSpawnSpreads, emitSpawnPointTethers, emitSpawnPlayerTethers, emitSpawnTower: `(params?: { duration?: number })`
+- emitSpawnRadialKnockback, emitSpawnLinearKnockback: `(params?: { delay?: number, knockbackDuration?: number })`
+- All methods forward params to socket.emit()
+- `npm run build` passes with no TypeScript errors
+- Files: src/client/admin.ts (no changes needed, just verification)
