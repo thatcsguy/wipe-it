@@ -1,118 +1,189 @@
 {
-  "feature": "Refactor client mechanics into per-mechanic files",
-  "description": "Split src/client/mechanics.ts into a mechanics/ directory with individual files per mechanic type, matching the server-side organization pattern",
+  "feature": "Tower Mechanic",
+  "description": "Circle AOE requiring N players inside when it expires. Success applies effects to players inside. Failure applies effects to ALL players and triggers arena-wide explosion animation.",
   "items": [
     {
-      "id": "MECH-001",
-      "category": "refactor",
-      "description": "Create src/client/mechanics/shared.ts with common constants and helpers. Extract from src/client/mechanics.ts: all color constants (CHARIOT_COLOR, CHARIOT_FILL_ALPHA, CHARIOT_INNER_ALPHA, SPREAD_OUTER_COLOR, SPREAD_BORDER_COLOR, TETHER_UNSTRETCHED_COLOR, TETHER_STRETCHED_COLOR), the PlayerPositionData interface, getPlayerPosition() function, and getEndpointPosition() function. Export all of them.",
+      "id": "TOWER-001",
+      "category": "types",
+      "description": "Add tower types to src/shared/types.ts. Add 'tower' to MechanicType union. Create TowerMechanicState interface with: type: 'tower', id: string, x: number, y: number, radius: number, startTime: number, endTime: number, requiredPlayers: number, failureEffects: Effect[], successEffects: Effect[]. Add TowerMechanicState to MechanicState union. Create TowerResolutionEvent interface with: mechanicId: string, success: boolean, playersInside: number, required: number.",
       "stepsToVerify": [
-        "File src/client/mechanics/shared.ts exists",
-        "File contains and exports all 7 color constants",
-        "File exports PlayerPositionData interface",
-        "File exports getPlayerPosition function",
-        "File exports getEndpointPosition function",
+        "MechanicType includes 'tower'",
+        "TowerMechanicState interface exists with all fields",
+        "MechanicState union includes TowerMechanicState",
+        "TowerResolutionEvent interface exists and is exported",
         "Run: npm run build - compiles without errors"
       ],
-      "passes": true
+      "passes": false
     },
     {
-      "id": "MECH-002",
-      "category": "refactor",
-      "description": "Create src/client/mechanics/chariot.ts with renderChariot function. Import CHARIOT_COLOR, CHARIOT_FILL_ALPHA, CHARIOT_INNER_ALPHA from ./shared. Import ChariotMechanicState from '../../shared/types'. Export renderChariot(ctx: CanvasRenderingContext2D, mechanic: ChariotMechanicState, serverTime: number): void.",
+      "id": "TOWER-002",
+      "category": "server",
+      "description": "Create src/server/mechanics/tower.ts implementing BaseMechanic. Constructor takes: id, x, y, radius, startTime, endTime, requiredPlayers, failureEffects, successEffects. tick() is empty. isExpired(now) returns now >= endTime. resolve() counts players within radius, if count >= requiredPlayers applies successEffects to all players inside, else applies failureEffects to ALL players regardless of position. Returns TowerResolutionEvent with mechanicId, success boolean, playersInside count, required count. toState() returns TowerMechanicState.",
       "stepsToVerify": [
-        "File src/client/mechanics/chariot.ts exists",
-        "File imports color constants from ./shared",
-        "File imports ChariotMechanicState from ../../shared/types",
-        "File exports renderChariot function",
+        "File src/server/mechanics/tower.ts exists",
+        "TowerMechanic class implements BaseMechanic interface",
+        "resolve() applies successEffects to players inside when requirement met",
+        "resolve() applies failureEffects to ALL players when requirement NOT met",
+        "resolve() returns TowerResolutionEvent with correct fields",
         "Run: npm run build - compiles without errors"
       ],
-      "passes": true
+      "passes": false
     },
     {
-      "id": "MECH-003",
-      "category": "refactor",
-      "description": "Create src/client/mechanics/spread.ts with renderSpread function. Import SPREAD_OUTER_COLOR, SPREAD_BORDER_COLOR, PlayerPositionData, getPlayerPosition from ./shared. Import SpreadMechanicState from '../../shared/types'. Export renderSpread(ctx: CanvasRenderingContext2D, mechanic: SpreadMechanicState, serverTime: number, posData: PlayerPositionData): void.",
+      "id": "TOWER-003",
+      "category": "server",
+      "description": "Integrate tower mechanic into server. In src/server/mechanics/manager.ts, import TowerMechanic. In src/server/game.ts, add spawnTower(x, y, radius, duration, requiredPlayers, failureEffects, successEffects) method that creates TowerMechanic with calculated startTime/endTime and adds to manager. Set up resolution callback to emit 'tower:resolved' Socket.IO event with TowerResolutionEvent payload when tower resolves.",
       "stepsToVerify": [
-        "File src/client/mechanics/spread.ts exists",
-        "File imports color constants and helpers from ./shared",
-        "File imports SpreadMechanicState from ../../shared/types",
-        "File exports renderSpread function",
+        "TowerMechanic is exported from server mechanics",
+        "Game class has spawnTower method",
+        "Socket.IO emits 'tower:resolved' event when tower resolves",
         "Run: npm run build - compiles without errors"
       ],
-      "passes": true
+      "passes": false
     },
     {
-      "id": "MECH-004",
-      "category": "refactor",
-      "description": "Create src/client/mechanics/tether.ts with renderTether function. Import TETHER_UNSTRETCHED_COLOR, TETHER_STRETCHED_COLOR, PlayerPositionData, getEndpointPosition from ./shared. Import TetherMechanicState from '../../shared/types'. Export renderTether(ctx: CanvasRenderingContext2D, mechanic: TetherMechanicState, posData: PlayerPositionData): void.",
+      "id": "TOWER-004",
+      "category": "client",
+      "description": "Add tower colors to src/client/mechanics/shared.ts. Add TOWER_COLOR = '#ffaa00' (yellow-orange), TOWER_FILL_ALPHA = 0.3, TOWER_STROKE_ALPHA = 0.8. Export all three constants.",
       "stepsToVerify": [
-        "File src/client/mechanics/tether.ts exists",
-        "File imports color constants and helpers from ./shared",
-        "File imports TetherMechanicState from ../../shared/types",
-        "File exports renderTether function",
+        "TOWER_COLOR constant exists with value '#ffaa00'",
+        "TOWER_FILL_ALPHA constant exists",
+        "TOWER_STROKE_ALPHA constant exists",
+        "All three are exported",
         "Run: npm run build - compiles without errors"
       ],
-      "passes": true
+      "passes": false
     },
     {
-      "id": "MECH-005",
-      "category": "refactor",
-      "description": "Create src/client/mechanics/index.ts as the main entry point. Import render functions from ./chariot, ./spread, ./tether. Re-export PlayerPositionData from ./shared. Implement and export renderMechanics(ctx, mechanics, serverTime, posData?) that dispatches to appropriate render function based on mechanic.type. Attach __mechanicsTest to window with renderMechanics.",
+      "id": "TOWER-005",
+      "category": "client",
+      "description": "Create src/client/mechanics/tower.ts with renderTower function. Import TowerMechanicState from '../../shared/types' and color constants from './shared'. Draw: (1) Outer circle with TOWER_COLOR, semi-transparent fill and solid stroke. (2) 6 rotating tick marks around perimeter - small triangles or lines that rotate based on serverTime (use serverTime * 0.002 for rotation angle). (3) Large centered number showing requiredPlayers - font size about 40-50% of radius, white fill with dark stroke outline for readability. Export renderTower(ctx: CanvasRenderingContext2D, mechanic: TowerMechanicState, serverTime: number): void.",
       "stepsToVerify": [
-        "File src/client/mechanics/index.ts exists",
-        "File exports renderMechanics function",
-        "File exports PlayerPositionData interface",
-        "File attaches __mechanicsTest to window",
+        "File src/client/mechanics/tower.ts exists",
+        "renderTower function draws outer circle in yellow-orange",
+        "renderTower function draws rotating tick marks around perimeter",
+        "renderTower function draws large centered number showing requiredPlayers",
+        "Number has outline/stroke for readability",
         "Run: npm run build - compiles without errors"
       ],
-      "passes": true
+      "passes": false
     },
     {
-      "id": "MECH-006",
-      "category": "refactor",
-      "description": "Update src/client/game.ts import path from './mechanics' to './mechanics/index' (or './mechanics' if TypeScript resolves index.ts). Ensure PlayerPositionData and renderMechanics are still imported correctly.",
+      "id": "TOWER-006",
+      "category": "client",
+      "description": "Create src/client/mechanics/towerExplosion.ts for failure animation. Module maintains array of active explosions: { centerX, centerY, startTime }[]. Export addTowerExplosion(x, y, serverTime) to add new explosion. Export renderTowerExplosions(ctx, serverTime) that draws each active explosion as expanding ring from center outward. Ring expands to ~1000px (arena diagonal) over 500ms. Use thick stroke (~20px), red/orange color, alpha fades as ring expands. Remove explosions older than 500ms. Export clearExplosions() for cleanup.",
       "stepsToVerify": [
-        "src/client/game.ts imports renderMechanics and PlayerPositionData from mechanics directory",
+        "File src/client/mechanics/towerExplosion.ts exists",
+        "addTowerExplosion function is exported",
+        "renderTowerExplosions function is exported",
+        "Explosion ring expands over 500ms duration",
+        "Ring fades alpha as it expands",
+        "Old explosions are cleaned up after 500ms",
         "Run: npm run build - compiles without errors"
       ],
-      "passes": true
+      "passes": false
     },
     {
-      "id": "MECH-007",
-      "category": "cleanup",
-      "description": "Delete the old src/client/mechanics.ts file after all code has been migrated to the new directory structure.",
+      "id": "TOWER-007",
+      "category": "client",
+      "description": "Integrate tower rendering into src/client/mechanics/index.ts. Import renderTower from './tower'. Add case for 'tower' type in renderMechanics dispatcher that calls renderTower(ctx, mechanic, serverTime).",
       "stepsToVerify": [
-        "File src/client/mechanics.ts does NOT exist",
+        "renderMechanics handles 'tower' mechanic type",
+        "Tower mechanics render without errors",
         "Run: npm run build - compiles without errors"
       ],
-      "passes": true
+      "passes": false
     },
     {
-      "id": "MECH-008",
+      "id": "TOWER-008",
+      "category": "client",
+      "description": "Integrate tower explosion rendering into src/client/renderer.ts. Import renderTowerExplosions from './mechanics/towerExplosion'. Call renderTowerExplosions(ctx, serverTime) in the render loop after mechanics are drawn so explosions appear on top.",
+      "stepsToVerify": [
+        "renderer.ts imports renderTowerExplosions",
+        "renderTowerExplosions is called in render loop",
+        "Run: npm run build - compiles without errors"
+      ],
+      "passes": false
+    },
+    {
+      "id": "TOWER-009",
+      "category": "client",
+      "description": "Add Socket.IO listener for tower:resolved event in src/client/main.ts. Import addTowerExplosion from './mechanics/towerExplosion'. On 'tower:resolved' event, if success is false, call addTowerExplosion with the tower's x, y coordinates and current server time. Note: The event payload includes mechanicId but you need tower position - either include x,y in TowerResolutionEvent or look up from current game state before mechanic is removed.",
+      "stepsToVerify": [
+        "main.ts imports addTowerExplosion",
+        "Socket.IO listener for 'tower:resolved' exists",
+        "Explosion is triggered only when success is false",
+        "Run: npm run build - compiles without errors"
+      ],
+      "passes": false
+    },
+    {
+      "id": "TOWER-010",
+      "category": "admin",
+      "description": "Add tower spawn button to admin panel. In src/client/admin.ts, add button with id='spawn-tower-btn' and text 'Spawn Tower'. On click, emit 'admin:spawnTower' to server. In src/server/game.ts, listen for 'admin:spawnTower' and call spawnTower with test values: center of arena (400, 300), radius 80, duration 5000ms, requiredPlayers 2, failureEffects [{type:'damage', amount:50}], successEffects empty array.",
+      "stepsToVerify": [
+        "Button #spawn-tower-btn exists in admin panel",
+        "Clicking button emits admin:spawnTower event",
+        "Server handles admin:spawnTower and spawns tower mechanic",
+        "Run: npm run build - compiles without errors"
+      ],
+      "passes": false
+    },
+    {
+      "id": "TOWER-011",
+      "category": "debug",
+      "description": "Add tower mechanic to debug panel. In src/client/debugPanel.ts, ensure tower mechanics render with class 'debug-mechanic', data-type='tower', data-mechanic-id, data-expires, and add data-required-players attribute showing the requiredPlayers value.",
+      "stepsToVerify": [
+        "Tower mechanics appear in debug panel with correct class and data attributes",
+        "data-required-players attribute shows correct value",
+        "Run: npm run build - compiles without errors"
+      ],
+      "passes": false
+    },
+    {
+      "id": "TOWER-012",
       "category": "integration",
-      "description": "Verify chariot mechanic renders correctly in browser using Playwright.",
+      "description": "Verify tower mechanic renders correctly using Playwright. Navigate to http://localhost:3000?debug=1, join game, click #spawn-tower-btn. Verify .debug-mechanic[data-type='tower'] exists. Take screenshot to confirm visual: yellow-orange circle with rotating elements and large number '2' in center.",
       "stepsToVerify": [
         "Start dev server: npm run dev",
-        "Use Playwright browser_navigate to http://localhost:3000",
-        "Use Playwright to type a name and click Join button",
-        "Use Playwright to click #spawn-chariot-btn",
-        "Use Playwright browser_snapshot to verify .debug-mechanic[data-type='chariot'] exists",
-        "Wait 3 seconds, take another snapshot to verify mechanic resolved (element gone)"
+        "Use Playwright browser_navigate to http://localhost:3000?debug=1",
+        "Wait for player to auto-join",
+        "Use Playwright to click #spawn-tower-btn",
+        "Use Playwright browser_snapshot to verify .debug-mechanic[data-type='tower'] exists",
+        "Use Playwright browser_take_screenshot to capture tower visual",
+        "Verify screenshot shows yellow-orange circle with number in center"
       ],
-      "passes": true
+      "passes": false
     },
     {
-      "id": "MECH-009",
+      "id": "TOWER-013",
       "category": "integration",
-      "description": "Verify spread mechanic renders correctly in browser using Playwright.",
+      "description": "Verify tower failure triggers explosion animation using Playwright. Spawn tower requiring 2 players with only 1 player in game. Wait for tower to expire (5 seconds). Verify explosion animation plays - can check by taking rapid screenshots or verifying damage was applied to player (HP decreased by 50).",
       "stepsToVerify": [
-        "With dev server running and player joined",
-        "Use Playwright to click #spawn-spread-btn",
-        "Use Playwright browser_snapshot to verify .debug-mechanic[data-type='spread'] exists",
-        "Wait for mechanic to resolve, verify element gone"
+        "With dev server running and single player joined",
+        "Click #spawn-tower-btn (requires 2 players)",
+        "Do NOT stand in tower (or stand in it alone)",
+        "Wait 5+ seconds for tower to expire",
+        "Use Playwright browser_snapshot to verify tower mechanic element is gone",
+        "Verify player HP decreased by 50 (check .debug-player data-hp attribute)",
+        "Optional: capture screenshot during explosion animation"
       ],
-      "passes": true
+      "passes": false
+    },
+    {
+      "id": "TOWER-014",
+      "category": "integration",
+      "description": "Verify tower success applies effects correctly. This requires 2+ players. Use Playwright to open two browser tabs, join with both players, spawn tower, move both players inside tower radius, wait for expiration. Verify no explosion animation and no damage taken (or success effects applied if any configured).",
+      "stepsToVerify": [
+        "Open two browser tabs to localhost:3000?debug=1",
+        "Join with both players",
+        "Click #spawn-tower-btn",
+        "Move both players to tower center (arena center 400,300)",
+        "Wait for tower to expire",
+        "Verify neither player took damage (HP unchanged)",
+        "Verify no explosion animation played"
+      ],
+      "passes": false
     }
   ]
 }
