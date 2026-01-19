@@ -3,7 +3,7 @@ import { StatusEffectType, StatusEffectState, Effect } from '../shared/types';
 
 // Icon paths for each status effect type
 const STATUS_ICONS: Record<StatusEffectType, string> = {
-  vulnerability: '/images/vulnerability.png',
+  vulnerability: '/images/vulnerability.svg',
 };
 
 export class StatusEffect {

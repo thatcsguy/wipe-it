@@ -40,7 +40,7 @@ for ((i=1; i<=$1; i++)); do
   If you started a playwright server, ensure it is cleaned up before ending.
 
   If, while implementing the feature, you notice that all work in the PRD is complete, output <promise>COMPLETE</promise>.
-  EOF
+EOF
 )")
 
   echo "$result"
