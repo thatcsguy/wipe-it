@@ -86,7 +86,7 @@
         "File src/client/mechanics.ts does NOT exist",
         "Run: npm run build - compiles without errors"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "id": "MECH-008",

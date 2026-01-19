@@ -59,3 +59,10 @@ Updated renderer.ts (not game.ts as PRD states) import from './mechanics' to './
 
 Files: src/client/renderer.ts (modified)
 Build: passes
+
+## MECH-007 - Delete old mechanics.ts
+
+Deleted src/client/mechanics.ts - all code now lives in mechanics/ directory.
+
+Files: src/client/mechanics.ts (deleted)
+Build: passes
