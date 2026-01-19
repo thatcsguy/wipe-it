@@ -5,3 +5,12 @@ AOE-001 COMPLETE: Added LineAoeMechanicState and ConalAoeMechanicState types
 - Added both to MechanicState union
 - Build passes
 Files: src/shared/types.ts
+
+AOE-002 COMPLETE: Created LineAoe server mechanic
+- LineAoeMechanic class implements BaseMechanic interface
+- ID format: lineAoe-{timestamp}-{random}
+- Point-in-rotated-rectangle collision: transform to local coords (line direction + perpendicular), check bounds
+- resolve() applies effects to players inside rectangle
+- toState() returns LineAoeMechanicState
+- Build passes
+Files: src/server/mechanics/lineAoe.ts
