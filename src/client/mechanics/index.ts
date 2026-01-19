@@ -5,6 +5,7 @@ import { renderTether } from './tether';
 import { renderTower } from './tower';
 import { renderRadialKnockback } from './radialKnockback';
 import { renderLinearKnockback } from './linearKnockback';
+import { renderLineAoe } from './lineAoe';
 export { PlayerPositionData } from './shared';
 import type { PlayerPositionData } from './shared';
 
@@ -28,6 +29,8 @@ export function renderMechanics(
       renderRadialKnockback(ctx, mechanic, serverTime);
     } else if (mechanic.type === 'linearKnockback') {
       renderLinearKnockback(ctx, mechanic, serverTime);
+    } else if (mechanic.type === 'lineAoe') {
+      renderLineAoe(ctx, mechanic);
     }
   }
 }

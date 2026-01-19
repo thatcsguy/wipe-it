@@ -48,3 +48,13 @@ AOE-006 COMPLETE: Added admin:spawnConalAoe socket handler
 - Client: __adminTest.emitSpawnConalAoe({ duration?: number }) added
 - Verified with Playwright: data-type='conalAoe', ID format conalAoe-{ts}-{random}, correct expiry
 Files: src/server/index.ts, src/client/admin.ts
+
+AOE-007 COMPLETE: Created Line AOE renderer
+- renderLineAoe() draws rotated rectangle using perpendicular vectors
+- Calculates 4 corners from start/end center points + width
+- Fill: chariot orange (255,159,64) at alpha 0.3
+- Inner glow: 70% width inner rectangle at alpha 0.5
+- Border stroke: #ff9f40, 2px width
+- Also added to dispatcher (index.ts) for testing
+- Verified with Playwright: orange vertical rectangle renders correctly
+Files: src/client/mechanics/lineAoe.ts, src/client/mechanics/index.ts

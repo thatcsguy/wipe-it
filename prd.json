@@ -112,7 +112,7 @@
       "Use Playwright browser_take_screenshot to capture the rendered line AOE",
       "Verify screenshot shows orange semi-transparent vertical rectangle through arena center, width ~100px"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "id": "AOE-008",
