@@ -65,7 +65,7 @@ export interface PlayerState {
 }
 
 // Mechanic types
-export type MechanicType = 'chariot' | 'spread' | 'tether' | 'tower' | 'radialKnockback' | 'linearKnockback';
+export type MechanicType = 'chariot' | 'spread' | 'tether' | 'tower' | 'radialKnockback' | 'linearKnockback' | 'lineAoe' | 'conalAoe';
 
 // Tether endpoint - either a player or a fixed point
 export type TetherEndpoint =
@@ -145,8 +145,36 @@ export interface LinearKnockbackMechanicState {
   knockbackDuration: number;
 }
 
+// Line AOE mechanic - rectangular AOE defined by center line and width
+export interface LineAoeMechanicState {
+  type: 'lineAoe';
+  id: string;
+  startX: number;
+  startY: number;
+  endX: number;
+  endY: number;
+  width: number;
+  startTime: number;
+  endTime: number;
+  effects: Effect[];
+}
+
+// Conal AOE mechanic - pie slice/sector AOE from center point
+export interface ConalAoeMechanicState {
+  type: 'conalAoe';
+  id: string;
+  centerX: number;
+  centerY: number;
+  endpointX: number;
+  endpointY: number;
+  angle: number;
+  startTime: number;
+  endTime: number;
+  effects: Effect[];
+}
+
 // Union of all mechanic states
-export type MechanicState = ChariotMechanicState | SpreadMechanicState | TetherMechanicState | TowerMechanicState | RadialKnockbackMechanicState | LinearKnockbackMechanicState;
+export type MechanicState = ChariotMechanicState | SpreadMechanicState | TetherMechanicState | TowerMechanicState | RadialKnockbackMechanicState | LinearKnockbackMechanicState | LineAoeMechanicState | ConalAoeMechanicState;
 
 // Tether resolution event - emitted when a tether mechanic resolves
 export interface TetherResolutionEvent {

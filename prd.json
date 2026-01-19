@@ -11,7 +11,7 @@
       "Verify MechanicState union type includes both new interfaces",
       "Run npm run build - should pass with no TypeScript errors"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "id": "AOE-002",

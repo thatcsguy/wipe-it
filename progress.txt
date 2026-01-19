@@ -1,0 +1,7 @@
+AOE-001 COMPLETE: Added LineAoeMechanicState and ConalAoeMechanicState types
+- Added 'lineAoe' and 'conalAoe' to MechanicType union
+- LineAoeMechanicState: startX/Y, endX/Y (line center points), width, startTime, endTime, effects[]
+- ConalAoeMechanicState: centerX/Y (origin), endpointX/Y (arc midpoint), angle (radians), startTime, endTime, effects[]
+- Added both to MechanicState union
+- Build passes
+Files: src/shared/types.ts
