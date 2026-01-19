@@ -6,8 +6,17 @@ TETHER-001 (Types) - DONE
 
 TETHER-002 (Server - tether.ts) - DONE
 - Created TetherMechanic class implementing BaseMechanic
-- Constructor takes: id, endpointA, endpointB, requiredDistance, damage, startTime, endTime
+- Constructor takes: endpointA, endpointB, requiredDistance, damage, duration (generates own id like other mechanics)
 - resolve() resolves endpoint positions (player lookup or point x/y), calculates Euclidean distance
 - Applies damage to connected players only when distance < requiredDistance
 - toState() returns properly typed TetherMechanicState
 - File: src/server/mechanics/tether.ts
+
+TETHER-003 (Server - admin handlers) - DONE
+- Added spawnTether() method to Game class
+- Added 'pointTethers' handler: creates 1 tether per player to (ARENA_WIDTH/2, 0)
+- Added 'playerTethers' handler: picks 2 random players, creates 1 tether between them
+- Both use: requiredDistance=ARENA_WIDTH*0.75 (600), duration=3000ms, damage=100
+- Verified w/ Playwright: point tethers create correct endpoint at top center
+- Verified w/ Playwright: player tethers create 1 tether between 2 different players
+- Files: src/server/game.ts, src/server/index.ts

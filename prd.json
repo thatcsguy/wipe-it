@@ -34,7 +34,7 @@
                 "Using Playwright: join 2 players, click spawn point tethers button, verify __gameTest.getGameState().mechanics contains 2 tether mechanics with point endpoints at arena top center",
                 "Using Playwright: join 2 players, click spawn player tethers button, verify __gameTest.getGameState().mechanics contains 1 tether mechanic with both endpoints as player type"
             ],
-            "passes": false
+            "passes": true
         },
         {
             "id": "TETHER-004",

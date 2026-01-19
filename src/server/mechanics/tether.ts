@@ -12,21 +12,19 @@ export class TetherMechanic implements BaseMechanic {
   endTime: number;
 
   constructor(
-    id: string,
     endpointA: TetherEndpoint,
     endpointB: TetherEndpoint,
     requiredDistance: number,
     damage: number,
-    startTime: number,
-    endTime: number
+    duration: number
   ) {
-    this.id = id;
+    this.id = `tether-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
     this.endpointA = endpointA;
     this.endpointB = endpointB;
     this.requiredDistance = requiredDistance;
     this.damage = damage;
-    this.startTime = startTime;
-    this.endTime = endTime;
+    this.startTime = Date.now();
+    this.endTime = this.startTime + duration;
   }
 
   tick(now: number): void {

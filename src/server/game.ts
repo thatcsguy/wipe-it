@@ -4,7 +4,9 @@ import { GameState, PlayerInput, TICK_RATE, BROADCAST_RATE, MAX_PLAYERS, MAX_HP 
 import { MechanicManager } from './mechanics/manager';
 import { ChariotMechanic } from './mechanics/chariot';
 import { SpreadMechanic } from './mechanics/spread';
+import { TetherMechanic } from './mechanics/tether';
 import { Effect } from './mechanics/types';
+import { TetherEndpoint } from '../shared/types';
 import { StatusEffectManager } from './statusEffectManager';
 
 // Color pool for players
@@ -147,6 +149,23 @@ export class Game {
 
   spawnSpread(playerId: string, radius: number, duration: number, effects: Effect[]): void {
     const mechanic = new SpreadMechanic(playerId, radius, duration, effects);
+    this.mechanicManager.add(mechanic);
+  }
+
+  spawnTether(
+    endpointA: TetherEndpoint,
+    endpointB: TetherEndpoint,
+    requiredDistance: number,
+    damage: number,
+    duration: number
+  ): void {
+    const mechanic = new TetherMechanic(
+      endpointA,
+      endpointB,
+      requiredDistance,
+      damage,
+      duration
+    );
     this.mechanicManager.add(mechanic);
   }
 
