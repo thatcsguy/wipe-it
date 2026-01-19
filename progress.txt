@@ -8,3 +8,13 @@ Created src/client/mechanics/shared.ts with:
 
 Files: src/client/mechanics/shared.ts (new)
 Build: passes
+
+## MECH-002 - Create chariot.ts
+
+Created src/client/mechanics/chariot.ts with:
+- renderChariot function extracted from mechanics.ts
+- Imports CHARIOT_* constants from ./shared
+- Imports ChariotMechanicState from ../../shared/types
+
+Files: src/client/mechanics/chariot.ts (new)
+Build: passes
