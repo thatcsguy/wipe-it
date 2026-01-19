@@ -1,186 +1,201 @@
 {
-    "name": "Status Effects & Spread AOEs",
-    "items": [
-        {
-            "id": "HEAL-001",
-            "category": "Admin Heal All Button",
-            "description": "Add heal button HTML to admin panel. Add `<button id=\"heal-all-btn\">Heal All</button>` after the spawn button in public/index.html.",
-            "stepsToVerify": [
-                "Open public/index.html and verify a button with id 'heal-all-btn' and text 'Heal All' exists",
-                "Use Playwright to navigate to localhost:3000, verify button is visible in admin panel"
-            ],
-            "passes": true
-        },
-        {
-            "id": "HEAL-002",
-            "category": "Admin Heal All Button",
-            "description": "Add client click handler in src/client/admin.ts that emits 'admin:healAll' socket event when heal button is clicked.",
-            "stepsToVerify": [
-                "Read src/client/admin.ts and verify it adds click listener to 'heal-all-btn'",
-                "Verify the click handler emits socket event 'admin:healAll'"
-            ],
-            "passes": true
-        },
-        {
-            "id": "HEAL-003",
-            "category": "Admin Heal All Button",
-            "description": "Add server handler for 'admin:healAll' event. In src/server/index.ts listen for 'admin:healAll' and call game.healAllPlayers(). In src/server/game.ts add healAllPlayers() method that sets all players to MAX_HP.",
-            "stepsToVerify": [
-                "Read src/server/index.ts and verify it listens for 'admin:healAll' event",
-                "Read src/server/game.ts and verify healAllPlayers() method exists and sets all player hp to MAX_HP",
-                "Use Playwright: join game, take damage (if possible), click Heal All button, verify player health restored"
-            ],
-            "passes": true
-        },
-        {
-            "id": "STATUS-001",
-            "category": "Status Effect System",
-            "description": "Define status effect types in src/shared/types.ts. Add StatusEffectType union starting with 'vulnerability'. Add StatusEffectState interface with type, iconPath, startTime, duration, playerId. Add statusEffects: StatusEffectState[] to PlayerState. Add statusEffects: StatusEffectState[] to GameState. Add Effect type variant for status effects: { type: 'status', statusType, duration }.",
-            "stepsToVerify": [
-                "Read src/shared/types.ts and verify StatusEffectType type exists with 'vulnerability'",
-                "Verify StatusEffectState interface has: type, iconPath, startTime, duration, playerId",
-                "Verify PlayerState has statusEffects array",
-                "Verify GameState has statusEffects array",
-                "Verify Effect type includes status variant with statusType and duration"
-            ],
-            "passes": true
-        },
-        {
-            "id": "STATUS-002",
-            "category": "Status Effect System",
-            "description": "Create StatusEffect class in src/server/statusEffect.ts. Properties: type, playerId, startTime, duration, ongoingEffects, expirationEffects. Methods: tick(player) applies ongoing effects, isExpired(now) checks duration, onExpire(player) applies expiration effects, toState() serializes for client.",
-            "stepsToVerify": [
-                "Verify src/server/statusEffect.ts exists",
-                "Verify StatusEffect class has properties: type, playerId, startTime, duration, ongoingEffects, expirationEffects",
-                "Verify tick() method exists and applies ongoing effects",
-                "Verify isExpired() method checks if now >= startTime + duration",
-                "Verify onExpire() method applies expiration effects",
-                "Verify toState() returns StatusEffectState object"
-            ],
-            "passes": true
-        },
-        {
-            "id": "STATUS-003",
-            "category": "Status Effect System",
-            "description": "Create StatusEffectManager in src/server/statusEffectManager.ts. Methods: add(status) adds new status, tick(now, players) iterates statuses applying ongoing and removing expired, getStates() returns array of serialized states, remove(id) removes specific status.",
-            "stepsToVerify": [
-                "Verify src/server/statusEffectManager.ts exists",
-                "Verify add() method accepts and stores StatusEffect",
-                "Verify tick() iterates statuses, calls tick on each, removes expired",
-                "Verify getStates() returns StatusEffectState[]",
-                "Verify remove() can remove status by id or criteria"
-            ],
-            "passes": true
-        },
-        {
-            "id": "STATUS-004",
-            "category": "Status Effect System",
-            "description": "Integrate StatusEffectManager into Game class. Add statusEffectManager property to src/server/game.ts. Call statusEffectManager.tick() during game tick. Include statusEffectManager.getStates() in game state broadcast.",
-            "stepsToVerify": [
-                "Read src/server/game.ts and verify statusEffectManager property exists",
-                "Verify game tick calls statusEffectManager.tick()",
-                "Verify getState() or broadcast includes statusEffects from statusEffectManager.getStates()"
-            ],
-            "passes": true
-        },
-        {
-            "id": "STATUS-005",
-            "category": "Status Effect System",
-            "description": "Implement vulnerability status behavior in src/server/player.ts. When player has vulnerability status, takeDamage() multiplies incoming damage by 10.",
-            "stepsToVerify": [
-                "Read src/server/player.ts",
-                "Verify takeDamage() checks for vulnerability status",
-                "Verify damage is multiplied by 10 when vulnerability is active"
-            ],
-            "passes": true
-        },
-        {
-            "id": "STATUS-006",
-            "category": "Status Effect System",
-            "description": "Add client-side status effect rendering. Create src/client/statusEffects.ts with renderStatusEffects(ctx, player, statuses) that draws status icons centered on player. Call status renderer in src/client/renderer.ts drawPlayerAt() after drawing the player circle. Add vulnerability icon to public/images/ (simple skull or down-arrow shape).",
-            "stepsToVerify": [
-                "Verify src/client/statusEffects.ts exists with renderStatusEffects function",
-                "Verify src/client/renderer.ts imports and calls renderStatusEffects",
-                "Verify vulnerability icon exists in public/images/",
-                "Use Playwright: apply vulnerability to player, verify icon renders above player"
-            ],
-            "passes": true
-        },
-        {
-            "id": "SPREAD-001",
-            "category": "Spread AOE Mechanic",
-            "description": "Define spread mechanic types in src/shared/types.ts. Add 'spread' to MechanicType union. Add SpreadMechanicState interface with: type: 'spread', id, targetPlayerId, radius, startTime, endTime. Note: no x/y since position comes from player.",
-            "stepsToVerify": [
-                "Read src/shared/types.ts",
-                "Verify MechanicType includes 'spread'",
-                "Verify SpreadMechanicState interface exists with type, id, targetPlayerId, radius, startTime, endTime",
-                "Verify SpreadMechanicState does NOT have x/y position fields"
-            ],
-            "passes": true
-        },
-        {
-            "id": "SPREAD-002",
-            "category": "Spread AOE Mechanic",
-            "description": "Create SpreadMechanic class in src/server/mechanics/spread.ts. Properties: id, targetPlayerId, radius, startTime, endTime, effects. Methods: tick(now) is no-op since position comes from player, isExpired(now) returns now >= endTime, resolve(players, statusManager) gets target player position and damages all players within radius then applies vulnerability status (1000ms duration), toState() returns SpreadMechanicState with targetPlayerId.",
-            "stepsToVerify": [
-                "Verify src/server/mechanics/spread.ts exists",
-                "Verify SpreadMechanic has properties: id, targetPlayerId, radius, startTime, endTime, effects",
-                "Verify resolve() finds all players within radius of target player",
-                "Verify resolve() applies damage to players in range",
-                "Verify resolve() applies vulnerability status with 1000ms duration",
-                "Verify toState() returns SpreadMechanicState with targetPlayerId"
-            ],
-            "passes": true
-        },
-        {
-            "id": "SPREAD-003",
-            "category": "Spread AOE Mechanic",
-            "description": "Update MechanicManager in src/server/mechanics/manager.ts to pass statusEffectManager to resolve() calls so SpreadMechanic can apply status effects.",
-            "stepsToVerify": [
-                "Read src/server/mechanics/manager.ts",
-                "Verify resolve() method receives or has access to statusEffectManager",
-                "Verify statusEffectManager is passed when calling mechanic.resolve()"
-            ],
-            "passes": true
-        },
-        {
-            "id": "SPREAD-004",
-            "category": "Spread AOE Mechanic",
-            "description": "Add spawnSpread method to Game class in src/server/game.ts. Method signature: spawnSpread(playerId, radius, duration, effects) creates a SpreadMechanic attached to the specified player.",
-            "stepsToVerify": [
-                "Read src/server/game.ts",
-                "Verify spawnSpread() method exists",
-                "Verify it accepts playerId, radius, duration, effects parameters",
-                "Verify it creates and adds a SpreadMechanic to mechanicManager"
-            ],
-            "passes": true
-        },
-        {
-            "id": "SPREAD-005",
-            "category": "Spread AOE Mechanic",
-            "description": "Add admin button to spawn spread mechanic. In public/index.html add <button id=\"spawn-spread-btn\">Spawn Spread</button>. In src/client/admin.ts emit 'admin:spawnMechanic' with type: 'spread' on click. In src/server/index.ts handle type === 'spread' by picking a random player and spawning spread on them.",
-            "stepsToVerify": [
-                "Verify public/index.html has button with id 'spawn-spread-btn'",
-                "Verify src/client/admin.ts adds click handler emitting admin:spawnMechanic with type 'spread'",
-                "Verify src/server/index.ts handles spread type in spawnMechanic handler",
-                "Verify server picks random player when spawning spread",
-                "Use Playwright: join game, click Spawn Spread, verify spread mechanic appears on a player"
-            ],
-            "passes": true
-        },
-        {
-            "id": "SPREAD-006",
-            "category": "Spread AOE Mechanic",
-            "description": "Add client spread rendering in src/client/mechanics.ts. Add renderSpread() function that gets player position from game state and draws FFXIV-style pink/purple gradient circle. Use light pink/purple outer ring (rgba(255, 128, 255, 0.3)), radial gradient pink/purple fill, pulsing glow effect based on progress toward expiration, clearly defined edge border.",
-            "stepsToVerify": [
-                "Verify src/client/mechanics.ts has renderSpread() function",
-                "Verify it retrieves target player position from game state using targetPlayerId",
-                "Verify it draws a circle with pink/purple gradient fill",
-                "Verify outer ring has light pink/purple color",
-                "Verify pulsing/glow effect based on mechanic progress",
-                "Use Playwright: spawn spread, take screenshot, verify pink/purple AOE circle renders on player"
-            ],
-            "passes": true
-        }
-    ]
+  "project": "Agent-Friendly Testing Infrastructure",
+  "description": "Add DOM-accessible debug panel, toast notifications, and event-based APIs to enable Playwright-based testing without canvas evaluation",
+  "items": [
+    {
+      "id": "DEBUG-001",
+      "category": "Debug Panel",
+      "description": "Create debug panel container in HTML that is hidden by default and shown when URL contains ?debug=1 query parameter. Add <div id=\"debug-panel\" class=\"debug-panel\"> to index.html. Panel should be positioned fixed on the right side of the screen, not overlapping the canvas.",
+      "steps_to_verify": [
+        "Open browser to http://localhost:3000 - debug panel should NOT be visible",
+        "Open browser to http://localhost:3000?debug=1 - debug panel SHOULD be visible",
+        "Use Playwright: await page.goto('http://localhost:3000?debug=1'); await expect(page.locator('#debug-panel')).toBeVisible()",
+        "Use Playwright: await page.goto('http://localhost:3000'); await expect(page.locator('#debug-panel')).not.toBeVisible()"
+      ],
+      "passes": false
+    },
+    {
+      "id": "DEBUG-002",
+      "category": "Debug Panel",
+      "description": "Create src/client/debugPanel.ts module that exports initDebugPanel() and updateDebugPanel(gameState, localPlayerId) functions. initDebugPanel() should check for ?debug=1 and set up the panel structure. updateDebugPanel() should be called each frame from the game loop in game.ts to refresh displayed data.",
+      "steps_to_verify": [
+        "File src/client/debugPanel.ts exists",
+        "Module exports initDebugPanel and updateDebugPanel functions",
+        "initDebugPanel is called from main.ts or game.ts on startup",
+        "updateDebugPanel is called in the game loop in game.ts"
+      ],
+      "passes": false
+    },
+    {
+      "id": "DEBUG-003",
+      "category": "Debug Panel",
+      "description": "Debug panel displays all connected players with data attributes. Each player shown as <div class=\"debug-player\" data-player-id=\"{id}\" data-hp=\"{hp}\" data-x=\"{x}\" data-y=\"{y}\">{name}: {hp}HP</div>. Values must update in real-time as game state changes. Include visual health bar inside each player div.",
+      "steps_to_verify": [
+        "Join game with ?debug=1, verify your player appears in debug panel",
+        "Use Playwright: const player = page.locator('.debug-player').first(); await expect(player).toHaveAttribute('data-hp', /\\d+/)",
+        "Use Playwright: verify data-x and data-y attributes update when player moves using WASD",
+        "Take damage from a mechanic, verify data-hp attribute decreases",
+        "Health bar visual width should correspond to HP percentage"
+      ],
+      "passes": false
+    },
+    {
+      "id": "DEBUG-004",
+      "category": "Debug Panel",
+      "description": "Debug panel displays all active mechanics with data attributes. Each mechanic shown as <div class=\"debug-mechanic\" data-mechanic-id=\"{id}\" data-type=\"{type}\" data-expires=\"{expiresAt}\">{type} - expires {timeRemaining}ms</div>. Mechanics should be added when spawned and removed when resolved/expired.",
+      "steps_to_verify": [
+        "Join game with ?debug=1, click 'Spawn Chariot' admin button",
+        "Verify mechanic appears in debug panel with data-type=\"chariot\"",
+        "Use Playwright: await page.click('#spawn-chariot-btn'); await expect(page.locator('.debug-mechanic[data-type=\"chariot\"]')).toBeVisible()",
+        "Wait 3 seconds, verify mechanic element is removed from debug panel",
+        "Use Playwright: await expect(page.locator('.debug-mechanic[data-type=\"chariot\"]')).not.toBeVisible({ timeout: 5000 })"
+      ],
+      "passes": false
+    },
+    {
+      "id": "DEBUG-005",
+      "category": "Debug Panel",
+      "description": "Debug panel displays status effects per player. Within each .debug-player div, show status effects as <span class=\"debug-status\" data-effect=\"{effectType}\">{effectType}</span>. Status effects appear when applied and disappear when expired.",
+      "steps_to_verify": [
+        "Join game with ?debug=1 and another player",
+        "Spawn spreads, have players overlap to trigger vulnerability",
+        "Verify data-effect=\"vulnerability\" span appears inside affected player's debug-player div",
+        "Use Playwright: await expect(page.locator('.debug-player .debug-status[data-effect=\"vulnerability\"]')).toBeVisible()",
+        "Wait for effect to expire, verify span is removed"
+      ],
+      "passes": false
+    },
+    {
+      "id": "TOAST-001",
+      "category": "Toast System",
+      "description": "Create toast notification container in HTML. Add <div id=\"action-log\" class=\"action-log\"></div> to index.html. Position fixed at bottom-left or bottom-center of screen, above any UI elements. Should always be visible (not dependent on debug mode).",
+      "steps_to_verify": [
+        "Open browser to http://localhost:3000",
+        "Verify #action-log element exists in DOM (can be empty)",
+        "Use Playwright: await expect(page.locator('#action-log')).toBeAttached()"
+      ],
+      "passes": false
+    },
+    {
+      "id": "TOAST-002",
+      "category": "Toast System",
+      "description": "Create src/client/toast.ts module that exports showToast(message: string) function. Each call appends <div class=\"toast\">{message}</div> to #action-log. Toast should auto-remove after 3 seconds. Maximum 5 toasts visible at once (oldest removed first if exceeded).",
+      "steps_to_verify": [
+        "File src/client/toast.ts exists",
+        "Module exports showToast function",
+        "Calling showToast('Test') adds a .toast element with text 'Test'",
+        "After 3 seconds, the toast element is removed from DOM",
+        "Adding 6 toasts rapidly results in only 5 being visible"
+      ],
+      "passes": false
+    },
+    {
+      "id": "TOAST-003",
+      "category": "Toast System",
+      "description": "Admin actions trigger toast notifications. Modify src/client/admin.ts to call showToast() after each admin emit. Messages: 'Spawned chariot' for chariot, 'Spawned spreads' for spreads, 'Healed all players' for heal all, 'Changed name to {name}' for name change.",
+      "steps_to_verify": [
+        "Click 'Spawn Chariot' button, verify toast 'Spawned chariot' appears",
+        "Click 'Spawn Spreads' button, verify toast 'Spawned spreads' appears",
+        "Click 'Heal All' button, verify toast 'Healed all players' appears",
+        "Use Playwright: await page.click('#heal-all-btn'); await expect(page.locator('.toast', { hasText: 'Healed all players' })).toBeVisible()",
+        "Use Playwright: await page.click('#spawn-chariot-btn'); await expect(page.locator('.toast', { hasText: 'Spawned chariot' })).toBeVisible()"
+      ],
+      "passes": false
+    },
+    {
+      "id": "TOAST-004",
+      "category": "Toast System",
+      "description": "Style toast notifications with CSS in public/css/style.css. Toasts should have visible background color, padding, border-radius, and fade-out animation before removal. Action log container should not interfere with game interaction.",
+      "steps_to_verify": [
+        "Toasts are visually distinct from background (contrasting color)",
+        "Toasts have padding and rounded corners",
+        "Toasts animate out (fade or slide) before removal",
+        "Can still click on canvas and admin buttons with toasts visible"
+      ],
+      "passes": false
+    },
+    {
+      "id": "EVENT-001",
+      "category": "Event API",
+      "description": "Add onStateChange(callback) to __gameTest API in src/client/game.ts. Callback receives full GameState on every state update from server. Returns unsubscribe function. Multiple callbacks can be registered.",
+      "steps_to_verify": [
+        "Use browser console: let count = 0; __gameTest.onStateChange(() => count++); then verify count increases over time",
+        "Verify callback receives GameState object with players, mechanics, statusEffects, timestamp",
+        "Verify unsubscribe function stops callbacks: const unsub = __gameTest.onStateChange(cb); unsub(); verify cb no longer called",
+        "Use Playwright: await page.evaluate(() => new Promise(resolve => { __gameTest.onStateChange(state => { if(state.players.length > 0) resolve(true); }); }))"
+      ],
+      "passes": false
+    },
+    {
+      "id": "EVENT-002",
+      "category": "Event API",
+      "description": "Add onMechanicSpawn(callback) to __gameTest API. Callback fires when a new mechanic appears in game state (not present in previous state). Callback receives the new MechanicState object. Returns unsubscribe function.",
+      "steps_to_verify": [
+        "Register callback, click 'Spawn Chariot', verify callback fires with mechanic data",
+        "Verify callback receives object with id, type, x, y, radius, expiresAt properties",
+        "Use Playwright: await page.evaluate(() => new Promise(resolve => { __gameTest.onMechanicSpawn(m => resolve(m)); })); await page.click('#spawn-chariot-btn'); verify promise resolves with mechanic",
+        "Verify callback does not fire for mechanics already present (only new ones)"
+      ],
+      "passes": false
+    },
+    {
+      "id": "EVENT-003",
+      "category": "Event API",
+      "description": "Add onMechanicResolve(callback) to __gameTest API. Callback fires when a mechanic disappears from game state (was present, now gone). Callback receives the mechanic id that resolved. Returns unsubscribe function.",
+      "steps_to_verify": [
+        "Register callback, spawn chariot, wait for expiration, verify callback fires",
+        "Verify callback receives the mechanic id string",
+        "Use Playwright: spawn mechanic, then await page.evaluate(() => new Promise(resolve => { __gameTest.onMechanicResolve(id => resolve(id)); })); verify resolves after ~3 seconds"
+      ],
+      "passes": false
+    },
+    {
+      "id": "EVENT-004",
+      "category": "Event API",
+      "description": "Add waitForMechanicResolve(mechanicId) to __gameTest API. Returns a Promise that resolves when the specified mechanic is no longer in game state. If mechanic doesn't exist, resolve immediately. Useful for tests that need to wait for mechanic completion.",
+      "steps_to_verify": [
+        "Spawn chariot, get its id, call waitForMechanicResolve(id), verify promise resolves after ~3 seconds",
+        "Call waitForMechanicResolve('nonexistent'), verify resolves immediately",
+        "Use Playwright: await page.evaluate(async () => { const state = __gameTest.getGameState(); const id = state.mechanics[0]?.id; if(id) await __gameTest.waitForMechanicResolve(id); return true; })"
+      ],
+      "passes": false
+    },
+    {
+      "id": "STYLE-001",
+      "category": "Styling",
+      "description": "Add CSS styles for debug panel in public/css/style.css. Panel should be fixed position on right side, dark semi-transparent background, light text, scrollable if content overflows. Should not block canvas interaction. Health bars should be colored (green to red gradient based on HP).",
+      "steps_to_verify": [
+        "Debug panel is positioned on right side of screen",
+        "Panel has dark background with readable light text",
+        "Panel scrolls if many players/mechanics present",
+        "Canvas is still clickable/interactable",
+        "Health bars show color gradient (green=full, red=low)"
+      ],
+      "passes": false
+    },
+    {
+      "id": "INTEGRATION-001",
+      "category": "Integration",
+      "description": "Ensure debug panel and toast system work together without conflicts. Both should initialize on page load. Debug panel controlled by query param, toasts always active. No console errors during normal gameplay with both systems active.",
+      "steps_to_verify": [
+        "Load game with ?debug=1, perform admin actions, verify both debug panel updates and toasts appear",
+        "Check browser console for errors during 30 seconds of gameplay",
+        "Use Playwright: navigate with debug=1, spawn mechanics, heal, verify no console errors logged"
+      ],
+      "passes": false
+    },
+    {
+      "id": "INTEGRATION-002",
+      "category": "Integration",
+      "description": "Expose debug panel functions on window for testing. Add __debugTest object with show(), hide(), isVisible(), and getElement() methods. Allows programmatic control of debug panel visibility regardless of query param.",
+      "steps_to_verify": [
+        "window.__debugTest exists after page load",
+        "__debugTest.show() makes panel visible even without ?debug=1",
+        "__debugTest.hide() hides panel",
+        "__debugTest.isVisible() returns correct boolean",
+        "__debugTest.getElement() returns the #debug-panel DOM element"
+      ],
+      "passes": false
+    }
+  ]
 }
