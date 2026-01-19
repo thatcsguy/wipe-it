@@ -110,7 +110,7 @@
         "Verify resolve() calculates direction from origin to each player",
         "Verify resolve() calls player.applyKnockback with correct params"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "id": "KB-010",

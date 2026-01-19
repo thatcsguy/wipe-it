@@ -50,3 +50,12 @@
 - Updated toState() to include knockback in serialized state
 - Files: src/server/player.ts
 - Build passes
+
+=== KB-009 - RadialKnockbackMechanic Class ===
+- Created RadialKnockbackMechanic implementing BaseMechanic
+- Constructor: originX/Y, delay, knockbackDistance, knockbackDuration
+- resolve() iterates ALL players, calculates direction from origin → player, calls player.applyKnockback
+- Uses getRadialKnockbackDirection from shared/knockback.ts
+- toState() returns RadialKnockbackMechanicState
+- Files: src/server/mechanics/radialKnockback.ts
+- Build passes
