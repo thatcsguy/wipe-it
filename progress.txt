@@ -81,3 +81,10 @@
 - Verified: Playwright shows portals at positions outside arena bounds
 - Screenshot confirms animated swirling portals visible at arena edges
 - Files: src/server/encounters/scripts/combos/orbital-omen.ts
+
+## DOODAD-012: Verify Doodad Auto-Expiration
+- Playwright verified: spawn portal w/ 2000ms duration → .debug-doodad appears
+- Wait 2500ms → .debug-doodad removed from DOM
+- Canvas verified: portal renders while active, disappears after expiration
+- DoodadManager.tick() correctly removes doodads where endTime < now
+- No code changes needed - existing implementation works correctly
