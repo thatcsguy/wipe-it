@@ -44,6 +44,42 @@ function getHealthColor(hpPercent: number): string {
   return '#ef4444'; // red
 }
 
+// Draw translucent bubble around player (for bubbled status)
+// Bubble encloses player circle (radius 20) and name text above it
+function drawBubble(ctx: CanvasRenderingContext2D, x: number, y: number): void {
+  // Bubble needs to encompass:
+  // - Player circle at y (radius PLAYER_RADIUS = 20)
+  // - Name text at y - PLAYER_RADIUS - 10 (approx 12-14px tall)
+  // - Health bar at y - PLAYER_RADIUS - 8 (6px tall)
+  // Center the bubble between player center and name, radius ~45-50
+  const bubbleRadius = 48;
+  const bubbleCenterY = y - 15; // Offset up to center around player+name
+
+  // Main bubble fill - semi-transparent cyan
+  ctx.beginPath();
+  ctx.arc(x, bubbleCenterY, bubbleRadius, 0, Math.PI * 2);
+  ctx.fillStyle = 'rgba(100, 200, 255, 0.25)';
+  ctx.fill();
+
+  // Soft white/light border
+  ctx.strokeStyle = 'rgba(200, 230, 255, 0.6)';
+  ctx.lineWidth = 2;
+  ctx.stroke();
+
+  // Highlight arc on upper-left for 3D bubble effect
+  ctx.beginPath();
+  ctx.arc(x, bubbleCenterY, bubbleRadius - 5, Math.PI * 1.1, Math.PI * 1.6);
+  ctx.strokeStyle = 'rgba(255, 255, 255, 0.5)';
+  ctx.lineWidth = 3;
+  ctx.stroke();
+
+  // Smaller inner highlight for extra shine
+  ctx.beginPath();
+  ctx.arc(x - bubbleRadius * 0.3, bubbleCenterY - bubbleRadius * 0.3, bubbleRadius * 0.15, 0, Math.PI * 2);
+  ctx.fillStyle = 'rgba(255, 255, 255, 0.4)';
+  ctx.fill();
+}
+
 // Draw health bar at position
 function drawHealthBar(x: number, y: number, hp: number): void {
   if (!ctx) return;
@@ -173,17 +209,34 @@ export function render(
 
   // Draw all players (body, health bar, name)
   for (const player of players) {
+    // Determine player position
+    let px = player.x;
+    let py = player.y;
     if (localPlayerId && player.id === localPlayerId && localPosition) {
-      // Draw local player at predicted position
-      drawPlayerAt(localPosition.x, localPosition.y, player.color, player.name, player.hp, player.statusEffects);
+      px = localPosition.x;
+      py = localPosition.y;
     } else {
-      // Draw other players at interpolated position if available, else server position
       const interpolated = interpolatedPositions?.get(player.id);
       if (interpolated) {
-        drawPlayerAt(interpolated.x, interpolated.y, player.color, player.name, player.hp, player.statusEffects);
-      } else {
-        drawPlayer(player);
+        px = interpolated.x;
+        py = interpolated.y;
       }
+    }
+
+    // Draw bubble BEFORE player if bubbled (so player appears inside)
+    const isBubbled = player.statusEffects?.some(s => s.type === 'bubbled');
+    if (isBubbled) {
+      drawBubble(ctx, px, py);
+    }
+
+    // Draw the player
+    if (localPlayerId && player.id === localPlayerId && localPosition) {
+      drawPlayerAt(localPosition.x, localPosition.y, player.color, player.name, player.hp, player.statusEffects);
+    } else if (interpolatedPositions?.get(player.id)) {
+      const interpolated = interpolatedPositions.get(player.id)!;
+      drawPlayerAt(interpolated.x, interpolated.y, player.color, player.name, player.hp, player.statusEffects);
+    } else {
+      drawPlayer(player);
     }
   }
 

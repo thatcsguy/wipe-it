@@ -91,7 +91,7 @@
         "Has a highlight arc or gradient for bubble effect",
         "TypeScript compilation succeeds: npm run build"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "id": "BUBBLE-009",
@@ -103,7 +103,7 @@
         "Bubble is drawn at correct position (player x, offset y to center around player+name)",
         "TypeScript compilation succeeds: npm run build"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "id": "BUBBLE-010",

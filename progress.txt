@@ -14,3 +14,11 @@ BUBBLE-005 + BUBBLE-006 + BUBBLE-007: Bubbled movement blocking (client + server
 - Key: applyKnockback() has NO bubbled check - knockback still works on bubbled players
 - Verified via Playwright: WASD blocked while bubbled, knockback still applies
 - Files: src/client/network.ts, src/server/player.ts
+
+BUBBLE-008 + BUBBLE-009: Visual bubble rendering
+- drawBubble(): translucent cyan circle (r=48), offset up to encompass player+name
+- 3D effect: highlight arc upper-left, small shine dot
+- Soft white/light border (rgba 200,230,255,0.6)
+- Called in render loop BEFORE drawPlayer/drawPlayerAt when player has 'bubbled' status
+- Verified via Playwright: bubble visual renders around bubbled player
+- File: src/client/renderer.ts
