@@ -65,3 +65,14 @@ MECH-011: Tether-line-combo script now applies effects on tether failure
 - On failed stretch: runner.damage() + runner.applyStatus('vulnerability')
 - Playwright verified: player took 100 damage, gained/lost vulnerability
 - Files: tether-line-combo.ts
+
+MECH-012: Tutorial-encounter.ts applies effects for chariot/spread mechanics
+- Store mechanic IDs when spawning, use waitForResolve to get results
+- Added CHARIOT_DAMAGE (50) and SPREAD_DAMAGE (30) constants
+- Added applyDamage helper function
+- Phase 1: chariot spawn + waitForResolve + damage
+- Phase 2: spreads spawn + Promise.all waitForResolve + damage
+- Phase 3: tether-line combo unchanged (handles its own effects)
+- Phase 4: chariot + spreads spawn + Promise.all waitForResolve + damage
+- Playwright verified: 50 dmg from chariot, 30 dmg from spread, tether combo effects
+- Files: tutorial-encounter.ts

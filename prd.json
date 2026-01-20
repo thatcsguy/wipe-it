@@ -176,7 +176,7 @@
             "Stand in chariot AOE, verify damage is applied when it resolves",
             "Stand in spread AOE, verify damage is applied when it resolves"
         ],
-        "passes": false
+        "passes": true
     },
     {
         "id": "MECH-013",
