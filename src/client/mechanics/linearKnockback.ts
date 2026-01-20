@@ -5,6 +5,7 @@ export const LINEAR_KB_COLOR = '#00ccff';
 const CHEVRON_SPACING = 100; // ~100px between chevrons along line
 const NUM_WAVES = 4;
 const CHEVRON_SIZE = 25;
+const CHEVRON_SPEED = 400; // pixels per second (constant)
 
 // Rectangle outline colors (similar to lineAoe but cyan-tinted)
 const RECT_EDGE_GLOW_COLOR = 'rgba(0, 200, 255, 0.6)';
@@ -60,10 +61,8 @@ export function renderLinearKnockback(
     return;
   }
 
-  // Calculate animation progress (0 to 1)
-  const duration = endTime - startTime;
-  const elapsed = serverTime - startTime;
-  const progress = Math.max(0, Math.min(1, elapsed / duration));
+  // Calculate elapsed time in seconds
+  const elapsed = (serverTime - startTime) / 1000;
 
   // Calculate line direction and length
   const lineDx = lineEndX - lineStartX;
@@ -136,8 +135,10 @@ export function renderLinearKnockback(
 
   // Draw multiple waves of chevrons within the rectangle
   for (let wave = 0; wave < NUM_WAVES; wave++) {
-    // Stagger waves - each wave is offset in the animation cycle
-    const wavePhase = (progress + wave / NUM_WAVES) % 1;
+    // Distance traveled at constant speed, offset per wave
+    const distanceTraveled = elapsed * CHEVRON_SPEED + (wave / NUM_WAVES) * width;
+    // Wrap within width to get phase (0 to 1)
+    const wavePhase = (distanceTraveled % width) / width;
 
     // Wave distance from the opposite edge (moves across rectangle in knockback direction)
     // Start at -halfWidth (opposite edge) and move to +halfWidth (knockback edge)
