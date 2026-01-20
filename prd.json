@@ -219,6 +219,6 @@
             "Verify tether-line combo applies effects on tether failure",
             "Check browser console for errors - should be none"
         ],
-        "passes": false
+        "passes": true
     }
 ]

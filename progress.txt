@@ -91,3 +91,10 @@ MECH-014: CLAUDE.md updated with script-driven effects documentation
 - Added examples: chariot damage application, tether failure handling
 - Build passes
 - Files: CLAUDE.md
+
+MECH-015: End-to-end verification complete
+- Playwright verified all script-driven effects working correctly
+- Orbital Omen: line AOE deals 50 dmg + vulnerability (saw 100 dmg = 2 hits)
+- Tutorial Encounter: chariot 50 dmg, spread 30 dmg, tether failure dmg+vuln
+- No console errors (only favicon 404)
+- All PRD tasks now passing
