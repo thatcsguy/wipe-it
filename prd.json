@@ -82,7 +82,7 @@
             "Verify select(selector) invokes selector with current state and returns PlayerState[]",
             "Run npm run build - should pass"
         ],
-        "passes": false
+        "passes": true
     },
     {
         "id": "ENC-007",

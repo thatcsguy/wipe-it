@@ -179,14 +179,16 @@ export class Game {
     this.io.emit('state', state);
   }
 
-  spawnChariot(x: number, y: number, radius: number, duration: number, effects: Effect[]): void {
+  spawnChariot(x: number, y: number, radius: number, duration: number, effects: Effect[]): string {
     const mechanic = new ChariotMechanic(x, y, radius, duration, effects);
     this.mechanicManager.add(mechanic);
+    return mechanic.id;
   }
 
-  spawnSpread(playerId: string, radius: number, duration: number, effects: Effect[]): void {
+  spawnSpread(playerId: string, radius: number, duration: number, effects: Effect[]): string {
     const mechanic = new SpreadMechanic(playerId, radius, duration, effects);
     this.mechanicManager.add(mechanic);
+    return mechanic.id;
   }
 
   spawnTether(
@@ -195,7 +197,7 @@ export class Game {
     requiredDistance: number,
     damage: number,
     duration: number
-  ): void {
+  ): string {
     const mechanic = new TetherMechanic(
       endpointA,
       endpointB,
@@ -204,6 +206,7 @@ export class Game {
       duration
     );
     this.mechanicManager.add(mechanic);
+    return mechanic.id;
   }
 
   spawnTower(
@@ -214,7 +217,7 @@ export class Game {
     requiredPlayers: number,
     failureEffects: Effect[],
     successEffects: Effect[]
-  ): void {
+  ): string {
     const now = Date.now();
     const id = `tower-${now}-${Math.random().toString(36).substr(2, 9)}`;
     const mechanic = new TowerMechanic(
@@ -229,6 +232,7 @@ export class Game {
       successEffects
     );
     this.mechanicManager.add(mechanic);
+    return id;
   }
 
   spawnRadialKnockback(
@@ -237,7 +241,7 @@ export class Game {
     startDelay: number,
     knockbackDistance: number,
     knockbackDuration: number
-  ): void {
+  ): string {
     const mechanic = new RadialKnockbackMechanic(
       originX,
       originY,
@@ -246,6 +250,7 @@ export class Game {
       knockbackDuration
     );
     this.mechanicManager.add(mechanic);
+    return mechanic.id;
   }
 
   spawnLinearKnockback(
@@ -256,7 +261,7 @@ export class Game {
     startDelay: number,
     knockbackDistance: number,
     knockbackDuration: number
-  ): void {
+  ): string {
     const mechanic = new LinearKnockbackMechanic(
       lineStartX,
       lineStartY,
@@ -267,6 +272,7 @@ export class Game {
       knockbackDuration
     );
     this.mechanicManager.add(mechanic);
+    return mechanic.id;
   }
 
   spawnLineAoe(
@@ -277,9 +283,10 @@ export class Game {
     width: number,
     duration: number,
     effects: Effect[]
-  ): void {
+  ): string {
     const mechanic = new LineAoeMechanic(startX, startY, endX, endY, width, duration, effects);
     this.mechanicManager.add(mechanic);
+    return mechanic.id;
   }
 
   spawnConalAoe(
@@ -290,9 +297,10 @@ export class Game {
     angle: number,
     duration: number,
     effects: Effect[]
-  ): void {
+  ): string {
     const mechanic = new ConalAoeMechanic(centerX, centerY, endpointX, endpointY, angle, duration, effects);
     this.mechanicManager.add(mechanic);
+    return mechanic.id;
   }
 
   getStatusEffectManager(): StatusEffectManager {
@@ -307,5 +315,19 @@ export class Game {
     for (const player of this.players.values()) {
       player.hp = MAX_HP;
     }
+  }
+
+  getState(): GameState {
+    const allStatusEffects = this.statusEffectManager.getStates();
+    return {
+      players: Array.from(this.players.values()).map(p => {
+        const playerState = p.toState();
+        playerState.statusEffects = allStatusEffects.filter(s => s.playerId === p.id);
+        return playerState;
+      }),
+      mechanics: this.mechanicManager.getStates(),
+      statusEffects: allStatusEffects,
+      timestamp: Date.now(),
+    };
   }
 }

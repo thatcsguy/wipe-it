@@ -1,0 +1,171 @@
+import { Game } from '../game';
+import { GameState, PlayerState, ARENA_WIDTH, ARENA_HEIGHT } from '../../shared/types';
+import { Context, MechanicParams, MechanicResult, Script, ScriptRunner, Selector } from './types';
+import { createContext } from './context';
+
+// Default values for mechanics (mirroring admin handlers)
+const DEFAULTS = {
+  chariot: { radius: ARENA_HEIGHT * 0.2, duration: 3000 },
+  spread: { radius: ARENA_HEIGHT * 0.15, duration: 3000 },
+  tether: { requiredDistance: ARENA_WIDTH * 0.75, damage: 100, duration: 3000 },
+  tower: { radius: 80, duration: 5000, requiredPlayers: 2 },
+  radialKnockback: { delay: 2000, knockbackDistance: 150, knockbackDuration: 500 },
+  linearKnockback: { delay: 2000, knockbackDistance: 150, knockbackDuration: 500 },
+  lineAoe: { width: 100, duration: 3000 },
+  conalAoe: { angle: Math.PI / 2, duration: 3000 },
+};
+
+// Default effects
+const DEFAULT_DAMAGE_EFFECT = { type: 'damage' as const, amount: 25 };
+
+/**
+ * Implementation of ScriptRunner that executes encounter scripts
+ */
+export class ScriptRunnerImpl implements ScriptRunner {
+  private game: Game;
+  private context: Context;
+
+  constructor(game: Game) {
+    this.game = game;
+    this.context = createContext();
+  }
+
+  spawn(mechanic: MechanicParams): string {
+    switch (mechanic.type) {
+      case 'chariot': {
+        const radius = mechanic.radius ?? DEFAULTS.chariot.radius;
+        const duration = mechanic.duration ?? DEFAULTS.chariot.duration;
+        return this.game.spawnChariot(
+          mechanic.x,
+          mechanic.y,
+          radius,
+          duration,
+          [DEFAULT_DAMAGE_EFFECT]
+        );
+      }
+
+      case 'spread': {
+        const radius = mechanic.radius ?? DEFAULTS.spread.radius;
+        const duration = mechanic.duration ?? DEFAULTS.spread.duration;
+        return this.game.spawnSpread(
+          mechanic.targetPlayerId,
+          radius,
+          duration,
+          [DEFAULT_DAMAGE_EFFECT]
+        );
+      }
+
+      case 'tether': {
+        const requiredDistance = mechanic.requiredDistance ?? DEFAULTS.tether.requiredDistance;
+        const damage = mechanic.damage ?? DEFAULTS.tether.damage;
+        const duration = mechanic.duration ?? DEFAULTS.tether.duration;
+        return this.game.spawnTether(
+          mechanic.endpointA,
+          mechanic.endpointB,
+          requiredDistance,
+          damage,
+          duration
+        );
+      }
+
+      case 'tower': {
+        const radius = mechanic.radius ?? DEFAULTS.tower.radius;
+        const duration = mechanic.duration ?? DEFAULTS.tower.duration;
+        const requiredPlayers = mechanic.requiredPlayers ?? DEFAULTS.tower.requiredPlayers;
+        return this.game.spawnTower(
+          mechanic.x,
+          mechanic.y,
+          radius,
+          duration,
+          requiredPlayers,
+          [{ type: 'damage', amount: 50 }],
+          []
+        );
+      }
+
+      case 'radialKnockback': {
+        const delay = mechanic.delay ?? DEFAULTS.radialKnockback.delay;
+        const knockbackDistance = mechanic.knockbackDistance ?? DEFAULTS.radialKnockback.knockbackDistance;
+        const knockbackDuration = mechanic.knockbackDuration ?? DEFAULTS.radialKnockback.knockbackDuration;
+        return this.game.spawnRadialKnockback(
+          mechanic.originX,
+          mechanic.originY,
+          delay,
+          knockbackDistance,
+          knockbackDuration
+        );
+      }
+
+      case 'linearKnockback': {
+        const delay = mechanic.delay ?? DEFAULTS.linearKnockback.delay;
+        const knockbackDistance = mechanic.knockbackDistance ?? DEFAULTS.linearKnockback.knockbackDistance;
+        const knockbackDuration = mechanic.knockbackDuration ?? DEFAULTS.linearKnockback.knockbackDuration;
+        return this.game.spawnLinearKnockback(
+          mechanic.lineStartX,
+          mechanic.lineStartY,
+          mechanic.lineEndX,
+          mechanic.lineEndY,
+          delay,
+          knockbackDistance,
+          knockbackDuration
+        );
+      }
+
+      case 'lineAoe': {
+        const width = mechanic.width ?? DEFAULTS.lineAoe.width;
+        const duration = mechanic.duration ?? DEFAULTS.lineAoe.duration;
+        return this.game.spawnLineAoe(
+          mechanic.startX,
+          mechanic.startY,
+          mechanic.endX,
+          mechanic.endY,
+          width,
+          duration,
+          [DEFAULT_DAMAGE_EFFECT]
+        );
+      }
+
+      case 'conalAoe': {
+        const angle = mechanic.angle ?? DEFAULTS.conalAoe.angle;
+        const duration = mechanic.duration ?? DEFAULTS.conalAoe.duration;
+        return this.game.spawnConalAoe(
+          mechanic.centerX,
+          mechanic.centerY,
+          mechanic.endpointX,
+          mechanic.endpointY,
+          angle,
+          duration,
+          [DEFAULT_DAMAGE_EFFECT]
+        );
+      }
+
+      default:
+        // TypeScript exhaustive check
+        const _exhaustive: never = mechanic;
+        throw new Error(`Unknown mechanic type: ${(_exhaustive as MechanicParams).type}`);
+    }
+  }
+
+  wait(ms: number): Promise<void> {
+    return new Promise(resolve => setTimeout(resolve, ms));
+  }
+
+  getState(): GameState {
+    return this.game.getState();
+  }
+
+  select(selector: Selector): PlayerState[] {
+    const state = this.getState();
+    return selector(state, this.context);
+  }
+
+  // NOT implemented yet per ENC-006 requirements
+  waitForResolve(_mechanicId: string): Promise<MechanicResult> {
+    throw new Error('waitForResolve not implemented yet');
+  }
+
+  // NOT implemented yet per ENC-006 requirements
+  run(_script: Script): Promise<void> {
+    throw new Error('run not implemented yet');
+  }
+}

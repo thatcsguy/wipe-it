@@ -33,3 +33,15 @@ ENC-005: Context factory
 - createContext() returns empty Context object {}
 - Simple foundation for future context initialization logic
 - Build passes
+
+ENC-006: Basic ScriptRunner implementation
+- Created src/server/encounters/script-runner.ts
+- ScriptRunnerImpl class takes Game in constructor
+- spawn(): routes MechanicParams to correct game.spawn* method, returns mechanic ID
+- wait(ms): returns Promise resolving after ms via setTimeout
+- getState(): returns GameState from game.getState()
+- select(selector): invokes selector with state + context, returns PlayerState[]
+- Modified game.ts: all spawn* methods now return string (mechanic ID)
+- Added game.getState() method
+- waitForResolve/run throw "not implemented" per spec
+- Build passes
