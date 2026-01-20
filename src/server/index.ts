@@ -277,6 +277,53 @@ io.on('connection', (socket) => {
     console.log('Admin healed all players');
   });
 
+  // Spawn portal doodad at random arena edge
+  socket.on('admin:spawnPortal', (params?: { duration?: number; x?: number; y?: number }) => {
+    const duration = params?.duration ?? 5000;
+    let x: number;
+    let y: number;
+
+    if (params?.x !== undefined && params?.y !== undefined) {
+      // Use provided position
+      x = params.x;
+      y = params.y;
+    } else {
+      // Random edge position: pick a side (N, S, E, W) and random position along it
+      const side = Math.floor(Math.random() * 4);
+      const offset = -50; // How far outside the arena
+      switch (side) {
+        case 0: // North
+          x = Math.random() * ARENA_WIDTH;
+          y = offset;
+          break;
+        case 1: // South
+          x = Math.random() * ARENA_WIDTH;
+          y = ARENA_HEIGHT - offset;
+          break;
+        case 2: // East
+          x = ARENA_WIDTH - offset;
+          y = Math.random() * ARENA_HEIGHT;
+          break;
+        default: // West
+          x = offset;
+          y = Math.random() * ARENA_HEIGHT;
+          break;
+      }
+    }
+
+    game.getDoodadManager().spawn({
+      type: 'portal',
+      width: 80,
+      height: 80,
+      duration,
+      layer: 'background',
+      color: '#8844ff',
+      x,
+      y,
+    });
+    console.log(`Admin spawned portal at (${x.toFixed(0)}, ${y.toFixed(0)}) duration=${duration}ms`);
+  });
+
   // Run tether-line combo encounter
   socket.on('admin:runTetherLineCombo', () => {
     runEncounter(game, tetherLineCombo);

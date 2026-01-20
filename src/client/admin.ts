@@ -145,6 +145,16 @@ export function initAdmin(socket: Socket): void {
       }
     });
   }
+
+  const spawnPortalBtn = document.getElementById('spawn-portal-btn');
+  if (spawnPortalBtn) {
+    spawnPortalBtn.addEventListener('click', () => {
+      if (adminSocket) {
+        adminSocket.emit('admin:spawnPortal');
+        logCombat('Spawned portal');
+      }
+    });
+  }
 }
 
 export function setChangeNameCallback(callback: () => void): void {
@@ -217,6 +227,11 @@ export function setChangeNameCallback(callback: () => void): void {
   emitRunOrbitalOmen: () => {
     if (adminSocket) {
       adminSocket.emit('admin:runOrbitalOmen');
+    }
+  },
+  emitSpawnPortal: (params?: { duration?: number; x?: number; y?: number }) => {
+    if (adminSocket) {
+      adminSocket.emit('admin:spawnPortal', params);
     }
   }
 };
