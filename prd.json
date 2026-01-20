@@ -66,7 +66,7 @@
             "Verify createContext() returns empty object of type Context",
             "Run npm run build - should pass"
         ],
-        "passes": false
+        "passes": true
     },
     {
         "id": "ENC-006",

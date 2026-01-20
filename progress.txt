@@ -27,3 +27,9 @@ ENC-004: Selector combinators
 - union(...selectors): combines all selector results, dedupes by player id
 - All combinators compose with existing selectors (e.g., exclude(random(2), closest(point)))
 - Build passes
+
+ENC-005: Context factory
+- Created src/server/encounters/context.ts
+- createContext() returns empty Context object {}
+- Simple foundation for future context initialization logic
+- Build passes
