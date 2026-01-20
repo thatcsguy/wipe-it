@@ -1,0 +1,4 @@
+BUBBLE-001 + BUBBLE-003: Added 'bubbled' and 'bubble-warning' to StatusEffectType, added icon paths
+- Files: src/shared/types.ts, src/server/statusEffect.ts
+- Both use '/assets/bubble-warning_icon.png' (same icon per PRD)
+- BUBBLE-003 required for BUBBLE-001 to compile (Record<StatusEffectType> constraint)

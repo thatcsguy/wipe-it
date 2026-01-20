@@ -10,7 +10,7 @@
         "StatusEffectType includes 'bubbled' and 'bubble-warning'",
         "TypeScript compilation succeeds: npm run build"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "id": "BUBBLE-002",
@@ -31,7 +31,7 @@
         "STATUS_ICONS includes: 'bubble-warning': '/assets/bubble-warning_icon.png'",
         "TypeScript compilation succeeds: npm run build"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "id": "BUBBLE-004",

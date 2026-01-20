@@ -26,7 +26,7 @@ export interface PlayerInput {
 }
 
 // Status effect types
-export type StatusEffectType = 'vulnerability' | 'rooted' | 'root-warning';
+export type StatusEffectType = 'vulnerability' | 'rooted' | 'root-warning' | 'bubbled' | 'bubble-warning';
 
 export interface StatusEffectState {
   type: StatusEffectType;

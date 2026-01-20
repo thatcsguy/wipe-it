@@ -6,6 +6,8 @@ const STATUS_ICONS: Record<StatusEffectType, string> = {
   vulnerability: '/assets/vulnerability_icon.png',
   rooted: '/assets/rooted_icon.png',
   'root-warning': '/assets/root-warning_icon.png',
+  bubbled: '/assets/bubble-warning_icon.png',
+  'bubble-warning': '/assets/bubble-warning_icon.png',
 };
 
 export class StatusEffect {
