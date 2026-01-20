@@ -37,3 +37,13 @@
 - Both draw fill + subtle white border for visibility
 - Updated index.ts to import and dispatch to these renderers (removing TODOs)
 - Files: src/client/doodads/rect.ts, src/client/doodads/circle.ts, src/client/doodads/index.ts
+
+## DOODAD-006: Integrate Doodad Rendering into Renderer
+- Import renderDoodads, DoodadPositionData from ./doodads/index
+- Add doodads?: DoodadState[] param to render()
+- Build posData once, reuse for mechanics + doodads
+- Background layer: rendered after drawArena(), before mechanics
+- Foreground layer: rendered after status effects, before tower explosions
+- Updated client game.ts to pass currentGameState.doodads to render()
+- Validated: doodads array flows through GameState (Playwright confirmed)
+- Files: src/client/renderer.ts, src/client/game.ts

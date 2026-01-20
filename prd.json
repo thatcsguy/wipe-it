@@ -77,7 +77,7 @@
         "Player positions passed to renderDoodads for anchor resolution",
         "TypeScript compilation succeeds: npm run build"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "id": "DOODAD-007",

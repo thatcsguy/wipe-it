@@ -1,7 +1,8 @@
-import { PlayerState, MechanicState, StatusEffectState, ARENA_WIDTH, ARENA_HEIGHT, PLAYER_RADIUS, MAX_HP, CANVAS_SIZE, ARENA_OFFSET } from '../shared/types';
+import { PlayerState, MechanicState, StatusEffectState, DoodadState, ARENA_WIDTH, ARENA_HEIGHT, PLAYER_RADIUS, MAX_HP, CANVAS_SIZE, ARENA_OFFSET } from '../shared/types';
 import { renderMechanics, PlayerPositionData } from './mechanics/index';
 import { renderStatusEffects } from './statusEffects';
 import { renderTowerExplosions } from './mechanics/towerExplosion';
+import { renderDoodads, DoodadPositionData } from './doodads/index';
 
 // Canvas and context (initialized on first render call)
 let canvas: HTMLCanvasElement | null = null;
@@ -133,7 +134,8 @@ export function render(
   localPosition: { x: number; y: number } | null,
   interpolatedPositions?: Map<string, { x: number; y: number }>,
   mechanics?: MechanicState[],
-  serverTime?: number
+  serverTime?: number,
+  doodads?: DoodadState[]
 ): void {
   // Initialize if not already done
   if (!ctx) {
@@ -151,14 +153,21 @@ export function render(
   // Draw arena border
   drawArena();
 
+  // Build position data for mechanics and doodads
+  const posData: PlayerPositionData = {
+    players,
+    localPlayerId,
+    localPosition,
+    interpolatedPositions,
+  };
+
+  // Draw background doodads (after arena, before mechanics)
+  if (doodads && serverTime !== undefined) {
+    renderDoodads(ctx, doodads, 'background', serverTime, posData);
+  }
+
   // Draw mechanics before players (so they appear below)
   if (mechanics && serverTime !== undefined) {
-    const posData: PlayerPositionData = {
-      players,
-      localPlayerId,
-      localPosition,
-      interpolatedPositions,
-    };
     renderMechanics(ctx, mechanics, serverTime, posData);
   }
 
@@ -196,6 +205,11 @@ export function render(
       }
       renderStatusEffects(ctx, px, py, player.statusEffects);
     }
+  }
+
+  // Draw foreground doodads (after players)
+  if (doodads && serverTime !== undefined) {
+    renderDoodads(ctx, doodads, 'foreground', serverTime, posData);
   }
 
   // Draw tower explosions on top of everything

@@ -288,14 +288,15 @@ function gameLoop(currentTime: number): void {
   }
 
   // Render with local player at predicted position, others at interpolated positions
-  // Pass mechanics and server timestamp for mechanic rendering
+  // Pass mechanics, doodads and server timestamp for rendering
   render(
     currentGameState.players,
     localPlayerId,
     localPos,
     interpolatedPositions,
     currentGameState.mechanics,
-    currentGameState.timestamp
+    currentGameState.timestamp,
+    currentGameState.doodads
   );
 
   // Update debug panel
