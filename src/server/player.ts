@@ -59,6 +59,15 @@ export class Player {
       return;
     }
 
+    // Rooted: freeze position, ignore WASD input
+    if (this.statusEffectManager) {
+      const statuses = this.statusEffectManager.getStatusesForPlayer(this.id);
+      const isRooted = statuses.some((s) => s.type === 'rooted');
+      if (isRooted) {
+        return;
+      }
+    }
+
     // Calculate velocity based on input keys
     let dx = 0;
     let dy = 0;
@@ -114,6 +123,15 @@ export class Player {
     duration: number,
     now: number
   ): void {
+    // Rooted players are immune to knockback
+    if (this.statusEffectManager) {
+      const statuses = this.statusEffectManager.getStatusesForPlayer(this.id);
+      const isRooted = statuses.some((s) => s.type === 'rooted');
+      if (isRooted) {
+        return;
+      }
+    }
+
     // Ignore if already being knocked back
     if (this.knockback) {
       return;

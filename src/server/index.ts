@@ -280,6 +280,18 @@ io.on('connection', (socket) => {
     console.log('Admin healed all players');
   });
 
+  // Apply status effect to player (for testing)
+  socket.on('admin:applyStatus', (params: { playerId: string; statusType: string; duration: number }) => {
+    const { playerId, statusType, duration } = params;
+    const statusEffect = new StatusEffect(
+      statusType as any,
+      playerId,
+      duration
+    );
+    game.getStatusEffectManager().add(statusEffect);
+    console.log(`Admin applied ${statusType} to ${playerId} for ${duration}ms`);
+  });
+
   // Spawn portal doodad at random arena edge
   socket.on('admin:spawnPortal', (params?: { duration?: number; x?: number; y?: number }) => {
     const duration = params?.duration ?? 5000;

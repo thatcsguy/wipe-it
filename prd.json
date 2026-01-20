@@ -42,7 +42,7 @@
         "lastProcessedInput is still updated even when rooted (for reconciliation)",
         "TypeScript compilation succeeds: npm run build"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "id": "ROOT-005",
@@ -53,7 +53,7 @@
         "If rooted, function returns early without applying knockback",
         "TypeScript compilation succeeds: npm run build"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "id": "ROOT-006",

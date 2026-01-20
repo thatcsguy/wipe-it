@@ -14,3 +14,13 @@ Note: ROOT-002 (asset download) still needed before icon displays
 - Verified: valid PNG 24x32 RGBA, loads at localhost:3000/assets/rooted_icon.png
 
 Files: public/assets/rooted_icon.png
+
+## ROOT-004 + ROOT-005: Server-side rooted movement block + knockback immunity
+
+- processInput(): after knockback check, return early if player has 'rooted' status (skips WASD)
+- applyKnockback(): at start, return early if player has 'rooted' status (immune)
+- Added admin:applyStatus socket handler for testing status effects
+- Added __adminTest.emitApplyStatus() client helper
+- Verified via Playwright: WASD blocked while rooted, knockback blocked, movement restored after expiry
+
+Files: src/server/player.ts, src/server/index.ts, src/client/admin.ts
