@@ -131,3 +131,13 @@ ENC-015: Admin runTetherLineCombo handler + button
 - Playwright verified: tether spawns between 2 players
 - Files: src/server/index.ts, src/client/admin.ts, public/index.html
 - Build passes
+
+ENC-016: Multi-phase tutorial encounter
+- Created src/server/encounters/scripts/encounters/tutorial-encounter.ts
+- tutorialEncounter exported as Script type
+- Phase 1: spawns chariot at arena center, waits 4000ms
+- Phase 2: spawns spread on each player from runner.select(all()), waits 4000ms
+- Phase 3: calls runner.run(tetherLineCombo)
+- Phase 4: spawns chariot + spreads on all players simultaneously (no wait)
+- Files: src/server/encounters/scripts/encounters/tutorial-encounter.ts
+- Build passes

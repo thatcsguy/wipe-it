@@ -233,7 +233,7 @@
             "Verify Phase 4: spawns chariot AND spreads on all players (no wait between them)",
             "Run npm run build - should pass"
         ],
-        "passes": false
+        "passes": true
     },
     {
         "id": "ENC-017",
