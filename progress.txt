@@ -7,3 +7,10 @@ BUBBLE-004: Added isBubbled() function to localStatus.ts
 - Pattern matches isRooted() exactly
 - Also exposed in __localStatusTest for testing
 - File: src/client/localStatus.ts
+
+BUBBLE-005 + BUBBLE-006 + BUBBLE-007: Bubbled movement blocking (client + server)
+- Client: import isBubbled, check in applyInput() + reconcile() after isRooted checks
+- Server: check for 'bubbled' in processInput() after rooted check
+- Key: applyKnockback() has NO bubbled check - knockback still works on bubbled players
+- Verified via Playwright: WASD blocked while bubbled, knockback still applies
+- Files: src/client/network.ts, src/server/player.ts

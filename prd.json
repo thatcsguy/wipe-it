@@ -54,7 +54,7 @@
         "If bubbled, function returns early without updating localX/localY or pendingInputs",
         "TypeScript compilation succeeds: npm run build"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "id": "BUBBLE-006",
@@ -65,7 +65,7 @@
         "If bubbled, position is synced from server and input replay is skipped",
         "TypeScript compilation succeeds: npm run build"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "id": "BUBBLE-007",
@@ -77,7 +77,7 @@
         "applyKnockback() does NOT have any check for bubbled status (knockbacks still work)",
         "TypeScript compilation succeeds: npm run build"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "id": "BUBBLE-008",

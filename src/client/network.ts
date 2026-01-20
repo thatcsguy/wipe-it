@@ -9,7 +9,7 @@ import {
   ARENA_HEIGHT,
 } from '../shared/types';
 import { getKnockbackPosition } from '../shared/knockback';
-import { isRooted } from './localStatus';
+import { isRooted, isBubbled } from './localStatus';
 
 // Pending input with predicted position after applying it
 interface PendingInput {
@@ -58,6 +58,11 @@ export function applyInput(input: PlayerInput): void {
 
   // During rooted, ignore WASD input (server ignores it too)
   if (isRooted()) {
+    return;
+  }
+
+  // During bubbled, ignore WASD input (server ignores it too)
+  if (isBubbled()) {
     return;
   }
 
@@ -191,6 +196,12 @@ export function reconcile(state: GameState, localPlayerId: string): void {
 
   // During rooted, use server position and skip input replay
   if (isRooted()) {
+    // Position already set from server above, skip input replay
+    return;
+  }
+
+  // During bubbled, use server position and skip input replay
+  if (isBubbled()) {
     // Position already set from server above, skip input replay
     return;
   }

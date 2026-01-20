@@ -68,6 +68,15 @@ export class Player {
       }
     }
 
+    // Bubbled: freeze position, ignore WASD input (but knockback still applies)
+    if (this.statusEffectManager) {
+      const statuses = this.statusEffectManager.getStatusesForPlayer(this.id);
+      const isBubbled = statuses.some((s) => s.type === 'bubbled');
+      if (isBubbled) {
+        return;
+      }
+    }
+
     // Calculate velocity based on input keys
     let dx = 0;
     let dy = 0;
