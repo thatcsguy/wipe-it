@@ -2,10 +2,12 @@ import { Script, ScriptRunner } from '../../types';
 import { ARENA_WIDTH, ARENA_HEIGHT } from '../../../../shared/types';
 
 const LINE_WIDTH = 200;
-const DAMAGE = 50;
+const DAMAGE = 30;
 const VULN_DURATION = 5000;
 const SPAWN_INTERVAL = 1500;
 const DURATION = 7500; // All lines have same duration so they resolve in spawn order
+const CONE_ANGLE = Math.PI / 2; // 90 degrees in radians
+const CONE_RADIUS = 800;
 
 /** Apply damage and vulnerability to hit players */
 function applyEffects(runner: ScriptRunner, playersHit: string[]): void {
@@ -60,6 +62,8 @@ export const orbitalOmen: Script = async (runner, ctx) => {
 
   // Store mechanic IDs for each pair
   const pairs: { nsId: string; ewId: string }[] = [];
+  let northConeId: string | null = null;
+  let southConeId: string | null = null;
 
   // Spawn all 4 pairs
   for (let i = 0; i < 4; i++) {
@@ -90,6 +94,37 @@ export const orbitalOmen: Script = async (runner, ctx) => {
 
     pairs.push({ nsId, ewId });
 
+    // Spawn conal AOEs with the 4th pair
+    if (i === 3) {
+      const centerX = ARENA_WIDTH / 2;
+      const centerY = ARENA_HEIGHT / 2;
+
+      // Cones resolve with first set, so duration = time until first set resolves
+      const coneDuration = DURATION - 3 * SPAWN_INTERVAL;
+
+      // North-pointing cone
+      northConeId = runner.spawn({
+        type: 'conalAoe',
+        centerX,
+        centerY,
+        endpointX: centerX,
+        endpointY: centerY - CONE_RADIUS,
+        angle: CONE_ANGLE,
+        duration: coneDuration,
+      });
+
+      // South-pointing cone
+      southConeId = runner.spawn({
+        type: 'conalAoe',
+        centerX,
+        centerY,
+        endpointX: centerX,
+        endpointY: centerY + CONE_RADIUS,
+        angle: CONE_ANGLE,
+        duration: coneDuration,
+      });
+    }
+
     // Wait before next spawn (except after the last one)
     if (i < 3) {
       await runner.wait(SPAWN_INTERVAL);
@@ -97,17 +132,38 @@ export const orbitalOmen: Script = async (runner, ctx) => {
   }
 
   // Wait for each pair to resolve and apply effects
-  for (const pair of pairs) {
-    const [nsResult, ewResult] = await Promise.all([
-      runner.waitForResolve(pair.nsId),
-      runner.waitForResolve(pair.ewId),
-    ]);
+  for (let i = 0; i < pairs.length; i++) {
+    const pair = pairs[i];
 
-    // Apply effects to players hit by either AOE
-    const nsHit = (nsResult.data as { playersHit: string[] }).playersHit;
-    const ewHit = (ewResult.data as { playersHit: string[] }).playersHit;
+    // On the 1st pair, also wait for cones to resolve (they spawn late but resolve early)
+    if (i === 0 && northConeId && southConeId) {
+      const [nsResult, ewResult, northConeResult, southConeResult] = await Promise.all([
+        runner.waitForResolve(pair.nsId),
+        runner.waitForResolve(pair.ewId),
+        runner.waitForResolve(northConeId),
+        runner.waitForResolve(southConeId),
+      ]);
 
-    applyEffects(runner, nsHit);
-    applyEffects(runner, ewHit);
+      const nsHit = (nsResult.data as { playersHit: string[] }).playersHit;
+      const ewHit = (ewResult.data as { playersHit: string[] }).playersHit;
+      const northConeHit = (northConeResult.data as { playersHit: string[] }).playersHit;
+      const southConeHit = (southConeResult.data as { playersHit: string[] }).playersHit;
+
+      applyEffects(runner, nsHit);
+      applyEffects(runner, ewHit);
+      applyEffects(runner, northConeHit);
+      applyEffects(runner, southConeHit);
+    } else {
+      const [nsResult, ewResult] = await Promise.all([
+        runner.waitForResolve(pair.nsId),
+        runner.waitForResolve(pair.ewId),
+      ]);
+
+      const nsHit = (nsResult.data as { playersHit: string[] }).playersHit;
+      const ewHit = (ewResult.data as { playersHit: string[] }).playersHit;
+
+      applyEffects(runner, nsHit);
+      applyEffects(runner, ewHit);
+    }
   }
 };
