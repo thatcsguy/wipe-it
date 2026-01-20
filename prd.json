@@ -1,232 +1,315 @@
 [
-  {
-    "id": "AOE-001",
-    "category": "shared",
-    "description": "Add LineAoeMechanicState and ConalAoeMechanicState types to src/shared/types.ts. Add 'lineAoe' and 'conalAoe' to MechanicType union. LineAoe has: startX, startY, endX, endY (center points of opposite edges), width, startTime, endTime, effects[]. ConalAoe has: centerX, centerY (cone origin), endpointX, endpointY (midpoint of arc), angle (radians), startTime, endTime, effects[].",
-    "steps_to_verify": [
-      "Open src/shared/types.ts",
-      "Verify MechanicType union includes 'lineAoe' and 'conalAoe'",
-      "Verify LineAoeMechanicState interface exists with fields: type: 'lineAoe', id: string, startX: number, startY: number, endX: number, endY: number, width: number, startTime: number, endTime: number, effects: Effect[]",
-      "Verify ConalAoeMechanicState interface exists with fields: type: 'conalAoe', id: string, centerX: number, centerY: number, endpointX: number, endpointY: number, angle: number, startTime: number, endTime: number, effects: Effect[]",
-      "Verify MechanicState union type includes both new interfaces",
-      "Run npm run build - should pass with no TypeScript errors"
-    ],
-    "passes": true
-  },
-  {
-    "id": "AOE-002",
-    "category": "server",
-    "description": "Create LineAoe server mechanic class in src/server/mechanics/lineAoe.ts implementing BaseMechanic interface. Constructor takes startX, startY, endX, endY, width, duration, effects. resolve() checks point-in-rotated-rectangle collision: transform player position to rectangle's local coordinate space (direction vector from start to end, perpendicular for width), check if within bounds. Only players inside at resolve time receive effects.",
-    "steps_to_verify": [
-      "Verify src/server/mechanics/lineAoe.ts exists",
-      "Verify class implements BaseMechanic interface with tick(), isExpired(), resolve(), toState()",
-      "Verify constructor generates unique ID (format: lineAoe-{timestamp}-{random})",
-      "Verify constructor sets startTime = Date.now(), endTime = startTime + duration",
-      "Verify resolve() implements point-in-rotated-rectangle collision correctly",
-      "Verify resolve() applies all effects to players inside the rectangle",
-      "Verify toState() returns LineAoeMechanicState with all fields",
-      "Run npm run build - should pass"
-    ],
-    "passes": true
-  },
-  {
-    "id": "AOE-003",
-    "category": "server",
-    "description": "Create ConalAoe server mechanic class in src/server/mechanics/conalAoe.ts implementing BaseMechanic interface. Constructor takes centerX, centerY, endpointX, endpointY, angle, duration, effects. Radius is computed as distance from center to endpoint. resolve() checks point-in-sector collision: 1) distance from center <= radius, 2) angle from center to player is within +/-(angle/2) of direction to endpoint (handle angle wraparound). Only players inside at resolve time receive effects.",
-    "steps_to_verify": [
-      "Verify src/server/mechanics/conalAoe.ts exists",
-      "Verify class implements BaseMechanic interface with tick(), isExpired(), resolve(), toState()",
-      "Verify constructor generates unique ID (format: conalAoe-{timestamp}-{random})",
-      "Verify constructor computes radius = sqrt((endpointX-centerX)^2 + (endpointY-centerY)^2)",
-      "Verify constructor sets startTime = Date.now(), endTime = startTime + duration",
-      "Verify resolve() checks distance <= radius AND angle within bounds",
-      "Verify angle comparison handles wraparound (e.g., comparing angles near +/- PI)",
-      "Verify resolve() applies all effects to players inside the sector",
-      "Verify toState() returns ConalAoeMechanicState with all fields",
-      "Run npm run build - should pass"
-    ],
-    "passes": true
-  },
-  {
-    "id": "AOE-004",
-    "category": "server",
-    "description": "Add spawnLineAoe and spawnConalAoe methods to Game class in src/server/game.ts. spawnLineAoe(startX, startY, endX, endY, width, duration, effects) creates LineAoe and adds to mechanicManager. spawnConalAoe(centerX, centerY, endpointX, endpointY, angle, duration, effects) creates ConalAoe and adds to mechanicManager. No default effects - effects array is required parameter.",
-    "steps_to_verify": [
-      "Open src/server/game.ts",
-      "Verify spawnLineAoe method exists with signature: spawnLineAoe(startX: number, startY: number, endX: number, endY: number, width: number, duration: number, effects: Effect[]): void",
-      "Verify spawnConalAoe method exists with signature: spawnConalAoe(centerX: number, centerY: number, endpointX: number, endpointY: number, angle: number, duration: number, effects: Effect[]): void",
-      "Verify both methods create mechanic instance and call mechanicManager.add()",
-      "Verify effects parameter has no default value (must be explicitly passed)",
-      "Run npm run build - should pass"
-    ],
-    "passes": true
-  },
-  {
-    "id": "AOE-005",
-    "category": "server",
-    "description": "Add admin:spawnLineAoe socket handler in src/server/index.ts. Accepts optional { duration?: number }. Default spawn: vertical line through arena center from (ARENA_WIDTH/2, 0) to (ARENA_WIDTH/2, ARENA_HEIGHT), width 100, duration 3000ms, effects [{ type: 'damage', amount: 25 }]. Add corresponding emitSpawnLineAoe method to __adminTest on client.",
-    "steps_to_verify": [
-      "Open src/server/index.ts",
-      "Verify socket.on('admin:spawnLineAoe', ...) handler exists",
-      "Verify handler accepts (params?: { duration?: number })",
-      "Verify default values: startX/endX = ARENA_WIDTH/2, startY = 0, endY = ARENA_HEIGHT, width = 100, duration = params?.duration ?? 3000, effects = [{ type: 'damage', amount: 25 }]",
-      "Open src/client/admin.ts",
-      "Verify emitSpawnLineAoe(params?: { duration?: number }) method exists",
-      "Verify method calls socket.emit('admin:spawnLineAoe', params)",
-      "Start dev server, open localhost:3000?debug=1",
-      "In console run: __adminTest.emitSpawnLineAoe({ duration: 10000 })",
-      "Verify debug panel shows mechanic with data-type='lineAoe' and ~10000ms until expiry"
-    ],
-    "passes": true
-  },
-  {
-    "id": "AOE-006",
-    "category": "server",
-    "description": "Add admin:spawnConalAoe socket handler in src/server/index.ts. Accepts optional { duration?: number }. Default spawn: center at arena center (ARENA_WIDTH/2, ARENA_HEIGHT/2), endpoint 200px to the right (ARENA_WIDTH/2 + 200, ARENA_HEIGHT/2), angle PI/2 (90 degrees), duration 3000ms, effects [{ type: 'damage', amount: 25 }]. Add corresponding emitSpawnConalAoe method to __adminTest on client.",
-    "steps_to_verify": [
-      "Open src/server/index.ts",
-      "Verify socket.on('admin:spawnConalAoe', ...) handler exists",
-      "Verify handler accepts (params?: { duration?: number })",
-      "Verify default values: centerX/Y = arena center, endpointX = centerX + 200, endpointY = centerY, angle = Math.PI / 2, duration = params?.duration ?? 3000, effects = [{ type: 'damage', amount: 25 }]",
-      "Open src/client/admin.ts",
-      "Verify emitSpawnConalAoe(params?: { duration?: number }) method exists",
-      "Verify method calls socket.emit('admin:spawnConalAoe', params)",
-      "Start dev server, open localhost:3000?debug=1",
-      "In console run: __adminTest.emitSpawnConalAoe({ duration: 10000 })",
-      "Verify debug panel shows mechanic with data-type='conalAoe' and ~10000ms until expiry"
-    ],
-    "passes": true
-  },
-  {
-    "id": "AOE-007",
-    "category": "client",
-    "description": "Create Line AOE renderer in src/client/mechanics/lineAoe.ts. Draw a semi-transparent rectangle using chariot color palette (#ff9f40). Rectangle defined by start/end center points and width. Use canvas transforms or manual path calculation to draw rotated rectangle. Fill with alpha 0.3, optional inner glow at 0.5 alpha to match chariot style. No visual indicator of duration/progress.",
-    "steps_to_verify": [
-      "Verify src/client/mechanics/lineAoe.ts exists",
-      "Verify renderLineAoe function exported with signature matching other renderers",
-      "Verify uses chariot orange color #ff9f40",
-      "Verify rectangle corners calculated correctly: perpendicular to line direction, width/2 on each side",
-      "Verify fill uses semi-transparent alpha (0.3-0.5 range)",
-      "Start dev server, open localhost:3000?debug=1",
-      "Run: __adminTest.emitSpawnLineAoe({ duration: 10000 })",
-      "Use Playwright browser_take_screenshot to capture the rendered line AOE",
-      "Verify screenshot shows orange semi-transparent vertical rectangle through arena center, width ~100px"
-    ],
-    "passes": true
-  },
-  {
-    "id": "AOE-008",
-    "category": "client",
-    "description": "Create Conal AOE renderer in src/client/mechanics/conalAoe.ts. Draw a semi-transparent circular sector (pie slice) using chariot color palette (#ff9f40). Sector centered at centerX/Y, radius = distance to endpoint, spanning angle radians centered on direction to endpoint. Use ctx.arc() with calculated start/end angles, lineTo center, closePath. Fill with alpha 0.3, match chariot style.",
-    "steps_to_verify": [
-      "Verify src/client/mechanics/conalAoe.ts exists",
-      "Verify renderConalAoe function exported with signature matching other renderers",
-      "Verify uses chariot orange color #ff9f40",
-      "Verify radius computed as distance from center to endpoint",
-      "Verify arc angles calculated: direction = atan2(endpointY-centerY, endpointX-centerX), startAngle = direction - angle/2, endAngle = direction + angle/2",
-      "Verify path: ctx.moveTo(center), ctx.arc(...), ctx.closePath()",
-      "Verify fill uses semi-transparent alpha (0.3-0.5 range)",
-      "Start dev server, open localhost:3000?debug=1",
-      "Run: __adminTest.emitSpawnConalAoe({ duration: 10000 })",
-      "Use Playwright browser_take_screenshot to capture the rendered conal AOE",
-      "Verify screenshot shows orange semi-transparent 90-degree cone pointing right from arena center, radius ~200px"
-    ],
-    "passes": true
-  },
-  {
-    "id": "AOE-009",
-    "category": "client",
-    "description": "Update mechanic dispatcher in src/client/mechanics/index.ts to handle 'lineAoe' and 'conalAoe' mechanic types. Import renderers and add cases to the switch statement in renderMechanics().",
-    "steps_to_verify": [
-      "Open src/client/mechanics/index.ts",
-      "Verify import statements for lineAoe and conalAoe renderers",
-      "Verify switch statement has case 'lineAoe': calling renderLineAoe with appropriate args",
-      "Verify switch statement has case 'conalAoe': calling renderConalAoe with appropriate args",
-      "Run npm run build - should pass",
-      "Start dev server, open localhost:3000?debug=1",
-      "Spawn both mechanics: __adminTest.emitSpawnLineAoe({ duration: 10000 }); __adminTest.emitSpawnConalAoe({ duration: 10000 });",
-      "Verify both mechanics render simultaneously on canvas"
-    ],
-    "passes": true
-  },
-  {
-    "id": "AOE-010",
-    "category": "integration",
-    "description": "Verify Line AOE collision and damage. Player standing in the line rectangle when it expires should take damage. Player outside should not take damage. Use Playwright to: spawn line AOE with long duration, position player inside, wait for resolve, check HP decreased by 25.",
-    "steps_to_verify": [
-      "Start dev server, open localhost:3000?debug=1 with Playwright",
-      "Wait for player to spawn and note initial HP from data-hp attribute",
-      "Spawn line AOE at player position: use browser_evaluate to call __adminTest.emitSpawnLineAoe({ duration: 2000 })",
-      "Wait 2.5 seconds for mechanic to resolve",
-      "Check player HP via data-hp attribute - should be initial HP minus 25",
-      "Verify combat log shows damage entry",
-      "Test miss case: spawn line AOE, immediately move player far away with WASD input, verify no damage taken"
-    ],
-    "passes": true
-  },
-  {
-    "id": "AOE-011",
-    "category": "integration",
-    "description": "Verify Conal AOE collision and damage. Player standing in the cone sector when it expires should take damage. Player outside (wrong angle or too far) should not take damage. Use Playwright to test both hit and miss scenarios.",
-    "steps_to_verify": [
-      "Start dev server, open localhost:3000?debug=1 with Playwright",
-      "Wait for player to spawn and note initial HP",
-      "Spawn conal AOE aimed at player: use browser_evaluate to spawn cone with endpoint toward player",
-      "Wait for mechanic to resolve",
-      "Check player HP - should decrease by 25 if player was in cone",
-      "Test miss case 1: spawn cone pointing away from player, verify no damage",
-      "Test miss case 2: spawn cone with small radius, player far away, verify no damage"
-    ],
-    "passes": true
-  },
-  {
-    "id": "AOE-012",
-    "category": "client",
-    "description": "Add 'Spawn Line AOE' button to admin panel in public/index.html with id='spawn-line-aoe-btn'. Wire up click handler in src/client/admin.ts to call emitSpawnLineAoe(). Button should appear in the admin-controls div alongside other spawn buttons.",
-    "steps_to_verify": [
-      "Open public/index.html",
-      "Verify <button id='spawn-line-aoe-btn'>Spawn Line AOE</button> exists in admin-controls div",
-      "Open src/client/admin.ts",
-      "Verify getElementById('spawn-line-aoe-btn') is called",
-      "Verify click handler calls emitSpawnLineAoe() (no params - uses server defaults)",
-      "Start dev server, open localhost:3000?debug=1",
-      "Click the 'Spawn Line AOE' button",
-      "Verify orange vertical line AOE appears on canvas",
-      "Verify debug panel shows mechanic with data-type='lineAoe'"
-    ],
-    "passes": true
-  },
-  {
-    "id": "AOE-013",
-    "category": "client",
-    "description": "Add 'Spawn Conal AOE' button to admin panel in public/index.html with id='spawn-conal-aoe-btn'. Wire up click handler in src/client/admin.ts to call emitSpawnConalAoe(). Button should appear in the admin-controls div alongside other spawn buttons.",
-    "steps_to_verify": [
-      "Open public/index.html",
-      "Verify <button id='spawn-conal-aoe-btn'>Spawn Conal AOE</button> exists in admin-controls div",
-      "Open src/client/admin.ts",
-      "Verify getElementById('spawn-conal-aoe-btn') is called",
-      "Verify click handler calls emitSpawnConalAoe() (no params - uses server defaults)",
-      "Start dev server, open localhost:3000?debug=1",
-      "Click the 'Spawn Conal AOE' button",
-      "Verify orange cone AOE appears on canvas pointing right from center",
-      "Verify debug panel shows mechanic with data-type='conalAoe'"
-    ],
-    "passes": true
-  },
-  {
-    "id": "AOE-014",
-    "category": "docs",
-    "description": "Update CLAUDE.md to document the new __adminTest methods for Line AOE and Conal AOE, including duration override examples. Also add the new admin button selectors to the Admin Buttons section.",
-    "steps_to_verify": [
-      "Open CLAUDE.md",
-      "Find Time-Sensitive Testing section",
-      "Verify __adminTest.emitSpawnLineAoe({ duration: 10000 }) example is documented",
-      "Verify __adminTest.emitSpawnConalAoe({ duration: 10000 }) example is documented",
-      "Verify default duration (3000ms) is mentioned for both",
-      "Find Admin Buttons section",
-      "Verify #spawn-line-aoe-btn is documented",
-      "Verify #spawn-conal-aoe-btn is documented"
-    ],
-    "passes": true
-  }
+    {
+        "id": "ENC-001",
+        "category": "shared",
+        "description": "Create src/server/encounters/types.ts with core type definitions. Define: Selector type as (state: GameState, ctx: Context) => PlayerState[]. Define Context interface as { [key: string]: unknown }. Define Script type as (runner: ScriptRunner, ctx: Context) => Promise<void>. Define MechanicResult interface with mechanicId: string, type: string, data: unknown. Define ScriptRunner interface with methods: spawn(mechanic: MechanicParams) => string, wait(ms: number) => Promise<void>, getState() => GameState, select(selector: Selector) => PlayerState[], waitForResolve(mechanicId: string) => Promise<MechanicResult>, run(script: Script) => Promise<void>.",
+        "steps_to_verify": [
+            "Verify src/server/encounters/types.ts exists",
+            "Verify Selector type is exported: (state: GameState, ctx: Context) => PlayerState[]",
+            "Verify Context interface is exported: { [key: string]: unknown }",
+            "Verify Script type is exported: (runner: ScriptRunner, ctx: Context) => Promise<void>",
+            "Verify MechanicResult interface is exported with mechanicId, type, data fields",
+            "Verify ScriptRunner interface is exported with all methods: spawn, wait, getState, select, waitForResolve, run",
+            "Run npm run build - should pass with no TypeScript errors"
+        ],
+        "passes": false
+    },
+    {
+        "id": "ENC-002",
+        "category": "server",
+        "description": "Create src/server/encounters/targeting.ts with basic selector functions. Implement: all() returns all living players (hp > 0). random(n: number) returns n random players from living players. closest(point: {x,y}) returns single player closest to point. furthest(point: {x,y}) returns single player furthest from point. Each function returns a Selector (a function, not the result directly).",
+        "steps_to_verify": [
+            "Verify src/server/encounters/targeting.ts exists",
+            "Verify all() returns Selector that filters players with hp > 0",
+            "Verify random(n) returns Selector that returns n random living players (handles n > players.length)",
+            "Verify closest(point) returns Selector that returns single-element array with nearest player by Euclidean distance",
+            "Verify furthest(point) returns Selector that returns single-element array with farthest player",
+            "Verify all functions return Selector functions, not direct results",
+            "Run npm run build - should pass"
+        ],
+        "passes": false
+    },
+    {
+        "id": "ENC-003",
+        "category": "server",
+        "description": "Add advanced targeting selectors to src/server/encounters/targeting.ts. Implement: nClosest(n: number, point: {x,y}) returns n players closest to point. nFurthest(n: number, point: {x,y}) returns n players furthest from point. withStatus(effect: string) returns players that have the specified status effect. withoutStatus(effect: string) returns players that do not have the specified status effect.",
+        "steps_to_verify": [
+            "Verify nClosest(n, point) returns Selector returning n closest players sorted by distance",
+            "Verify nFurthest(n, point) returns Selector returning n furthest players sorted by distance descending",
+            "Verify withStatus(effect) returns Selector filtering players where statusEffects includes effect",
+            "Verify withoutStatus(effect) returns Selector filtering players where statusEffects does not include effect",
+            "Verify all selectors handle edge cases (n > players, no players with status, etc.)",
+            "Run npm run build - should pass"
+        ],
+        "passes": false
+    },
+    {
+        "id": "ENC-004",
+        "category": "server",
+        "description": "Add selector combinators to src/server/encounters/targeting.ts. Implement: exclude(selector: Selector, excluded: Selector) returns selector results minus excluded results (by player id). first(n: number, selector: Selector) returns first n results from selector. union(...selectors: Selector[]) combines results from all selectors, deduped by player id.",
+        "steps_to_verify": [
+            "Verify exclude(selector, excluded) returns Selector that filters out players present in excluded results",
+            "Verify first(n, selector) returns Selector that returns only first n results from inner selector",
+            "Verify union(...selectors) returns Selector that combines all results, removing duplicates by player id",
+            "Verify combinators work with other selectors: e.g., exclude(random(2), closest(point))",
+            "Run npm run build - should pass"
+        ],
+        "passes": false
+    },
+    {
+        "id": "ENC-005",
+        "category": "server",
+        "description": "Create src/server/encounters/context.ts with context factory. Export createContext() function that returns an empty Context object {}. This is simple now but provides a place to add context initialization logic later.",
+        "steps_to_verify": [
+            "Verify src/server/encounters/context.ts exists",
+            "Verify createContext() function is exported",
+            "Verify createContext() returns empty object of type Context",
+            "Run npm run build - should pass"
+        ],
+        "passes": false
+    },
+    {
+        "id": "ENC-006",
+        "category": "server",
+        "description": "Create src/server/encounters/script-runner.ts with basic ScriptRunner implementation. Constructor takes Game instance. Implement spawn() that calls appropriate game.spawn* method based on mechanic type and returns mechanic ID. Implement wait(ms) returning Promise that resolves after ms milliseconds. Implement getState() returning game.getState(). Implement select(selector) that calls selector with current state and empty context. Do NOT implement waitForResolve or run yet.",
+        "steps_to_verify": [
+            "Verify src/server/encounters/script-runner.ts exists",
+            "Verify ScriptRunner class constructor takes Game instance",
+            "Verify spawn() accepts mechanic params object with 'type' field and routes to correct game method",
+            "Verify spawn() returns the mechanic ID (string)",
+            "Verify wait(ms) returns Promise<void> that resolves after specified milliseconds",
+            "Verify getState() returns current GameState from game instance",
+            "Verify select(selector) invokes selector with current state and returns PlayerState[]",
+            "Run npm run build - should pass"
+        ],
+        "passes": false
+    },
+    {
+        "id": "ENC-007",
+        "category": "server",
+        "description": "Add MechanicResult emission to mechanic resolution. In src/server/game.ts, when a mechanic resolves (in the tick loop where expired mechanics are processed), emit a 'mechanicResolved' event with { mechanicId, type, data }. The data field should contain mechanic-specific resolution info. For now, data can be minimal: { position } for positional mechanics, { targetIds } for player-targeted mechanics. This requires mechanics to have a getResult() method or similar.",
+        "steps_to_verify": [
+            "Verify Game class extends EventEmitter or has event emission capability",
+            "Verify mechanic resolution in tick() emits 'mechanicResolved' event",
+            "Verify event payload includes mechanicId (string), type (string), data (object)",
+            "Verify at least one mechanic type returns meaningful result data",
+            "Run npm run build - should pass"
+        ],
+        "passes": false
+    },
+    {
+        "id": "ENC-008",
+        "category": "server",
+        "description": "Implement waitForResolve(mechanicId) in ScriptRunner. Method returns Promise<MechanicResult> that resolves when the mechanic with given ID resolves. Subscribe to game's 'mechanicResolved' event, filter by mechanicId, resolve promise with result, unsubscribe. Handle case where mechanic doesn't exist or already resolved (reject with error).",
+        "steps_to_verify": [
+            "Verify waitForResolve(mechanicId) is implemented in ScriptRunner",
+            "Verify it returns Promise<MechanicResult>",
+            "Verify it subscribes to game 'mechanicResolved' event",
+            "Verify it filters events to match the requested mechanicId",
+            "Verify it unsubscribes after receiving matching event",
+            "Verify promise resolves with MechanicResult containing mechanicId, type, data",
+            "Run npm run build - should pass"
+        ],
+        "passes": false
+    },
+    {
+        "id": "ENC-009",
+        "category": "server",
+        "description": "Implement run(script) in ScriptRunner for sub-script execution. Method accepts a Script function and executes it with 'this' runner and a context. For now, use a fresh context per run() call (can be changed later if scripts need shared context). Await the script's completion. Propagate any errors (abort behavior).",
+        "steps_to_verify": [
+            "Verify run(script) is implemented in ScriptRunner",
+            "Verify it accepts Script type (async function)",
+            "Verify it calls script with (this, context)",
+            "Verify it awaits script completion",
+            "Verify errors from script propagate up (not caught/swallowed)",
+            "Run npm run build - should pass"
+        ],
+        "passes": false
+    },
+    {
+        "id": "ENC-010",
+        "category": "server",
+        "description": "Add execute(script) method to ScriptRunner as the main entry point for running an encounter. This method creates initial context via createContext(), runs the script, and handles top-level error catching (logs error, could trigger cleanup later). Export a convenience function runEncounter(game, script) that creates runner and calls execute().",
+        "steps_to_verify": [
+            "Verify execute(script) method exists on ScriptRunner",
+            "Verify it creates context using createContext()",
+            "Verify it calls script(this, context) and awaits",
+            "Verify errors are caught and logged (console.error or similar)",
+            "Verify runEncounter(game, script) function is exported",
+            "Verify runEncounter creates ScriptRunner and calls execute()",
+            "Run npm run build - should pass"
+        ],
+        "passes": false
+    },
+    {
+        "id": "ENC-011",
+        "category": "server",
+        "description": "Create first test script in src/server/encounters/scripts/test-sequence.ts. Script spawns a chariot, waits 3 seconds, spawns spreads on 2 random players using targeting selector, waits 3 seconds, spawns another chariot. Export as testSequenceScript. This proves basic spawn + wait + select flow.",
+        "steps_to_verify": [
+            "Verify src/server/encounters/scripts/test-sequence.ts exists",
+            "Verify testSequenceScript is exported as Script type",
+            "Verify script spawns chariot mechanic",
+            "Verify script waits 3000ms",
+            "Verify script uses runner.select(random(2)) to get 2 random players",
+            "Verify script spawns spread on each selected player",
+            "Verify script waits another 3000ms",
+            "Verify script spawns final chariot",
+            "Run npm run build - should pass"
+        ],
+        "passes": false
+    },
+    {
+        "id": "ENC-012",
+        "category": "server",
+        "description": "Add admin:runTestScript socket handler in src/server/index.ts. When received, call runEncounter(game, testSequenceScript). Add corresponding emitRunTestScript() method to __adminTest on client. Add button 'Run Test Script' with id='run-test-script-btn' to admin panel.",
+        "steps_to_verify": [
+            "Verify socket.on('admin:runTestScript') handler exists in src/server/index.ts",
+            "Verify handler calls runEncounter(game, testSequenceScript)",
+            "Verify __adminTest.emitRunTestScript() exists in src/client/admin.ts",
+            "Verify button #run-test-script-btn exists in public/index.html",
+            "Verify button click handler calls emitRunTestScript()",
+            "Start dev server, open localhost:3000?debug=1",
+            "Click 'Run Test Script' button",
+            "Verify using Playwright: chariot spawns, then after ~3s spreads appear on 2 players, then after ~3s another chariot spawns"
+        ],
+        "passes": false
+    },
+    {
+        "id": "ENC-013",
+        "category": "server",
+        "description": "Add stretch tether mechanic result data. When stretch tether resolves, its result should include: player1: { id, position }, player2: { id, position }, stretched: boolean (whether distance >= minDistance at resolve time). Update the tether mechanic to track this and return it via getResult() or similar mechanism used by mechanicResolved event.",
+        "steps_to_verify": [
+            "Verify stretch tether mechanic has getResult() method or equivalent",
+            "Verify result includes player1 object with id and position at resolve time",
+            "Verify result includes player2 object with id and position at resolve time",
+            "Verify result includes stretched boolean based on distance vs minDistance",
+            "Verify 'mechanicResolved' event for tether includes this data",
+            "Run npm run build - should pass"
+        ],
+        "passes": false
+    },
+    {
+        "id": "ENC-014",
+        "category": "server",
+        "description": "Create stretch tether to line AOE combo script in src/server/encounters/scripts/combos/tether-line-combo.ts. Script: select 2 random players, spawn stretch tether between them, waitForResolve, spawn line AOE from player1's position to player2's position (using result data). Store tether targets in context for potential reuse. Export as tetherLineCombo.",
+        "steps_to_verify": [
+            "Verify src/server/encounters/scripts/combos/tether-line-combo.ts exists",
+            "Verify tetherLineCombo is exported as Script type",
+            "Verify script uses runner.select(random(2)) to get 2 players",
+            "Verify script stores selected player IDs in ctx.tetherTargets",
+            "Verify script spawns stretchTether mechanic with both player IDs",
+            "Verify script calls runner.waitForResolve(tetherId)",
+            "Verify script spawns lineAoe using result.data.player1.position and result.data.player2.position",
+            "Run npm run build - should pass"
+        ],
+        "passes": false
+    },
+    {
+        "id": "ENC-015",
+        "category": "server",
+        "description": "Add admin:runTetherLineCombo socket handler. When received, call runEncounter(game, tetherLineCombo). Add emitRunTetherLineCombo() to __adminTest. Add button 'Run Tether→Line Combo' with id='run-tether-line-btn' to admin panel.",
+        "steps_to_verify": [
+            "Verify socket.on('admin:runTetherLineCombo') handler exists",
+            "Verify __adminTest.emitRunTetherLineCombo() exists",
+            "Verify button #run-tether-line-btn exists in admin panel",
+            "Start dev server, open localhost:3000?debug=1 with Playwright",
+            "Click 'Run Tether→Line Combo' button",
+            "Verify stretch tether appears between 2 players",
+            "Wait for tether to resolve",
+            "Verify line AOE spawns connecting the two player positions"
+        ],
+        "passes": false
+    },
+    {
+        "id": "ENC-016",
+        "category": "server",
+        "description": "Create first multi-phase encounter in src/server/encounters/scripts/encounters/tutorial-encounter.ts. Phase 1: spawn chariot at center, wait 4s. Phase 2: spawn spreads on all players, wait 4s. Phase 3: run tetherLineCombo. Phase 4: spawn chariot + spreads simultaneously. Export as tutorialEncounter.",
+        "steps_to_verify": [
+            "Verify src/server/encounters/scripts/encounters/tutorial-encounter.ts exists",
+            "Verify tutorialEncounter is exported as Script type",
+            "Verify Phase 1: spawns chariot at arena center, waits 4000ms",
+            "Verify Phase 2: spawns spread on each player from runner.select(all()), waits 4000ms",
+            "Verify Phase 3: calls runner.run(tetherLineCombo)",
+            "Verify Phase 4: spawns chariot AND spreads on all players (no wait between them)",
+            "Run npm run build - should pass"
+        ],
+        "passes": false
+    },
+    {
+        "id": "ENC-017",
+        "category": "server",
+        "description": "Add admin:runTutorialEncounter socket handler. When received, call runEncounter(game, tutorialEncounter). Add emitRunTutorialEncounter() to __adminTest. Add button 'Run Tutorial Encounter' with id='run-tutorial-btn' to admin panel.",
+        "steps_to_verify": [
+            "Verify socket.on('admin:runTutorialEncounter') handler exists",
+            "Verify __adminTest.emitRunTutorialEncounter() exists",
+            "Verify button #run-tutorial-btn exists in admin panel",
+            "Start dev server, open localhost:3000?debug=1 with Playwright",
+            "Click 'Run Tutorial Encounter' button",
+            "Observe full encounter sequence: chariot → spreads → tether+line → chariot+spreads",
+            "Verify mechanics spawn at correct times with expected delays"
+        ],
+        "passes": false
+    },
+    {
+        "id": "ENC-018",
+        "category": "integration",
+        "description": "Verify targeting selectors work correctly with Playwright. Test random(n) returns n players. Test closest(point) returns nearest player. Test exclude combinator filters correctly. Use browser_evaluate to run scripts and verify selector results match expected players.",
+        "steps_to_verify": [
+            "Start dev server, open localhost:3000?debug=1 with Playwright",
+            "Join with at least 2 players (or use existing player)",
+            "Use browser_evaluate to access game state and test selectors",
+            "Verify random(1) returns exactly 1 player",
+            "Verify all() returns all living players",
+            "Verify closest({x:0,y:0}) returns player nearest to top-left corner",
+            "Verify exclude(all(), closest(point)) returns all players except closest"
+        ],
+        "passes": false
+    },
+    {
+        "id": "ENC-019",
+        "category": "integration",
+        "description": "Verify waitForResolve works correctly. Spawn a tether with known duration, call waitForResolve, verify promise resolves after mechanic expires with correct result data. Use Playwright to trigger combo script and verify line AOE spawns at correct positions based on tether result.",
+        "steps_to_verify": [
+            "Start dev server, open localhost:3000?debug=1 with Playwright",
+            "Run tether-line combo via admin button",
+            "Verify tether spawns and is visible",
+            "Wait for tether duration to expire",
+            "Verify line AOE spawns immediately after tether resolves",
+            "Verify line AOE endpoints match where players were standing when tether resolved"
+        ],
+        "passes": false
+    },
+    {
+        "id": "ENC-020",
+        "category": "integration",
+        "description": "Verify full tutorial encounter executes correctly end-to-end. Use Playwright to start encounter and verify each phase executes in order with correct timing. Verify no errors in console. Verify all mechanics spawn and resolve as expected.",
+        "steps_to_verify": [
+            "Start dev server, open localhost:3000?debug=1 with Playwright",
+            "Click 'Run Tutorial Encounter' button",
+            "Verify Phase 1: chariot appears at center",
+            "Wait ~4 seconds, verify chariot resolves",
+            "Verify Phase 2: spreads appear on all players",
+            "Wait ~4 seconds, verify spreads resolve",
+            "Verify Phase 3: tether appears, then line AOE after tether resolves",
+            "Verify Phase 4: chariot AND spreads appear simultaneously",
+            "Check browser console for errors - should be none",
+            "Verify encounter completes without crashing"
+        ],
+        "passes": false
+    },
+    {
+        "id": "ENC-021",
+        "category": "docs",
+        "description": "Update CLAUDE.md to document the encounter system. Add section describing Script type, ScriptRunner methods, targeting selectors, and how to create new scripts. Document new admin buttons and __adminTest methods for running scripts/encounters.",
+        "steps_to_verify": [
+            "Open CLAUDE.md",
+            "Verify new section exists documenting encounter system",
+            "Verify Script type and ScriptRunner interface are documented",
+            "Verify targeting selectors (all, random, closest, etc.) are listed with descriptions",
+            "Verify example script usage is shown",
+            "Verify new admin buttons documented: #run-test-script-btn, #run-tether-line-btn, #run-tutorial-btn",
+            "Verify __adminTest methods documented: emitRunTestScript, emitRunTetherLineCombo, emitRunTutorialEncounter"
+        ],
+        "passes": false
+    }
 ]
