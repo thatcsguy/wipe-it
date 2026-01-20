@@ -130,7 +130,7 @@
             "Verify MechanicParams tether type in encounters/types.ts has no damage field",
             "Run npm run build - should pass with no TypeScript errors"
         ],
-        "passes": false
+        "passes": true
     },
     {
         "id": "MECH-010",
@@ -146,7 +146,7 @@
             "Verify tether appears visually",
             "Let tether resolve without stretching - verify player does NOT take damage"
         ],
-        "passes": false
+        "passes": true
     },
     {
         "id": "MECH-011",

@@ -8,7 +8,7 @@ import { StatusEffect } from '../statusEffect';
 const DEFAULTS = {
   chariot: { radius: ARENA_HEIGHT * 0.2, duration: 3000 },
   spread: { radius: ARENA_HEIGHT * 0.15, duration: 3000 },
-  tether: { requiredDistance: ARENA_WIDTH * 0.75, damage: 100, duration: 3000 },
+  tether: { requiredDistance: ARENA_WIDTH * 0.75, duration: 3000 },
   tower: { radius: 80, duration: 5000, requiredPlayers: 2 },
   radialKnockback: { delay: 2000, knockbackDistance: 150, knockbackDuration: 500 },
   linearKnockback: { delay: 2000, knockbackDistance: 150, knockbackDuration: 500 },
@@ -56,13 +56,11 @@ export class ScriptRunnerImpl implements ScriptRunner {
 
       case 'tether': {
         const requiredDistance = mechanic.requiredDistance ?? DEFAULTS.tether.requiredDistance;
-        const damage = mechanic.damage ?? DEFAULTS.tether.damage;
         const duration = mechanic.duration ?? DEFAULTS.tether.duration;
         return this.game.spawnTether(
           mechanic.endpointA,
           mechanic.endpointB,
           requiredDistance,
-          damage,
           duration
         );
       }

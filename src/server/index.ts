@@ -122,11 +122,10 @@ io.on('connection', (socket) => {
     if (players.length > 0) {
       const requiredDistance = ARENA_WIDTH * 0.75;
       const duration = params?.duration ?? 3000;
-      const damage = 100;
       const pointEndpoint = { type: 'point' as const, x: ARENA_WIDTH / 2, y: 0 };
       for (const playerId of players) {
         const playerEndpoint = { type: 'player' as const, playerId };
-        game.spawnTether(playerEndpoint, pointEndpoint, requiredDistance, damage, duration);
+        game.spawnTether(playerEndpoint, pointEndpoint, requiredDistance, duration);
       }
       console.log(`Admin spawned point tethers for ${players.length} players duration=${duration}ms`);
     } else {
@@ -139,13 +138,12 @@ io.on('connection', (socket) => {
     if (players.length >= 2) {
       const requiredDistance = ARENA_WIDTH * 0.75;
       const duration = params?.duration ?? 3000;
-      const damage = 100;
       // Pick 2 random different players
       const shuffled = [...players].sort(() => Math.random() - 0.5);
       const [playerA, playerB] = shuffled;
       const endpointA = { type: 'player' as const, playerId: playerA };
       const endpointB = { type: 'player' as const, playerId: playerB };
-      game.spawnTether(endpointA, endpointB, requiredDistance, damage, duration);
+      game.spawnTether(endpointA, endpointB, requiredDistance, duration);
       console.log(`Admin spawned player tether between ${playerA} and ${playerB} duration=${duration}ms`);
     } else {
       console.log('Admin tried to spawn player tethers but need at least 2 players');
@@ -178,11 +176,10 @@ io.on('connection', (socket) => {
       if (players.length > 0) {
         const requiredDistance = ARENA_WIDTH * 0.75;
         const duration = 3000;
-        const damage = 100;
         const pointEndpoint = { type: 'point' as const, x: ARENA_WIDTH / 2, y: 0 };
         for (const playerId of players) {
           const playerEndpoint = { type: 'player' as const, playerId };
-          game.spawnTether(playerEndpoint, pointEndpoint, requiredDistance, damage, duration);
+          game.spawnTether(playerEndpoint, pointEndpoint, requiredDistance, duration);
         }
         console.log(`Admin spawned point tethers for ${players.length} players`);
       } else {
@@ -193,13 +190,12 @@ io.on('connection', (socket) => {
       if (players.length >= 2) {
         const requiredDistance = ARENA_WIDTH * 0.75;
         const duration = 3000;
-        const damage = 100;
         // Pick 2 random different players
         const shuffled = [...players].sort(() => Math.random() - 0.5);
         const [playerA, playerB] = shuffled;
         const endpointA = { type: 'player' as const, playerId: playerA };
         const endpointB = { type: 'player' as const, playerId: playerB };
-        game.spawnTether(endpointA, endpointB, requiredDistance, damage, duration);
+        game.spawnTether(endpointA, endpointB, requiredDistance, duration);
         console.log(`Admin spawned player tether between ${playerA} and ${playerB}`);
       } else {
         console.log('Admin tried to spawn player tethers but need at least 2 players');

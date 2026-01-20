@@ -43,3 +43,19 @@ MECH-007 + MECH-008: Tower mechanic migrated to script-driven effects
 - Build passes
 - Files: tower.ts, game.ts, script-runner.ts, index.ts, shared/types.ts
 - NOTE: Playwright not verified (dev server not running), but follows same pattern as verified mechanics
+
+MECH-009: Tether mechanic migrated to script-driven effects
+- Removed damage param from TetherMechanic ctor
+- resolve() now no-op (removed damage application on failed stretch)
+- getResult() already returns { player1, player2, stretched }
+- Updated game.spawnTether() sig (no damage)
+- Removed damage from TetherMechanicState in shared/types.ts
+- Removed damage from MechanicParams tether type in encounters/types.ts
+- Updated script-runner.ts tether spawn (removed damage default + param)
+- Updated admin handlers: admin:spawnPointTethers, admin:spawnPlayerTethers, admin:spawnMechanic (tether cases)
+- Removed unused TetherResolutionEvent import, applyDamageToConnectedPlayers method
+- Build passes
+- Files: tether.ts, game.ts, script-runner.ts, index.ts, shared/types.ts, encounters/types.ts
+- NOTE: Playwright not verified (dev server not running)
+
+MECH-010: Admin tether handlers already updated in MECH-009 (no separate work needed)

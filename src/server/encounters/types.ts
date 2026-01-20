@@ -32,7 +32,7 @@ export type Script = (runner: ScriptRunner, ctx: Context) => Promise<void>;
 export type MechanicParams =
   | { type: 'chariot'; x: number; y: number; radius?: number; duration?: number }
   | { type: 'spread'; targetPlayerId: string; radius?: number; duration?: number }
-  | { type: 'tether'; endpointA: { type: 'player'; playerId: string } | { type: 'point'; x: number; y: number }; endpointB: { type: 'player'; playerId: string } | { type: 'point'; x: number; y: number }; requiredDistance?: number; damage?: number; duration?: number }
+  | { type: 'tether'; endpointA: { type: 'player'; playerId: string } | { type: 'point'; x: number; y: number }; endpointB: { type: 'player'; playerId: string } | { type: 'point'; x: number; y: number }; requiredDistance?: number; duration?: number }
   | { type: 'tower'; x: number; y: number; radius?: number; duration?: number; requiredPlayers?: number }
   | { type: 'radialKnockback'; originX: number; originY: number; delay?: number; knockbackDistance?: number; knockbackDuration?: number }
   | { type: 'linearKnockback'; lineStartX: number; lineStartY: number; lineEndX: number; lineEndY: number; delay?: number; knockbackDistance?: number; knockbackDuration?: number }

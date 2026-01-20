@@ -100,7 +100,6 @@ export interface TetherMechanicState {
   endpointA: TetherEndpoint;
   endpointB: TetherEndpoint;
   requiredDistance: number;
-  damage: number;
   startTime: number;
   endTime: number;
 }

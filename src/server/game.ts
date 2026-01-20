@@ -202,14 +202,12 @@ export class Game extends EventEmitter {
     endpointA: TetherEndpoint,
     endpointB: TetherEndpoint,
     requiredDistance: number,
-    damage: number,
     duration: number
   ): string {
     const mechanic = new TetherMechanic(
       endpointA,
       endpointB,
       requiredDistance,
-      damage,
       duration
     );
     this.mechanicManager.add(mechanic);
