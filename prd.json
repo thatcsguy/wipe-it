@@ -10,7 +10,7 @@
         "StatusEffectType includes 'rooted': export type StatusEffectType = 'vulnerability' | 'rooted'",
         "TypeScript compilation succeeds: npm run build"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "id": "ROOT-002",
@@ -30,7 +30,7 @@
         "STATUS_ICONS includes: rooted: '/assets/rooted_icon.png'",
         "TypeScript compilation succeeds: npm run build"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "id": "ROOT-004",

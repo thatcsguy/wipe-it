@@ -1,0 +1,9 @@
+## ROOT-001 + ROOT-003: Add rooted type and icon mapping
+
+- Added 'rooted' to StatusEffectType union in src/shared/types.ts
+- Added rooted icon path to STATUS_ICONS in src/server/statusEffect.ts
+- Combined because STATUS_ICONS is Record<StatusEffectType, string> - requires all types
+
+Files: src/shared/types.ts, src/server/statusEffect.ts
+
+Note: ROOT-002 (asset download) still needed before icon displays
