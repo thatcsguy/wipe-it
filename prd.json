@@ -54,7 +54,7 @@
             "Verify combinators work with other selectors: e.g., exclude(random(2), closest(point))",
             "Run npm run build - should pass"
         ],
-        "passes": false
+        "passes": true
     },
     {
         "id": "ENC-005",

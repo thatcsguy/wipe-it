@@ -139,3 +139,48 @@ export function withoutStatus(effect: string): Selector {
     return living.filter(p => !p.statusEffects.some(s => s.type === effect));
   };
 }
+
+// ============= Selector Combinators =============
+
+/**
+ * Returns results from selector minus results from excluded (by player id)
+ */
+export function exclude(selector: Selector, excluded: Selector): Selector {
+  return (state: GameState, ctx: Context): PlayerState[] => {
+    const selected = selector(state, ctx);
+    const excludedPlayers = excluded(state, ctx);
+    const excludedIds = new Set(excludedPlayers.map(p => p.id));
+    return selected.filter(p => !excludedIds.has(p.id));
+  };
+}
+
+/**
+ * Returns first n results from the given selector
+ */
+export function first(n: number, selector: Selector): Selector {
+  return (state: GameState, ctx: Context): PlayerState[] => {
+    const selected = selector(state, ctx);
+    return selected.slice(0, n);
+  };
+}
+
+/**
+ * Combines results from all selectors, deduplicating by player id
+ * Preserves order: first selector's results first, then second's unique results, etc.
+ */
+export function union(...selectors: Selector[]): Selector {
+  return (state: GameState, ctx: Context): PlayerState[] => {
+    const seenIds = new Set<string>();
+    const result: PlayerState[] = [];
+    for (const selector of selectors) {
+      const selected = selector(state, ctx);
+      for (const player of selected) {
+        if (!seenIds.has(player.id)) {
+          seenIds.add(player.id);
+          result.push(player);
+        }
+      }
+    }
+    return result;
+  };
+}

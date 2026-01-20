@@ -20,3 +20,10 @@ ENC-003: Advanced targeting selectors
 - withoutStatus(effect): filters players whose statusEffects excludes effect
 - All handle edge cases (empty living players, n > players.length)
 - Build passes
+
+ENC-004: Selector combinators
+- exclude(selector, excluded): filters out players by id from excluded results
+- first(n, selector): takes first n results from selector
+- union(...selectors): combines all selector results, dedupes by player id
+- All combinators compose with existing selectors (e.g., exclude(random(2), closest(point)))
+- Build passes
