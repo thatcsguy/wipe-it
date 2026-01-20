@@ -50,3 +50,13 @@ BUBBLE-012: Integration test - bubbled does NOT grant knockback immunity
 - Player moved from (400,400) to (400,250) after knockback - 150px displacement
 - Confirms key difference from rooted: bubbled blocks WASD but allows knockback
 - No code changes needed - applyKnockback() correctly only checks for 'rooted', not 'bubbled'
+
+BUBBLE-013: Integration test - bubbled status expires correctly and movement resumes
+- Verified via Playwright: navigate to localhost:3000?debug=1
+- Applied bubbled via __adminTest.emitApplyStatus({ statusType: 'bubbled', duration: 2000 })
+- Confirmed .debug-status[data-effect='bubbled'] appears in debug panel
+- Screenshot confirms "BUBBLED" indicator visible in debug panel while active
+- After 2500ms wait: status element removed from DOM
+- Screenshot confirms status indicator gone after expiration
+- WASD input after expiry: player moved from (400,480) to (400,540) - movement restored
+- No code changes needed - existing implementation works correctly

@@ -161,7 +161,7 @@
         "Take screenshot to confirm bubble visual gone",
         "Send WASD input, verify player position changes (movement restored)"
       ],
-      "passes": false
+      "passes": true
     }
   ]
 }
