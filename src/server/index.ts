@@ -324,6 +324,39 @@ io.on('connection', (socket) => {
     console.log(`Admin spawned portal at (${x.toFixed(0)}, ${y.toFixed(0)}) duration=${duration}ms`);
   });
 
+  // Spawn anchored doodad for testing player-anchored behavior
+  socket.on('admin:spawnAnchoredDoodad', (params: {
+    type?: 'portal' | 'rect' | 'circle';
+    anchorPlayerId: string;
+    offsetX?: number;
+    offsetY?: number;
+    duration?: number;
+    width?: number;
+    height?: number;
+    color?: string;
+  }) => {
+    const type = params.type ?? 'circle';
+    const duration = params.duration ?? 10000;
+    const width = params.width ?? 60;
+    const height = params.height ?? 60;
+    const color = params.color ?? '#00ff88';
+
+    game.getDoodadManager().spawn({
+      type,
+      width,
+      height,
+      duration,
+      layer: 'foreground',
+      color,
+      anchorPlayerId: params.anchorPlayerId,
+      anchorOffset: {
+        x: params.offsetX ?? 0,
+        y: params.offsetY ?? 0,
+      },
+    });
+    console.log(`Admin spawned ${type} doodad anchored to player ${params.anchorPlayerId}`);
+  });
+
   // Run tether-line combo encounter
   socket.on('admin:runTetherLineCombo', () => {
     runEncounter(game, tetherLineCombo);

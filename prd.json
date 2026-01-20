@@ -140,7 +140,7 @@
         "Verify .debug-doodad data-x/data-y attributes update as player moves OR verify visually via screenshot that doodad follows player",
         "Doodad maintains correct offset from player position"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "id": "DOODAD-012",

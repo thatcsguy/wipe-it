@@ -82,6 +82,15 @@
 - Screenshot confirms animated swirling portals visible at arena edges
 - Files: src/server/encounters/scripts/combos/orbital-omen.ts
 
+## DOODAD-011: Verify Player-Anchored Doodads
+- Added admin:spawnAnchoredDoodad socket event for testing anchored doodads
+- Added __adminTest.emitSpawnAnchoredDoodad() method for Playwright testing
+- Playwright verified: spawn circle anchored to player w/ offset (50, 0)
+- Move player w/ WASD → doodad position updates in debug panel
+- (400,400)+50 → (450,400), move up → (450,300), move right → (550,300)
+- Offset maintained correctly throughout movement
+- Files: src/server/index.ts, src/client/admin.ts
+
 ## DOODAD-012: Verify Doodad Auto-Expiration
 - Playwright verified: spawn portal w/ 2000ms duration → .debug-doodad appears
 - Wait 2500ms → .debug-doodad removed from DOM

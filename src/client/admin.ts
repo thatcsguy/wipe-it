@@ -233,5 +233,19 @@ export function setChangeNameCallback(callback: () => void): void {
     if (adminSocket) {
       adminSocket.emit('admin:spawnPortal', params);
     }
+  },
+  emitSpawnAnchoredDoodad: (params: {
+    type?: 'portal' | 'rect' | 'circle';
+    anchorPlayerId: string;
+    offsetX?: number;
+    offsetY?: number;
+    duration?: number;
+    width?: number;
+    height?: number;
+    color?: string;
+  }) => {
+    if (adminSocket) {
+      adminSocket.emit('admin:spawnAnchoredDoodad', params);
+    }
   }
 };
