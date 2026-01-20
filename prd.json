@@ -95,7 +95,7 @@
             "Verify at least one mechanic type returns meaningful result data",
             "Run npm run build - should pass"
         ],
-        "passes": false
+        "passes": true
     },
     {
         "id": "ENC-008",

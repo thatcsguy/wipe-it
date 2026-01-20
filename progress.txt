@@ -45,3 +45,15 @@ ENC-006: Basic ScriptRunner implementation
 - Added game.getState() method
 - waitForResolve/run throw "not implemented" per spec
 - Build passes
+
+ENC-007: MechanicResult emission on resolution
+- Game extends EventEmitter
+- Added onMechanicResult callback to MechanicManager
+- MechanicManager calls getResult() on mechanics before resolve(), emits result
+- Default result: { mechanicId, type, data: { position } } for positional mechanics
+- Added optional getResult(players) method to BaseMechanic interface
+- Implemented getResult() on ChariotMechanic: returns position + hitPlayerIds
+- Implemented getResult() on SpreadMechanic: returns targetPlayerId, position, hitPlayerIds
+- Game.constructor registers callback that emits 'mechanicResolved' event
+- Files: game.ts, mechanics/manager.ts, mechanics/types.ts, mechanics/chariot.ts, mechanics/spread.ts
+- Build passes

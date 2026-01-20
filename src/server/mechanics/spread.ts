@@ -2,6 +2,7 @@ import { Player } from '../player';
 import { StatusEffectManager } from '../statusEffectManager';
 import { StatusEffect } from '../statusEffect';
 import { Effect, SpreadMechanicState } from '../../shared/types';
+import { MechanicResult } from '../encounters/types';
 
 export class SpreadMechanic {
   id: string;
@@ -79,6 +80,36 @@ export class SpreadMechanic {
       radius: this.radius,
       startTime: this.startTime,
       endTime: this.endTime,
+    };
+  }
+
+  getResult(players: Map<string, Player>): MechanicResult {
+    const targetPlayer = players.get(this.targetPlayerId);
+    const position = targetPlayer
+      ? { x: targetPlayer.x, y: targetPlayer.y }
+      : null;
+
+    // Find players hit by this spread
+    const hitPlayerIds: string[] = [];
+    if (targetPlayer) {
+      for (const player of players.values()) {
+        const dx = player.x - targetPlayer.x;
+        const dy = player.y - targetPlayer.y;
+        const distance = Math.sqrt(dx * dx + dy * dy);
+        if (distance <= this.radius) {
+          hitPlayerIds.push(player.id);
+        }
+      }
+    }
+
+    return {
+      mechanicId: this.id,
+      type: 'spread',
+      data: {
+        targetPlayerId: this.targetPlayerId,
+        position,
+        hitPlayerIds,
+      },
     };
   }
 }

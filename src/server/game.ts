@@ -1,3 +1,4 @@
+import { EventEmitter } from 'events';
 import { Server } from 'socket.io';
 import { Player } from './player';
 import { GameState, PlayerInput, TICK_RATE, BROADCAST_RATE, MAX_PLAYERS, MAX_HP, TetherResolutionEvent, TowerResolutionEvent, PLAYER_RADIUS, ARENA_WIDTH, ARENA_HEIGHT } from '../shared/types';
@@ -14,11 +15,12 @@ import { ConalAoeMechanic } from './mechanics/conalAoe';
 import { Effect } from './mechanics/types';
 import { TetherEndpoint } from '../shared/types';
 import { StatusEffectManager } from './statusEffectManager';
+import { MechanicResult } from './encounters/types';
 
 // Color pool for players
 const COLOR_POOL = ['#e74c3c', '#3498db', '#2ecc71', '#f39c12'];
 
-export class Game {
+export class Game extends EventEmitter {
   private players: Map<string, Player> = new Map();
   private availableColors: string[] = [...COLOR_POOL];
   private inputQueues: Map<string, PlayerInput[]> = new Map();
@@ -30,9 +32,10 @@ export class Game {
   private playerCounter: number = 0;
 
   constructor(io: Server) {
+    super();
     this.io = io;
 
-    // Register callback for mechanic resolution events
+    // Register callback for mechanic resolution events (legacy socket.io events)
     this.mechanicManager.onResolution((result) => {
       if (result && 'mechanicId' in result) {
         // Check for TowerResolutionEvent (has 'required' field)
@@ -43,6 +46,11 @@ export class Game {
           this.io.emit('tether:resolved', result as TetherResolutionEvent);
         }
       }
+    });
+
+    // Register callback for generic mechanic result events (for encounter scripts)
+    this.mechanicManager.onMechanicResult((result: MechanicResult) => {
+      this.emit('mechanicResolved', result);
     });
   }
 

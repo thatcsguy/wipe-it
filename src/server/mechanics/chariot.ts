@@ -1,5 +1,6 @@
 import { Player } from '../player';
 import { BaseMechanic, Effect, MechanicState } from './types';
+import { MechanicResult } from '../encounters/types';
 
 export class ChariotMechanic implements BaseMechanic {
   id: string;
@@ -61,6 +62,28 @@ export class ChariotMechanic implements BaseMechanic {
       x: this.x,
       y: this.y,
       radius: this.radius,
+    };
+  }
+
+  getResult(players: Map<string, Player>): MechanicResult {
+    // Find players hit by this mechanic
+    const hitPlayerIds: string[] = [];
+    for (const player of players.values()) {
+      const dx = player.x - this.x;
+      const dy = player.y - this.y;
+      const distance = Math.sqrt(dx * dx + dy * dy);
+      if (distance <= this.radius) {
+        hitPlayerIds.push(player.id);
+      }
+    }
+
+    return {
+      mechanicId: this.id,
+      type: 'chariot',
+      data: {
+        position: { x: this.x, y: this.y },
+        hitPlayerIds,
+      },
     };
   }
 }
