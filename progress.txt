@@ -27,3 +27,10 @@ BUBBLE-002: Downloaded bubble-warning icon asset
 - Downloaded from ffxiv.consolegameswiki.com/mediawiki/images/9/95/Bubble_weave_icon.png
 - Saved to public/assets/bubble-warning_icon.png
 - Verified: valid PNG 24x32 RGBA, loads at localhost:3000/assets/bubble-warning_icon.png
+
+BUBBLE-010: Integration test - bubble-warning status displays icon
+- Verified via Playwright: navigate to localhost:3000?debug=1
+- Applied bubble-warning via __adminTest.emitApplyStatus({ statusType: 'bubble-warning', duration: 30000 })
+- Confirmed .debug-status[data-effect='bubble-warning'] appears in debug panel
+- Screenshot confirms icon renders inside player circle on canvas
+- No code changes needed - existing implementation works correctly

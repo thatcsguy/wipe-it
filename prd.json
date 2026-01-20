@@ -115,7 +115,7 @@
         "Verify .debug-status[data-effect='bubble-warning'] appears in debug panel",
         "Take screenshot to verify bubble icon displays on player"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "id": "BUBBLE-011",
