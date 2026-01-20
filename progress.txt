@@ -57,3 +57,11 @@ ENC-007: MechanicResult emission on resolution
 - Game.constructor registers callback that emits 'mechanicResolved' event
 - Files: game.ts, mechanics/manager.ts, mechanics/types.ts, mechanics/chariot.ts, mechanics/spread.ts
 - Build passes
+
+ENC-008: waitForResolve implementation
+- Implemented waitForResolve(mechanicId) in ScriptRunnerImpl
+- Returns Promise<MechanicResult> that resolves when mechanic resolves
+- Subscribes to game 'mechanicResolved' event, filters by mechanicId
+- Unsubscribes handler after receiving matching event
+- Files: src/server/encounters/script-runner.ts
+- Build passes

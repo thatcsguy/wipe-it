@@ -159,9 +159,16 @@ export class ScriptRunnerImpl implements ScriptRunner {
     return selector(state, this.context);
   }
 
-  // NOT implemented yet per ENC-006 requirements
-  waitForResolve(_mechanicId: string): Promise<MechanicResult> {
-    throw new Error('waitForResolve not implemented yet');
+  waitForResolve(mechanicId: string): Promise<MechanicResult> {
+    return new Promise((resolve) => {
+      const handler = (result: MechanicResult) => {
+        if (result.mechanicId === mechanicId) {
+          this.game.off('mechanicResolved', handler);
+          resolve(result);
+        }
+      };
+      this.game.on('mechanicResolved', handler);
+    });
   }
 
   // NOT implemented yet per ENC-006 requirements

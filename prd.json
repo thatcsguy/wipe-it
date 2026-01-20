@@ -110,7 +110,7 @@
             "Verify promise resolves with MechanicResult containing mechanicId, type, data",
             "Run npm run build - should pass"
         ],
-        "passes": false
+        "passes": true
     },
     {
         "id": "ENC-009",
