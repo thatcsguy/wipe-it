@@ -1,0 +1,8 @@
+MECH-001: Chariot mechanic migrated to script-driven effects
+- Removed effects param from ChariotMechanic ctor, resolve() now no-op
+- Updated game.spawnChariot() sig (no effects)
+- Updated script-runner.ts chariot spawn (no DEFAULT_DAMAGE_EFFECT)
+- Updated admin handlers in index.ts (admin:spawnChariot, admin:spawnMechanic chariot case)
+- getResult() returns { playersHit: string[] }
+- Build passes, Playwright verified: chariot appears, no damage on resolve
+- Files: chariot.ts, game.ts, script-runner.ts, index.ts

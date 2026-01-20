@@ -76,8 +76,7 @@ io.on('connection', (socket) => {
     const x = padding + Math.random() * (ARENA_WIDTH - 2 * padding);
     const y = padding + Math.random() * (ARENA_HEIGHT - 2 * padding);
     const duration = params?.duration ?? 3000;
-    const effects = [{ type: 'damage' as const, amount: 25 }];
-    game.spawnChariot(x, y, radius, duration, effects);
+    game.spawnChariot(x, y, radius, duration);
     console.log(`Admin spawned chariot at (${x.toFixed(0)}, ${y.toFixed(0)})`);
   });
 
@@ -161,8 +160,7 @@ io.on('connection', (socket) => {
       const x = padding + Math.random() * (ARENA_WIDTH - 2 * padding);
       const y = padding + Math.random() * (ARENA_HEIGHT - 2 * padding);
       const duration = 3000;
-      const effects = [{ type: 'damage' as const, amount: 25 }];
-      game.spawnChariot(x, y, radius, duration, effects);
+      game.spawnChariot(x, y, radius, duration);
       console.log(`Admin spawned chariot at (${x.toFixed(0)}, ${y.toFixed(0)})`);
     } else if (data.type === 'spreads') {
       const players = Array.from(game.getPlayers().keys());

@@ -13,7 +13,7 @@
             "Verify script-runner.ts spawn() for chariot does not pass effects",
             "Run npm run build - should pass with no TypeScript errors"
         ],
-        "passes": false
+        "passes": true
     },
     {
         "id": "MECH-002",

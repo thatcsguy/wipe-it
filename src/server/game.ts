@@ -187,8 +187,8 @@ export class Game extends EventEmitter {
     this.io.emit('state', state);
   }
 
-  spawnChariot(x: number, y: number, radius: number, duration: number, effects: Effect[]): string {
-    const mechanic = new ChariotMechanic(x, y, radius, duration, effects);
+  spawnChariot(x: number, y: number, radius: number, duration: number): string {
+    const mechanic = new ChariotMechanic(x, y, radius, duration);
     this.mechanicManager.add(mechanic);
     return mechanic.id;
   }

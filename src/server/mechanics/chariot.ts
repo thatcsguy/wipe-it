@@ -1,5 +1,5 @@
 import { Player } from '../player';
-import { BaseMechanic, Effect, MechanicState } from './types';
+import { BaseMechanic, MechanicState } from './types';
 import { MechanicResult } from '../encounters/types';
 
 export class ChariotMechanic implements BaseMechanic {
@@ -9,14 +9,12 @@ export class ChariotMechanic implements BaseMechanic {
   radius: number;
   startTime: number;
   endTime: number;
-  effects: Effect[];
 
   constructor(
     x: number,
     y: number,
     radius: number,
-    duration: number,
-    effects: Effect[]
+    duration: number
   ) {
     this.id = `chariot-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
     this.x = x;
@@ -24,7 +22,6 @@ export class ChariotMechanic implements BaseMechanic {
     this.radius = radius;
     this.startTime = Date.now();
     this.endTime = this.startTime + duration;
-    this.effects = effects;
   }
 
   tick(now: number): void {
@@ -35,22 +32,8 @@ export class ChariotMechanic implements BaseMechanic {
     return now >= this.endTime;
   }
 
-  resolve(players: Map<string, Player>): void {
-    // Apply damage to all players within radius
-    for (const player of players.values()) {
-      const dx = player.x - this.x;
-      const dy = player.y - this.y;
-      const distance = Math.sqrt(dx * dx + dy * dy);
-
-      if (distance <= this.radius) {
-        // Player is inside the AOE - apply all effects
-        for (const effect of this.effects) {
-          if (effect.type === 'damage') {
-            player.takeDamage(effect.amount);
-          }
-        }
-      }
-    }
+  resolve(_players: Map<string, Player>): void {
+    // No-op: effects are now applied by scripts via waitForResolve + runner.damage()
   }
 
   toState(): MechanicState {
@@ -67,23 +50,20 @@ export class ChariotMechanic implements BaseMechanic {
 
   getResult(players: Map<string, Player>): MechanicResult {
     // Find players hit by this mechanic
-    const hitPlayerIds: string[] = [];
+    const playersHit: string[] = [];
     for (const player of players.values()) {
       const dx = player.x - this.x;
       const dy = player.y - this.y;
       const distance = Math.sqrt(dx * dx + dy * dy);
       if (distance <= this.radius) {
-        hitPlayerIds.push(player.id);
+        playersHit.push(player.id);
       }
     }
 
     return {
       mechanicId: this.id,
       type: 'chariot',
-      data: {
-        position: { x: this.x, y: this.y },
-        hitPlayerIds,
-      },
+      data: { playersHit },
     };
   }
 }

@@ -40,8 +40,7 @@ export class ScriptRunnerImpl implements ScriptRunner {
           mechanic.x,
           mechanic.y,
           radius,
-          duration,
-          [DEFAULT_DAMAGE_EFFECT]
+          duration
         );
       }
 
