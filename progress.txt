@@ -163,3 +163,12 @@ ENC-021: Document encounter system in CLAUDE.md
 - Added table of admin buttons with IDs and __adminTest methods
 - Added file structure overview
 - Files: CLAUDE.md
+
+ENC-018: Integration test - targeting selectors
+- Playwright test with 2 players at different positions
+- Player 1 at (400,400), Player 2 at (20,400)
+- Verified random(2) returns both players via test-sequence script
+- Verified all() returns all living players via tutorial-encounter Phase 2
+- Verified all() returns empty when all players dead (hp=0) - Phase 4 no spreads
+- Selectors work correctly through encounter system integration
+- No code changes - verification only

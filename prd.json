@@ -263,7 +263,7 @@
             "Verify closest({x:0,y:0}) returns player nearest to top-left corner",
             "Verify exclude(all(), closest(point)) returns all players except closest"
         ],
-        "passes": false
+        "passes": true
     },
     {
         "id": "ENC-019",
