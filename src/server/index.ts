@@ -8,6 +8,7 @@ import { StatusEffect } from './statusEffect';
 import { runEncounter } from './encounters/script-runner';
 import { tetherLineCombo } from './encounters/scripts/combos/tether-line-combo';
 import { orbitalOmen } from './encounters/scripts/combos/orbital-omen';
+import { quadKnock } from './encounters/scripts/combos/quad-knock';
 import { tutorialEncounter } from './encounters/scripts/encounters/tutorial-encounter';
 
 const app = express();
@@ -110,11 +111,12 @@ io.on('connection', (socket) => {
     const lineStartY = ARENA_HEIGHT / 2;
     const lineEndX = ARENA_WIDTH;
     const lineEndY = ARENA_HEIGHT / 2;
+    const width = 800; // Full arena width for broad coverage
     const delay = params?.delay ?? 2000;
     const knockbackDistance = 150;
     const knockbackDuration = params?.knockbackDuration ?? 500;
-    game.spawnLinearKnockback(lineStartX, lineStartY, lineEndX, lineEndY, delay, knockbackDistance, knockbackDuration);
-    console.log(`Admin spawned linear knockback delay=${delay}ms kbDuration=${knockbackDuration}ms`);
+    game.spawnLinearKnockback(lineStartX, lineStartY, lineEndX, lineEndY, width, delay, knockbackDistance, knockbackDuration);
+    console.log(`Admin spawned linear knockback width=${width} delay=${delay}ms kbDuration=${knockbackDuration}ms`);
   });
 
   socket.on('admin:spawnPointTethers', (params?: { duration?: number }) => {
@@ -215,11 +217,12 @@ io.on('connection', (socket) => {
       const lineStartY = ARENA_HEIGHT / 2;
       const lineEndX = ARENA_WIDTH;
       const lineEndY = ARENA_HEIGHT / 2;
+      const width = 800; // Full arena width for broad coverage
       const startDelay = 2000;
       const knockbackDistance = 150;
       const knockbackDuration = 500;
-      game.spawnLinearKnockback(lineStartX, lineStartY, lineEndX, lineEndY, startDelay, knockbackDistance, knockbackDuration);
-      console.log(`Admin spawned linear knockback (horizontal line, southward knockback)`);
+      game.spawnLinearKnockback(lineStartX, lineStartY, lineEndX, lineEndY, width, startDelay, knockbackDistance, knockbackDuration);
+      console.log(`Admin spawned linear knockback (horizontal line, southward knockback, width=${width})`);
     }
   });
 
@@ -373,6 +376,12 @@ io.on('connection', (socket) => {
   socket.on('admin:runOrbitalOmen', () => {
     runEncounter(game, orbitalOmen);
     console.log('Admin started orbital omen');
+  });
+
+  // Run quad-knock script
+  socket.on('admin:runQuadKnock', () => {
+    runEncounter(game, quadKnock);
+    console.log('Admin started quad-knock');
   });
 });
 

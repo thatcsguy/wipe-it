@@ -225,7 +225,7 @@ Available to scripts via `runner` parameter:
 { type: 'lineAoe'; startX; startY; endX; endY; width?; duration? }
 { type: 'conalAoe'; centerX; centerY; endpointX; endpointY; angle?; duration? }
 { type: 'radialKnockback'; originX; originY; delay?; knockbackDistance?; knockbackDuration? }
-{ type: 'linearKnockback'; lineStartX; lineStartY; lineEndX; lineEndY; delay?; knockbackDistance?; knockbackDuration? }
+{ type: 'linearKnockback'; lineStartX; lineStartY; lineEndX; lineEndY; width?; delay?; knockbackDistance?; knockbackDuration? }
 ```
 
 ### Script-Driven Effects

@@ -100,24 +100,47 @@ export function getLinearKnockbackDirection(
 }
 
 /**
- * Check if a player is on the knockback side of a linear knockback line
- * Uses cross product to determine which side of the line the player is on
- * Returns true when player is on the right side (walking from A to B)
- * Cross product formula: (bx-ax)*(py-ay) - (by-ay)*(px-ax)
- * Negative cross product = right side = knockback side
+ * Check if a point is inside the linear knockback rectangle.
+ * Uses local coordinate transform (same approach as lineAoe):
+ * - Origin at lineStart
+ * - X-axis along line direction
+ * - Y-axis perpendicular to line
+ * Then checks if within [0, length] x [-width/2, width/2]
  */
-export function isOnKnockbackSide(
+export function isInsideLinearKnockbackRect(
   lineStartX: number,
   lineStartY: number,
   lineEndX: number,
   lineEndY: number,
+  width: number,
   playerX: number,
   playerY: number
 ): boolean {
-  const cross =
-    (lineEndX - lineStartX) * (playerY - lineStartY) -
-    (lineEndY - lineStartY) * (playerX - lineStartX);
-  return cross < 0;
+  // Direction vector from start to end
+  const dx = lineEndX - lineStartX;
+  const dy = lineEndY - lineStartY;
+  const length = Math.sqrt(dx * dx + dy * dy);
+
+  if (length === 0) return false;
+
+  // Unit vectors
+  const ux = dx / length; // along line
+  const uy = dy / length;
+  // Perpendicular unit vector
+  const vx = -uy;
+  const vy = ux;
+
+  // Vector from start to point
+  const relX = playerX - lineStartX;
+  const relY = playerY - lineStartY;
+
+  // Project onto local axes
+  const localX = relX * ux + relY * uy; // distance along line
+  const localY = relX * vx + relY * vy; // distance perpendicular to line
+
+  // Check bounds
+  const halfWidth = width / 2;
+  return localX >= 0 && localX <= length && localY >= -halfWidth && localY <= halfWidth;
 }
 
 export interface KnockbackEndpoint {

@@ -146,6 +146,16 @@ export function initAdmin(socket: Socket): void {
     });
   }
 
+  const runQuadKnockBtn = document.getElementById('run-quad-knock-btn');
+  if (runQuadKnockBtn) {
+    runQuadKnockBtn.addEventListener('click', () => {
+      if (adminSocket) {
+        adminSocket.emit('admin:runQuadKnock');
+        logCombat('Started quad-knock');
+      }
+    });
+  }
+
   const spawnPortalBtn = document.getElementById('spawn-portal-btn');
   if (spawnPortalBtn) {
     spawnPortalBtn.addEventListener('click', () => {
@@ -227,6 +237,11 @@ export function setChangeNameCallback(callback: () => void): void {
   emitRunOrbitalOmen: () => {
     if (adminSocket) {
       adminSocket.emit('admin:runOrbitalOmen');
+    }
+  },
+  emitRunQuadKnock: () => {
+    if (adminSocket) {
+      adminSocket.emit('admin:runQuadKnock');
     }
   },
   emitSpawnPortal: (params?: { duration?: number; x?: number; y?: number }) => {

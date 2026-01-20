@@ -1,10 +1,15 @@
-import { LinearKnockbackMechanicState, ARENA_WIDTH, ARENA_HEIGHT } from '../../shared/types';
+import { LinearKnockbackMechanicState } from '../../shared/types';
 
 // Linear knockback colors (cyan/blue for movement effect)
 export const LINEAR_KB_COLOR = '#00ccff';
 const CHEVRON_SPACING = 100; // ~100px between chevrons along line
 const NUM_WAVES = 4;
 const CHEVRON_SIZE = 25;
+
+// Rectangle outline colors (similar to lineAoe but cyan-tinted)
+const RECT_EDGE_GLOW_COLOR = 'rgba(0, 200, 255, 0.6)';
+const RECT_EDGE_CORE_COLOR = 'rgba(150, 230, 255, 0.8)';
+const RECT_FILL_COLOR = 'rgba(0, 150, 200, 0.1)';
 
 // Draw a single chevron (>> shape) pointing in direction
 function drawChevron(
@@ -42,13 +47,13 @@ function drawChevron(
   ctx.restore();
 }
 
-// Render linear knockback with animated chevrons moving perpendicular to line
+// Render linear knockback with rectangle bounds and animated chevrons
 export function renderLinearKnockback(
   ctx: CanvasRenderingContext2D,
   mechanic: LinearKnockbackMechanicState,
   serverTime: number
 ): void {
-  const { lineStartX, lineStartY, lineEndX, lineEndY, startTime, endTime } = mechanic;
+  const { lineStartX, lineStartY, lineEndX, lineEndY, width, startTime, endTime } = mechanic;
 
   // Only visible during active time
   if (serverTime < startTime || serverTime > endTime) {
@@ -79,24 +84,66 @@ export function renderLinearKnockback(
   // Angle for chevrons (pointing in knockback direction)
   const chevronAngle = Math.atan2(perpDirY, perpDirX);
 
-  // Max distance to fill arena in knockback direction
-  const maxDistance = Math.max(ARENA_WIDTH, ARENA_HEIGHT);
+  // Half width for rectangle
+  const halfWidth = width / 2;
+
+  // Calculate four corners of the rectangle (centered on line)
+  const corners = [
+    { x: lineStartX + perpDirX * halfWidth, y: lineStartY + perpDirY * halfWidth },
+    { x: lineEndX + perpDirX * halfWidth, y: lineEndY + perpDirY * halfWidth },
+    { x: lineEndX - perpDirX * halfWidth, y: lineEndY - perpDirY * halfWidth },
+    { x: lineStartX - perpDirX * halfWidth, y: lineStartY - perpDirY * halfWidth },
+  ];
+
+  // Draw rectangle path helper
+  const drawRect = () => {
+    ctx.beginPath();
+    ctx.moveTo(corners[0].x, corners[0].y);
+    ctx.lineTo(corners[1].x, corners[1].y);
+    ctx.lineTo(corners[2].x, corners[2].y);
+    ctx.lineTo(corners[3].x, corners[3].y);
+    ctx.closePath();
+  };
+
+  ctx.save();
+
+  // Draw faint fill
+  drawRect();
+  ctx.fillStyle = RECT_FILL_COLOR;
+  ctx.fill();
+
+  // Draw glowing edge - outer glow layer
+  drawRect();
+  ctx.shadowColor = RECT_EDGE_GLOW_COLOR;
+  ctx.shadowBlur = 6;
+  ctx.strokeStyle = RECT_EDGE_GLOW_COLOR;
+  ctx.lineWidth = 1.5;
+  ctx.stroke();
+  ctx.shadowBlur = 0;
+
+  // Draw bright core edge
+  drawRect();
+  ctx.strokeStyle = RECT_EDGE_CORE_COLOR;
+  ctx.lineWidth = 0.75;
+  ctx.stroke();
+
+  // Clip to rectangle for chevrons
+  drawRect();
+  ctx.clip();
 
   // Calculate how many chevrons fit along the line
   const numChevronsAlongLine = Math.ceil(lineLength / CHEVRON_SPACING) + 1;
 
-  // Draw multiple waves of chevrons
+  // Draw multiple waves of chevrons within the rectangle
   for (let wave = 0; wave < NUM_WAVES; wave++) {
     // Stagger waves - each wave is offset in the animation cycle
     const wavePhase = (progress + wave / NUM_WAVES) % 1;
 
-    // Wave distance from line (moves outward in knockback direction)
-    const waveDistance = wavePhase * maxDistance;
+    // Wave distance from the opposite edge (moves across rectangle in knockback direction)
+    // Start at -halfWidth (opposite edge) and move to +halfWidth (knockback edge)
+    const waveDistance = -halfWidth + wavePhase * width;
 
-    // Skip waves that haven't started
-    if (waveDistance < 10) continue;
-
-    // Fade out as waves move away from line
+    // Fade out as chevrons travel toward knockback edge
     const alpha = 0.8 * (1 - wavePhase * 0.7);
 
     // Draw chevrons along the line at this wave distance
@@ -110,14 +157,10 @@ export function renderLinearKnockback(
       const chevronX = lineX + perpDirX * waveDistance;
       const chevronY = lineY + perpDirY * waveDistance;
 
-      // Skip chevrons outside visible area (with margin)
-      if (chevronX < -50 || chevronX > ARENA_WIDTH + 50 ||
-          chevronY < -50 || chevronY > ARENA_HEIGHT + 50) {
-        continue;
-      }
-
-      // Draw chevron pointing in knockback direction (no size change)
+      // Draw chevron pointing in knockback direction
       drawChevron(ctx, chevronX, chevronY, chevronAngle, CHEVRON_SIZE, alpha);
     }
   }
+
+  ctx.restore();
 }

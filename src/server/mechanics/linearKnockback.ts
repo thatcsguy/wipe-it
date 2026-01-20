@@ -1,6 +1,6 @@
 import { Player } from '../player';
 import { BaseMechanic, MechanicState } from './types';
-import { getLinearKnockbackDirection, isOnKnockbackSide } from '../../shared/knockback';
+import { getLinearKnockbackDirection, isInsideLinearKnockbackRect } from '../../shared/knockback';
 import { LinearKnockbackMechanicState } from '../../shared/types';
 
 export class LinearKnockbackMechanic implements BaseMechanic {
@@ -9,6 +9,7 @@ export class LinearKnockbackMechanic implements BaseMechanic {
   lineStartY: number;
   lineEndX: number;
   lineEndY: number;
+  width: number;
   startTime: number;
   endTime: number;
   knockbackDistance: number;
@@ -19,6 +20,7 @@ export class LinearKnockbackMechanic implements BaseMechanic {
     lineStartY: number,
     lineEndX: number,
     lineEndY: number,
+    width: number,
     delay: number,
     knockbackDistance: number,
     knockbackDuration: number
@@ -28,6 +30,7 @@ export class LinearKnockbackMechanic implements BaseMechanic {
     this.lineStartY = lineStartY;
     this.lineEndX = lineEndX;
     this.lineEndY = lineEndY;
+    this.width = width;
     this.startTime = Date.now();
     this.endTime = this.startTime + delay;
     this.knockbackDistance = knockbackDistance;
@@ -53,14 +56,15 @@ export class LinearKnockbackMechanic implements BaseMechanic {
       this.lineEndY
     );
 
-    // Apply knockback only to players on the knockback side (right side of line)
+    // Apply knockback only to players inside the rectangle
     for (const player of players.values()) {
       if (
-        isOnKnockbackSide(
+        isInsideLinearKnockbackRect(
           this.lineStartX,
           this.lineStartY,
           this.lineEndX,
           this.lineEndY,
+          this.width,
           player.x,
           player.y
         )
@@ -86,6 +90,7 @@ export class LinearKnockbackMechanic implements BaseMechanic {
       lineStartY: this.lineStartY,
       lineEndX: this.lineEndX,
       lineEndY: this.lineEndY,
+      width: this.width,
       knockbackDistance: this.knockbackDistance,
       knockbackDuration: this.knockbackDuration,
     } as LinearKnockbackMechanicState;

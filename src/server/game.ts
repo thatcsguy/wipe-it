@@ -265,6 +265,7 @@ export class Game extends EventEmitter {
     lineStartY: number,
     lineEndX: number,
     lineEndY: number,
+    width: number,
     startDelay: number,
     knockbackDistance: number,
     knockbackDuration: number
@@ -274,6 +275,7 @@ export class Game extends EventEmitter {
       lineStartY,
       lineEndX,
       lineEndY,
+      width,
       startDelay,
       knockbackDistance,
       knockbackDuration

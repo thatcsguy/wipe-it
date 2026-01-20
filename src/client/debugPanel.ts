@@ -168,6 +168,7 @@ function updateMechanicsSection(mechanics: MechanicState[], serverTimestamp: num
       mechanicDiv.setAttribute('data-line-start-y', String(linear.lineStartY));
       mechanicDiv.setAttribute('data-line-end-x', String(linear.lineEndX));
       mechanicDiv.setAttribute('data-line-end-y', String(linear.lineEndY));
+      mechanicDiv.setAttribute('data-width', String(linear.width));
       mechanicDiv.setAttribute('data-kb-distance', String(linear.knockbackDistance));
       mechanicDiv.setAttribute('data-kb-duration', String(linear.knockbackDuration));
     }

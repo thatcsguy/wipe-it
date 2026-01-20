@@ -11,7 +11,7 @@ const DEFAULTS = {
   tether: { requiredDistance: ARENA_WIDTH * 0.75, duration: 3000 },
   tower: { radius: 80, duration: 5000, requiredPlayers: 2 },
   radialKnockback: { delay: 2000, knockbackDistance: 150, knockbackDuration: 500 },
-  linearKnockback: { delay: 2000, knockbackDistance: 150, knockbackDuration: 500 },
+  linearKnockback: { width: 800, delay: 2000, knockbackDistance: 150, knockbackDuration: 500 },
   lineAoe: { width: 100, duration: 3000 },
   conalAoe: { angle: Math.PI / 2, duration: 3000 },
 };
@@ -89,6 +89,7 @@ export class ScriptRunnerImpl implements ScriptRunner {
       }
 
       case 'linearKnockback': {
+        const width = mechanic.width ?? DEFAULTS.linearKnockback.width;
         const delay = mechanic.delay ?? DEFAULTS.linearKnockback.delay;
         const knockbackDistance = mechanic.knockbackDistance ?? DEFAULTS.linearKnockback.knockbackDistance;
         const knockbackDuration = mechanic.knockbackDuration ?? DEFAULTS.linearKnockback.knockbackDuration;
@@ -97,6 +98,7 @@ export class ScriptRunnerImpl implements ScriptRunner {
           mechanic.lineStartY,
           mechanic.lineEndX,
           mechanic.lineEndY,
+          width,
           delay,
           knockbackDistance,
           knockbackDuration

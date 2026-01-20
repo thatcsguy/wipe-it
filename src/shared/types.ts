@@ -128,7 +128,7 @@ export interface RadialKnockbackMechanicState {
   knockbackDuration: number;
 }
 
-// Linear knockback mechanic - pushes players on one side perpendicular to line
+// Linear knockback mechanic - pushes players inside rectangle perpendicular to line
 export interface LinearKnockbackMechanicState {
   type: 'linearKnockback';
   id: string;
@@ -136,6 +136,7 @@ export interface LinearKnockbackMechanicState {
   lineStartY: number;
   lineEndX: number;
   lineEndY: number;
+  width: number;
   startTime: number;
   endTime: number;
   knockbackDistance: number;
