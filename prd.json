@@ -41,7 +41,7 @@
             "Verify all selectors handle edge cases (n > players, no players with status, etc.)",
             "Run npm run build - should pass"
         ],
-        "passes": false
+        "passes": true
     },
     {
         "id": "ENC-004",

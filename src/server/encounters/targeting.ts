@@ -79,3 +79,63 @@ export function furthest(point: { x: number; y: number }): Selector {
     return [farthestPlayer];
   };
 }
+
+/**
+ * Returns n players closest to the given point, sorted by distance (ascending)
+ * If n > number of living players, returns all living players
+ */
+export function nClosest(n: number, point: { x: number; y: number }): Selector {
+  return (state: GameState, ctx: Context): PlayerState[] => {
+    const living = all()(state, ctx);
+    if (living.length === 0) {
+      return [];
+    }
+    // Sort by distance ascending
+    const sorted = [...living].sort((a, b) => {
+      const distA = (a.x - point.x) ** 2 + (a.y - point.y) ** 2;
+      const distB = (b.x - point.x) ** 2 + (b.y - point.y) ** 2;
+      return distA - distB;
+    });
+    return sorted.slice(0, n);
+  };
+}
+
+/**
+ * Returns n players furthest from the given point, sorted by distance (descending)
+ * If n > number of living players, returns all living players
+ */
+export function nFurthest(n: number, point: { x: number; y: number }): Selector {
+  return (state: GameState, ctx: Context): PlayerState[] => {
+    const living = all()(state, ctx);
+    if (living.length === 0) {
+      return [];
+    }
+    // Sort by distance descending
+    const sorted = [...living].sort((a, b) => {
+      const distA = (a.x - point.x) ** 2 + (a.y - point.y) ** 2;
+      const distB = (b.x - point.x) ** 2 + (b.y - point.y) ** 2;
+      return distB - distA;
+    });
+    return sorted.slice(0, n);
+  };
+}
+
+/**
+ * Returns living players that have the specified status effect
+ */
+export function withStatus(effect: string): Selector {
+  return (state: GameState, ctx: Context): PlayerState[] => {
+    const living = all()(state, ctx);
+    return living.filter(p => p.statusEffects.some(s => s.type === effect));
+  };
+}
+
+/**
+ * Returns living players that do not have the specified status effect
+ */
+export function withoutStatus(effect: string): Selector {
+  return (state: GameState, ctx: Context): PlayerState[] => {
+    const living = all()(state, ctx);
+    return living.filter(p => !p.statusEffects.some(s => s.type === effect));
+  };
+}

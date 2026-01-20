@@ -12,3 +12,11 @@ ENC-002: Basic targeting selectors
 - furthest(point): Euclidean distance, returns single-element array
 - All return Selector functions (not results)
 - Build passes
+
+ENC-003: Advanced targeting selectors
+- nClosest(n, point): sorts by distance ascending, takes first n
+- nFurthest(n, point): sorts by distance descending, takes first n
+- withStatus(effect): filters players whose statusEffects includes effect
+- withoutStatus(effect): filters players whose statusEffects excludes effect
+- All handle edge cases (empty living players, n > players.length)
+- Build passes
