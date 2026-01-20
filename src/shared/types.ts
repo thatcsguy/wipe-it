@@ -115,8 +115,6 @@ export interface TowerMechanicState {
   startTime: number;
   endTime: number;
   requiredPlayers: number;
-  failureEffects: Effect[];
-  successEffects: Effect[];
 }
 
 // Radial knockback mechanic - pushes all players away from origin

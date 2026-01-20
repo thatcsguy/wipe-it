@@ -76,9 +76,7 @@ export class ScriptRunnerImpl implements ScriptRunner {
           mechanic.y,
           radius,
           duration,
-          requiredPlayers,
-          [{ type: 'damage', amount: 50 }],
-          []
+          requiredPlayers
         );
       }
 

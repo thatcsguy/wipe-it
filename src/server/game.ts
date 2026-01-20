@@ -12,7 +12,6 @@ import { RadialKnockbackMechanic } from './mechanics/radialKnockback';
 import { LinearKnockbackMechanic } from './mechanics/linearKnockback';
 import { LineAoeMechanic } from './mechanics/lineAoe';
 import { ConalAoeMechanic } from './mechanics/conalAoe';
-import { Effect } from './mechanics/types';
 import { TetherEndpoint } from '../shared/types';
 import { StatusEffectManager } from './statusEffectManager';
 import { MechanicResult } from './encounters/types';
@@ -222,9 +221,7 @@ export class Game extends EventEmitter {
     y: number,
     radius: number,
     duration: number,
-    requiredPlayers: number,
-    failureEffects: Effect[],
-    successEffects: Effect[]
+    requiredPlayers: number
   ): string {
     const now = Date.now();
     const id = `tower-${now}-${Math.random().toString(36).substr(2, 9)}`;
@@ -235,9 +232,7 @@ export class Game extends EventEmitter {
       radius,
       now,
       now + duration,
-      requiredPlayers,
-      failureEffects,
-      successEffects
+      requiredPlayers
     );
     this.mechanicManager.add(mechanic);
     return id;

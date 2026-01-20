@@ -251,7 +251,7 @@ io.on('connection', (socket) => {
     console.log(`Admin spawned conal AOE at (${centerX}, ${centerY}) endpoint=(${endpointX}, ${endpointY}) angle=${angle} duration=${duration}ms`);
   });
 
-  // Handle admin tower spawn
+  // Handle admin tower spawn (no effects - use scripts for damage)
   socket.on('admin:spawnTower', (params?: { duration?: number }) => {
     // Test values: center of arena, radius 80, duration 5000ms, requires 2 players
     const x = ARENA_WIDTH / 2;
@@ -259,9 +259,7 @@ io.on('connection', (socket) => {
     const radius = 80;
     const duration = params?.duration ?? 5000;
     const requiredPlayers = 2;
-    const failureEffects = [{ type: 'damage' as const, amount: 50 }];
-    const successEffects: { type: 'damage'; amount: number }[] = [];
-    game.spawnTower(x, y, radius, duration, requiredPlayers, failureEffects, successEffects);
+    game.spawnTower(x, y, radius, duration, requiredPlayers);
     console.log(`Admin spawned tower at (${x}, ${y}) duration=${duration}ms`);
   });
 

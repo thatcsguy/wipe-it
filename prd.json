@@ -102,7 +102,7 @@
             "Verify MechanicParams tower type in encounters/types.ts has no effects fields",
             "Run npm run build - should pass with no TypeScript errors"
         ],
-        "passes": false
+        "passes": true
     },
     {
         "id": "MECH-008",
@@ -115,7 +115,7 @@
             "Verify tower appears visually",
             "Verify players do NOT take damage when tower resolves (even if failed)"
         ],
-        "passes": false
+        "passes": true
     },
     {
         "id": "MECH-009",
