@@ -1,7 +1,9 @@
-import { Script, ScriptRunner } from '../../types';
+import { Script, ScriptRunner, DoodadParams } from '../../types';
 import { ARENA_WIDTH, ARENA_HEIGHT } from '../../../../shared/types';
 
 const LINE_WIDTH = 200;
+const PORTAL_SIZE = 80;
+const PORTAL_OFFSET = -50; // Distance outside arena edge
 const DAMAGE = 30;
 const VULN_DURATION = 5000;
 const SPAWN_INTERVAL = 1500;
@@ -69,6 +71,51 @@ export const orbitalOmen: Script = async (runner, ctx) => {
   for (let i = 0; i < 4; i++) {
     const nsPos = NS_POSITIONS[nsOrder[i]];
     const ewPos = EW_POSITIONS[ewOrder[i]];
+
+    // Spawn portal doodads at origin points BEFORE line AOEs
+    // N-S lines come from both top and bottom
+    runner.spawnDoodad({
+      type: 'portal',
+      x: nsPos,
+      y: PORTAL_OFFSET, // Above arena (north edge)
+      width: PORTAL_SIZE,
+      height: PORTAL_SIZE,
+      duration: DURATION,
+      color: '#8844ff',
+      layer: 'background',
+    });
+    runner.spawnDoodad({
+      type: 'portal',
+      x: nsPos,
+      y: ARENA_HEIGHT - PORTAL_OFFSET, // Below arena (south edge)
+      width: PORTAL_SIZE,
+      height: PORTAL_SIZE,
+      duration: DURATION,
+      color: '#8844ff',
+      layer: 'background',
+    });
+
+    // E-W lines come from both left and right
+    runner.spawnDoodad({
+      type: 'portal',
+      x: PORTAL_OFFSET, // Left of arena (west edge)
+      y: ewPos,
+      width: PORTAL_SIZE,
+      height: PORTAL_SIZE,
+      duration: DURATION,
+      color: '#8844ff',
+      layer: 'background',
+    });
+    runner.spawnDoodad({
+      type: 'portal',
+      x: ARENA_WIDTH - PORTAL_OFFSET, // Right of arena (east edge)
+      y: ewPos,
+      width: PORTAL_SIZE,
+      height: PORTAL_SIZE,
+      duration: DURATION,
+      color: '#8844ff',
+      layer: 'background',
+    });
 
     // N-S line (vertical): runs from top to bottom at nsPos X
     const nsId = runner.spawn({

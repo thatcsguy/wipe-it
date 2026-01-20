@@ -71,3 +71,13 @@
 - Added spawnDoodad(params): string + removeDoodad(id): boolean to ScriptRunner interface
 - Implemented in ScriptRunnerImpl, delegating to game.getDoodadManager()
 - Files: src/server/encounters/types.ts, src/server/encounters/script-runner.ts
+
+## DOODAD-010: Orbital Omen Portal Integration
+- Added runner.spawnDoodad() calls before each line AOE spawn
+- N-S lines: portals at (nsPos, -50) and (nsPos, 850) - north/south edges
+- E-W lines: portals at (-50, ewPos) and (850, ewPos) - west/east edges
+- Portals use same duration as line AOEs, disappear when lines resolve
+- PORTAL_SIZE=80, PORTAL_OFFSET=-50, color=#8844ff, layer=background
+- Verified: Playwright shows portals at positions outside arena bounds
+- Screenshot confirms animated swirling portals visible at arena edges
+- Files: src/server/encounters/scripts/combos/orbital-omen.ts

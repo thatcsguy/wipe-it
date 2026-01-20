@@ -128,7 +128,7 @@
         "Portals appear before corresponding line AOEs",
         "Use Playwright: run orbital-omen via #run-orbital-omen-btn, take screenshot, verify portal visuals appear at arena edges before line AOEs fire"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "id": "DOODAD-011",
