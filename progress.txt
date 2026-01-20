@@ -2,3 +2,8 @@ BUBBLE-001 + BUBBLE-003: Added 'bubbled' and 'bubble-warning' to StatusEffectTyp
 - Files: src/shared/types.ts, src/server/statusEffect.ts
 - Both use '/assets/bubble-warning_icon.png' (same icon per PRD)
 - BUBBLE-003 required for BUBBLE-001 to compile (Record<StatusEffectType> constraint)
+
+BUBBLE-004: Added isBubbled() function to localStatus.ts
+- Pattern matches isRooted() exactly
+- Also exposed in __localStatusTest for testing
+- File: src/client/localStatus.ts

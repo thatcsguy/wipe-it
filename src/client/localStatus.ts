@@ -21,6 +21,11 @@ export function isRooted(): boolean {
   return localStatuses.some((s) => s.type === 'rooted');
 }
 
+// Check if local player has bubbled status effect
+export function isBubbled(): boolean {
+  return localStatuses.some((s) => s.type === 'bubbled');
+}
+
 // Get all local statuses (for testing)
 export function getLocalStatuses(): StatusEffectState[] {
   return [...localStatuses];
@@ -36,6 +41,7 @@ export function getLocalPlayerId(): string | null {
   setLocalPlayerId,
   updateLocalStatuses,
   isRooted,
+  isBubbled,
   getLocalStatuses,
   getLocalPlayerId,
 };

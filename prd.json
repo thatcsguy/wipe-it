@@ -42,7 +42,7 @@
         "isBubbled() returns true when localStatuses contains type 'bubbled'",
         "TypeScript compilation succeeds: npm run build"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "id": "BUBBLE-005",
