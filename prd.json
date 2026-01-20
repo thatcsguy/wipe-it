@@ -161,7 +161,7 @@
             "Have players NOT stretch the tether (stay close together)",
             "Verify appropriate effect is applied to player(s) when tether resolves"
         ],
-        "passes": false
+        "passes": true
     },
     {
         "id": "MECH-012",

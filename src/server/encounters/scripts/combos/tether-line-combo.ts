@@ -2,6 +2,9 @@ import { Script } from '../../types';
 import { random } from '../../targeting';
 import { ARENA_WIDTH, ARENA_HEIGHT } from '../../../../shared/types';
 
+const TETHER_FAIL_DAMAGE = 100;
+const TETHER_FAIL_VULN_DURATION = 1000;
+
 // Wall midpoints (game coords: 0 to ARENA_WIDTH/HEIGHT)
 const WALL_MIDPOINTS = [
   { x: ARENA_WIDTH / 2, y: 0 }, // Top
@@ -49,9 +52,10 @@ export const tetherLineCombo: Script = async (runner, ctx) => {
     stretched: boolean;
   };
 
-  // If tether wasn't stretched, apply vulnerability to the player
+  // If tether wasn't stretched, apply damage and vulnerability to the player
   if (!data.stretched) {
-    runner.applyStatus(targets[0].id, 'vulnerability', 1000);
+    runner.damage(targets[0].id, TETHER_FAIL_DAMAGE);
+    runner.applyStatus(targets[0].id, 'vulnerability', TETHER_FAIL_VULN_DURATION);
   }
 
   // Calculate direction vector and extend line by 200px on both sides

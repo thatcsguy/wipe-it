@@ -59,3 +59,9 @@ MECH-009: Tether mechanic migrated to script-driven effects
 - NOTE: Playwright not verified (dev server not running)
 
 MECH-010: Admin tether handlers already updated in MECH-009 (no separate work needed)
+
+MECH-011: Tether-line-combo script now applies effects on tether failure
+- Added TETHER_FAIL_DAMAGE (100) and TETHER_FAIL_VULN_DURATION (1000) constants
+- On failed stretch: runner.damage() + runner.applyStatus('vulnerability')
+- Playwright verified: player took 100 damage, gained/lost vulnerability
+- Files: tether-line-combo.ts
