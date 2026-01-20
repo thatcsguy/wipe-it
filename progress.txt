@@ -22,3 +22,8 @@ BUBBLE-008 + BUBBLE-009: Visual bubble rendering
 - Called in render loop BEFORE drawPlayer/drawPlayerAt when player has 'bubbled' status
 - Verified via Playwright: bubble visual renders around bubbled player
 - File: src/client/renderer.ts
+
+BUBBLE-002: Downloaded bubble-warning icon asset
+- Downloaded from ffxiv.consolegameswiki.com/mediawiki/images/9/95/Bubble_weave_icon.png
+- Saved to public/assets/bubble-warning_icon.png
+- Verified: valid PNG 24x32 RGBA, loads at localhost:3000/assets/bubble-warning_icon.png

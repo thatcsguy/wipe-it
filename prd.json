@@ -20,7 +20,7 @@
         "File exists: public/assets/bubble-warning_icon.png",
         "Image loads correctly when accessed via browser at localhost:3000/assets/bubble-warning_icon.png"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "id": "BUBBLE-003",
