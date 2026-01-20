@@ -29,3 +29,11 @@
 - 4 spiral arms with SPIRAL_TWIST, radial gradients, bright core, edge ring
 - parseColor() supports hex (#xxx, #xxxxxx) and named colors
 - Files: src/client/doodads/index.ts, src/client/doodads/portal.ts
+
+## DOODAD-005: Rect and Circle Renderers
+- Created src/client/doodads/rect.ts: renderRect() w/ rotation, color, opacity
+- Created src/client/doodads/circle.ts: renderCircle() w/ rotation, color, opacity
+- Both use ctx.save/restore, translate to pos, rotate, apply globalAlpha
+- Both draw fill + subtle white border for visibility
+- Updated index.ts to import and dispatch to these renderers (removing TODOs)
+- Files: src/client/doodads/rect.ts, src/client/doodads/circle.ts, src/client/doodads/index.ts

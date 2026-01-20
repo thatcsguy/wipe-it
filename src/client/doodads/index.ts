@@ -1,5 +1,7 @@
 import { DoodadState, DoodadLayer, PlayerState } from '../../shared/types';
 import { renderPortal } from './portal';
+import { renderRect } from './rect';
+import { renderCircle } from './circle';
 
 // Position lookup data for doodad rendering (same pattern as mechanics)
 export interface DoodadPositionData {
@@ -77,10 +79,10 @@ export function renderDoodads(
         renderPortal(ctx, doodad, pos, serverTime);
         break;
       case 'rect':
-        // TODO: renderRect
+        renderRect(ctx, doodad, pos, serverTime);
         break;
       case 'circle':
-        // TODO: renderCircle
+        renderCircle(ctx, doodad, pos, serverTime);
         break;
     }
   }

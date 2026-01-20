@@ -64,7 +64,7 @@
         "Both renderers respect color and opacity properties",
         "TypeScript compilation succeeds: npm run build"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "id": "DOODAD-006",
