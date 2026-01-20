@@ -1,0 +1,6 @@
+## DOODAD-001: Types
+- Added DoodadState interface: id, type, width, height, rotation, startTime, endTime, opacity?, layer, color, data?, x?, y?, anchorPlayerId?, anchorOffset?
+- Added DoodadType ('portal'|'rect'|'circle'), DoodadLayer ('background'|'foreground'), DoodadAnchorOffset
+- Added doodads: DoodadState[] to GameState
+- Stub empty doodads[] in game.ts (server broadcast + getState) and client game.ts for compilation
+- Files: src/shared/types.ts, src/server/game.ts, src/client/game.ts

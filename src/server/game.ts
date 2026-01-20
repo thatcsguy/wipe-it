@@ -181,6 +181,7 @@ export class Game extends EventEmitter {
       }),
       mechanics: this.mechanicManager.getStates(),
       statusEffects: allStatusEffects,
+      doodads: [], // TODO: populate from DoodadManager once implemented
       timestamp: Date.now(),
     };
     this.io.emit('state', state);
@@ -326,6 +327,7 @@ export class Game extends EventEmitter {
       }),
       mechanics: this.mechanicManager.getStates(),
       statusEffects: allStatusEffects,
+      doodads: [], // TODO: populate from DoodadManager once implemented
       timestamp: Date.now(),
     };
   }

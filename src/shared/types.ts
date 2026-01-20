@@ -171,6 +171,36 @@ export interface ConalAoeMechanicState {
 // Union of all mechanic states
 export type MechanicState = ChariotMechanicState | SpreadMechanicState | TetherMechanicState | TowerMechanicState | RadialKnockbackMechanicState | LinearKnockbackMechanicState | LineAoeMechanicState | ConalAoeMechanicState;
 
+// Doodad types - visual-only elements with no gameplay effect
+export type DoodadType = 'portal' | 'rect' | 'circle';
+export type DoodadLayer = 'background' | 'foreground';
+
+// Doodad anchor offset for player-anchored doodads
+export interface DoodadAnchorOffset {
+  x: number;
+  y: number;
+}
+
+// Doodad state - visual elements that can be fixed or player-anchored
+export interface DoodadState {
+  id: string;
+  type: DoodadType;
+  width: number;
+  height: number;
+  rotation: number;
+  startTime: number;
+  endTime: number;
+  opacity?: number;
+  layer: DoodadLayer;
+  color: string;
+  data?: Record<string, unknown>;
+  // Position: either fixed (x, y) or anchored to player
+  x?: number;
+  y?: number;
+  anchorPlayerId?: string;
+  anchorOffset?: DoodadAnchorOffset;
+}
+
 // Tether resolution event - emitted when a tether mechanic resolves
 export interface TetherResolutionEvent {
   mechanicId: string;
@@ -193,5 +223,6 @@ export interface GameState {
   players: PlayerState[];
   mechanics: MechanicState[];
   statusEffects: StatusEffectState[];
+  doodads: DoodadState[];
   timestamp: number;
 }

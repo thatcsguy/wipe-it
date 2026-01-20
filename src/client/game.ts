@@ -22,7 +22,7 @@ let localPlayerColor: string = '';
 let gameRunning = false;
 
 // Current game state from server
-let currentGameState: GameState = { players: [], mechanics: [], statusEffects: [], timestamp: 0 };
+let currentGameState: GameState = { players: [], mechanics: [], statusEffects: [], doodads: [], timestamp: 0 };
 
 // Track previous mechanic IDs for spawn detection
 let previousMechanicIds = new Set<string>();

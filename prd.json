@@ -12,7 +12,7 @@
         "Type supports both fixed position (x, y) and player anchor (anchorPlayerId, anchorOffset)",
         "TypeScript compilation succeeds: npm run build"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "id": "DOODAD-002",
