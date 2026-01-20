@@ -281,8 +281,9 @@ io.on('connection', (socket) => {
   });
 
   // Apply status effect to player (for testing)
-  socket.on('admin:applyStatus', (params: { playerId: string; statusType: string; duration: number }) => {
-    const { playerId, statusType, duration } = params;
+  socket.on('admin:applyStatus', (params: { playerId?: string; statusType: string; duration: number }) => {
+    const { statusType, duration } = params;
+    const playerId = params.playerId ?? socket.id;
     const statusEffect = new StatusEffect(
       statusType as any,
       playerId,

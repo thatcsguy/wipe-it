@@ -115,7 +115,7 @@
         "Verify position attributes unchanged while rooted",
         "Verify rooted icon displays on player (take screenshot)"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "id": "ROOT-011",
@@ -129,7 +129,7 @@
         "Wait for knockback to resolve (2s)",
         "Verify player position unchanged (knockback had no effect)"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "id": "ROOT-012",
@@ -143,7 +143,7 @@
         "Verify .debug-status[data-effect='rooted'] removed",
         "Send WASD input, verify player position changes (movement restored)"
       ],
-      "passes": false
+      "passes": true
     }
   ]
 }

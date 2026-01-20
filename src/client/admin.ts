@@ -263,7 +263,7 @@ export function setChangeNameCallback(callback: () => void): void {
       adminSocket.emit('admin:spawnAnchoredDoodad', params);
     }
   },
-  emitApplyStatus: (params: { playerId: string; statusType: string; duration: number }) => {
+  emitApplyStatus: (params: { playerId?: string; statusType: string; duration: number }) => {
     if (adminSocket) {
       adminSocket.emit('admin:applyStatus', params);
     }

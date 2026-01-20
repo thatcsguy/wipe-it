@@ -38,3 +38,13 @@ Files: src/server/player.ts, src/server/index.ts, src/client/admin.ts
 - Verified via Playwright: movement blocked while rooted, restored after expiry
 
 Files: src/client/localStatus.ts, src/client/game.ts, src/client/network.ts
+
+## ROOT-010/011/012: Integration tests verified
+
+- Fixed admin:applyStatus handler to default playerId to socket.id if not provided
+- ROOT-010: Rooted blocks WASD movement, icon displays in debug panel
+- ROOT-011: Rooted grants knockback immunity (radial knockback has no effect)
+- ROOT-012: Rooted expires correctly, movement resumes after expiration
+- All verified via Playwright with held key inputs (keyboard.down/up)
+
+Files: src/server/index.ts, src/client/admin.ts
