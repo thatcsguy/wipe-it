@@ -82,3 +82,11 @@ ENC-010: execute(script) entry point + runEncounter helper
 - Creates ScriptRunnerImpl and calls execute()
 - Files: src/server/encounters/script-runner.ts
 - Build passes
+
+ENC-011: First test script
+- Created src/server/encounters/scripts/test-sequence.ts
+- testSequenceScript exported as Script type
+- Spawns chariot at arena center, waits 3s, spawns spreads on random(2) players, waits 3s, spawns chariot
+- Uses runner.select(random(2)) for targeting
+- Files: src/server/encounters/scripts/test-sequence.ts
+- Build passes
