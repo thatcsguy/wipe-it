@@ -65,3 +65,9 @@
 - __adminTest.emitSpawnPortal(params?) method added for testing
 - Portal: 80x80, #8844ff color, background layer, 5s default duration
 - Files: public/index.html, src/server/index.ts, src/client/admin.ts
+
+## DOODAD-009: ScriptRunner Doodad Methods
+- Added DoodadParams interface to types.ts (mirrors SpawnDoodadParams)
+- Added spawnDoodad(params): string + removeDoodad(id): boolean to ScriptRunner interface
+- Implemented in ScriptRunnerImpl, delegating to game.getDoodadManager()
+- Files: src/server/encounters/types.ts, src/server/encounters/script-runner.ts

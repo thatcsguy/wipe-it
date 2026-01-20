@@ -1,4 +1,4 @@
-import { GameState, PlayerState, StatusEffectType } from '../../shared/types';
+import { GameState, PlayerState, StatusEffectType, DoodadType, DoodadLayer, DoodadAnchorOffset } from '../../shared/types';
 
 /**
  * Context passed to scripts for storing arbitrary data between phases
@@ -38,6 +38,26 @@ export type MechanicParams =
   | { type: 'linearKnockback'; lineStartX: number; lineStartY: number; lineEndX: number; lineEndY: number; delay?: number; knockbackDistance?: number; knockbackDuration?: number }
   | { type: 'lineAoe'; startX: number; startY: number; endX: number; endY: number; width?: number; duration?: number }
   | { type: 'conalAoe'; centerX: number; centerY: number; endpointX: number; endpointY: number; angle?: number; duration?: number };
+
+/**
+ * Parameters for spawning doodads via scripts
+ */
+export interface DoodadParams {
+  type: DoodadType;
+  width: number;
+  height: number;
+  rotation?: number;
+  duration: number;
+  opacity?: number;
+  layer?: DoodadLayer;
+  color?: string;
+  data?: Record<string, unknown>;
+  // Position: either fixed (x, y) or anchored to player
+  x?: number;
+  y?: number;
+  anchorPlayerId?: string;
+  anchorOffset?: DoodadAnchorOffset;
+}
 
 /**
  * ScriptRunner interface - the API available to encounter scripts
@@ -82,4 +102,14 @@ export interface ScriptRunner {
    * Deal damage to a player
    */
   damage(playerId: string, amount: number): void;
+
+  /**
+   * Spawn a visual-only doodad and return its ID
+   */
+  spawnDoodad(params: DoodadParams): string;
+
+  /**
+   * Remove a doodad by ID before its natural expiration
+   */
+  removeDoodad(id: string): boolean;
 }

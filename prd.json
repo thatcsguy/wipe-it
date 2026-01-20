@@ -116,7 +116,7 @@
         "removeDoodad() removes doodad before natural expiration",
         "TypeScript compilation succeeds: npm run build"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "id": "DOODAD-010",

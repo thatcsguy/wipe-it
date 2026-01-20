@@ -1,6 +1,6 @@
 import { Game } from '../game';
 import { GameState, PlayerState, StatusEffectType, ARENA_WIDTH, ARENA_HEIGHT } from '../../shared/types';
-import { Context, MechanicParams, MechanicResult, Script, ScriptRunner, Selector } from './types';
+import { Context, DoodadParams, MechanicParams, MechanicResult, Script, ScriptRunner, Selector } from './types';
 import { createContext } from './context';
 import { StatusEffect } from '../statusEffect';
 
@@ -178,6 +178,14 @@ export class ScriptRunnerImpl implements ScriptRunner {
     if (player) {
       player.takeDamage(amount);
     }
+  }
+
+  spawnDoodad(params: DoodadParams): string {
+    return this.game.getDoodadManager().spawn(params);
+  }
+
+  removeDoodad(id: string): boolean {
+    return this.game.getDoodadManager().remove(id);
   }
 
   async execute(script: Script): Promise<void> {
