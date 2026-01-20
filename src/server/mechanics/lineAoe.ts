@@ -1,6 +1,7 @@
 import { Player } from '../player';
-import { BaseMechanic, Effect, MechanicState } from './types';
+import { BaseMechanic, MechanicState } from './types';
 import { LineAoeMechanicState } from '../../shared/types';
+import { MechanicResult } from '../encounters/types';
 
 export class LineAoeMechanic implements BaseMechanic {
   id: string;
@@ -11,7 +12,6 @@ export class LineAoeMechanic implements BaseMechanic {
   width: number;
   startTime: number;
   endTime: number;
-  effects: Effect[];
 
   constructor(
     startX: number,
@@ -19,8 +19,7 @@ export class LineAoeMechanic implements BaseMechanic {
     endX: number,
     endY: number,
     width: number,
-    duration: number,
-    effects: Effect[]
+    duration: number
   ) {
     this.id = `lineAoe-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
     this.startX = startX;
@@ -30,7 +29,6 @@ export class LineAoeMechanic implements BaseMechanic {
     this.width = width;
     this.startTime = Date.now();
     this.endTime = this.startTime + duration;
-    this.effects = effects;
   }
 
   tick(now: number): void {
@@ -77,17 +75,22 @@ export class LineAoeMechanic implements BaseMechanic {
     return localX >= 0 && localX <= length && localY >= -halfWidth && localY <= halfWidth;
   }
 
-  resolve(players: Map<string, Player>): void {
+  resolve(): void {
+    // Effects are handled by scripts via getResult()
+  }
+
+  getResult(players: Map<string, Player>): MechanicResult {
+    const playersHit: string[] = [];
     for (const player of players.values()) {
       if (this.isPointInRectangle(player.x, player.y)) {
-        // Player is inside the rectangle - apply all effects
-        for (const effect of this.effects) {
-          if (effect.type === 'damage') {
-            player.takeDamage(effect.amount);
-          }
-        }
+        playersHit.push(player.id);
       }
     }
+    return {
+      mechanicId: this.id,
+      type: 'lineAoe',
+      data: { playersHit },
+    };
   }
 
   toState(): MechanicState {
@@ -101,7 +104,6 @@ export class LineAoeMechanic implements BaseMechanic {
       width: this.width,
       startTime: this.startTime,
       endTime: this.endTime,
-      effects: this.effects,
     };
     return state;
   }

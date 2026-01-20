@@ -77,4 +77,9 @@ export interface ScriptRunner {
    * Apply a status effect to a player
    */
   applyStatus(playerId: string, statusType: StatusEffectType, duration: number): void;
+
+  /**
+   * Deal damage to a player
+   */
+  damage(playerId: string, amount: number): void;
 }

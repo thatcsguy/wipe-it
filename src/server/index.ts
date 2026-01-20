@@ -7,6 +7,7 @@ import { PlayerInput, ARENA_WIDTH, ARENA_HEIGHT } from '../shared/types';
 import { StatusEffect } from './statusEffect';
 import { runEncounter } from './encounters/script-runner';
 import { tetherLineCombo } from './encounters/scripts/combos/tether-line-combo';
+import { orbitalOmen } from './encounters/scripts/combos/orbital-omen';
 import { tutorialEncounter } from './encounters/scripts/encounters/tutorial-encounter';
 
 const app = express();
@@ -230,7 +231,7 @@ io.on('connection', (socket) => {
     }
   });
 
-  // Handle admin line AOE spawn
+  // Handle admin line AOE spawn (no effects - use scripts for damage)
   socket.on('admin:spawnLineAoe', (params?: { duration?: number }) => {
     const startX = ARENA_WIDTH / 2;
     const startY = 0;
@@ -238,8 +239,7 @@ io.on('connection', (socket) => {
     const endY = ARENA_HEIGHT;
     const width = 100;
     const duration = params?.duration ?? 3000;
-    const effects = [{ type: 'damage' as const, amount: 25 }];
-    game.spawnLineAoe(startX, startY, endX, endY, width, duration, effects);
+    game.spawnLineAoe(startX, startY, endX, endY, width, duration);
     console.log(`Admin spawned line AOE from (${startX}, ${startY}) to (${endX}, ${endY}) width=${width} duration=${duration}ms`);
   });
 
@@ -298,6 +298,12 @@ io.on('connection', (socket) => {
   socket.on('admin:runTutorialEncounter', () => {
     runEncounter(game, tutorialEncounter);
     console.log('Admin started tutorial encounter');
+  });
+
+  // Run orbital omen script
+  socket.on('admin:runOrbitalOmen', () => {
+    runEncounter(game, orbitalOmen);
+    console.log('Admin started orbital omen');
   });
 });
 

@@ -135,6 +135,16 @@ export function initAdmin(socket: Socket): void {
       }
     });
   }
+
+  const runOrbitalOmenBtn = document.getElementById('run-orbital-omen-btn');
+  if (runOrbitalOmenBtn) {
+    runOrbitalOmenBtn.addEventListener('click', () => {
+      if (adminSocket) {
+        adminSocket.emit('admin:runOrbitalOmen');
+        logCombat('Started orbital omen');
+      }
+    });
+  }
 }
 
 export function setChangeNameCallback(callback: () => void): void {
@@ -202,6 +212,11 @@ export function setChangeNameCallback(callback: () => void): void {
   emitRunTutorialEncounter: () => {
     if (adminSocket) {
       adminSocket.emit('admin:runTutorialEncounter');
+    }
+  },
+  emitRunOrbitalOmen: () => {
+    if (adminSocket) {
+      adminSocket.emit('admin:runOrbitalOmen');
     }
   }
 };

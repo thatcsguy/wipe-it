@@ -289,10 +289,9 @@ export class Game extends EventEmitter {
     endX: number,
     endY: number,
     width: number,
-    duration: number,
-    effects: Effect[]
+    duration: number
   ): string {
-    const mechanic = new LineAoeMechanic(startX, startY, endX, endY, width, duration, effects);
+    const mechanic = new LineAoeMechanic(startX, startY, endX, endY, width, duration);
     this.mechanicManager.add(mechanic);
     return mechanic.id;
   }

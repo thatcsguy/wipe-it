@@ -121,8 +121,7 @@ export class ScriptRunnerImpl implements ScriptRunner {
           mechanic.endX,
           mechanic.endY,
           width,
-          duration,
-          [DEFAULT_DAMAGE_EFFECT]
+          duration
         );
       }
 
@@ -182,6 +181,13 @@ export class ScriptRunnerImpl implements ScriptRunner {
   applyStatus(playerId: string, statusType: StatusEffectType, duration: number): void {
     const status = new StatusEffect(statusType, playerId, duration);
     this.game.getStatusEffectManager().add(status);
+  }
+
+  damage(playerId: string, amount: number): void {
+    const player = this.game.getPlayer(playerId);
+    if (player) {
+      player.takeDamage(amount);
+    }
   }
 
   async execute(script: Script): Promise<void> {

@@ -156,7 +156,6 @@ export interface LineAoeMechanicState {
   width: number;
   startTime: number;
   endTime: number;
-  effects: Effect[];
 }
 
 // Conal AOE mechanic - pie slice/sector AOE from center point

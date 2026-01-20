@@ -280,6 +280,7 @@ runEncounter(game, myEncounter);
 |--------|----|--------------------|--------|
 | Run Tether→Line Combo | `#run-tether-line-btn` | `emitRunTetherLineCombo()` | tetherLineCombo |
 | Run Tutorial Encounter | `#run-tutorial-btn` | `emitRunTutorialEncounter()` | tutorialEncounter |
+| Run Orbital Omen | `#run-orbital-omen-btn` | `emitRunOrbitalOmen()` | orbitalOmen |
 
 ### File Structure
 
@@ -291,7 +292,8 @@ src/server/encounters/
 ├── script-runner.ts  # ScriptRunnerImpl + runEncounter()
 └── scripts/
     └── combos/
-    │   └── tether-line-combo.ts   # Tether → waitForResolve → line AOE
+    │   ├── tether-line-combo.ts   # Tether → waitForResolve → line AOE
+    │   └── orbital-omen.ts        # 4 N-S + 4 E-W line AOEs, random order with constraints
     └── encounters/
         └── tutorial-encounter.ts  # Multi-phase encounter example
 ```
