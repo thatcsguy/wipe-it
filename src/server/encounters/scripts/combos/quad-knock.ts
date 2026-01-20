@@ -1,5 +1,6 @@
 import { Script } from '../../types';
 import { ARENA_WIDTH, ARENA_HEIGHT } from '../../../../shared/types';
+import { all } from '../../targeting';
 
 const KNOCKBACK_DISTANCE = 400;
 const KNOCKBACK_DURATION = 1000;
@@ -75,6 +76,28 @@ export const quadKnock: Script = async (runner) => {
     });
   }
 
+  // Apply root-warning status to each player with 50% chance
+  // Duration is until 500ms before knockback activates
+  const WARNING_DURATION = DELAY - 500;
+  const players = runner.select(all());
+  const warnedPlayerIds: string[] = [];
+  for (const player of players) {
+    if (Math.random() < 0.5) {
+      runner.applyStatus(player.id, 'root-warning', WARNING_DURATION);
+      warnedPlayerIds.push(player.id);
+    }
+  }
+
+  // Wait until 500ms before knockback activates
+  await runner.wait(WARNING_DURATION);
+
+  // Replace root-warning with rooted for the same players
+  // Duration covers remaining 500ms + knockback duration
+  const ROOTED_DURATION = 500 + KNOCKBACK_DURATION;
+  for (const playerId of warnedPlayerIds) {
+    runner.applyStatus(playerId, 'rooted', ROOTED_DURATION);
+  }
+
   // Wait for knockbacks to resolve
-  await runner.wait(DELAY + KNOCKBACK_DURATION);
+  await runner.wait(ROOTED_DURATION);
 };

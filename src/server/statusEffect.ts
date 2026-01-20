@@ -5,6 +5,7 @@ import { StatusEffectType, StatusEffectState, Effect } from '../shared/types';
 const STATUS_ICONS: Record<StatusEffectType, string> = {
   vulnerability: '/assets/vulnerability_icon.png',
   rooted: '/assets/rooted_icon.png',
+  'root-warning': '/assets/root-warning_icon.png',
 };
 
 export class StatusEffect {
