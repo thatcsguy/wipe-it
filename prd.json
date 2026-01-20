@@ -248,7 +248,7 @@
             "Observe full encounter sequence: chariot → spreads → tether+line → chariot+spreads",
             "Verify mechanics spawn at correct times with expected delays"
         ],
-        "passes": false
+        "passes": true
     },
     {
         "id": "ENC-018",

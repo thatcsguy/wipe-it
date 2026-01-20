@@ -8,6 +8,7 @@ import { StatusEffect } from './statusEffect';
 import { runEncounter } from './encounters/script-runner';
 import { testSequenceScript } from './encounters/scripts/test-sequence';
 import { tetherLineCombo } from './encounters/scripts/combos/tether-line-combo';
+import { tutorialEncounter } from './encounters/scripts/encounters/tutorial-encounter';
 
 const app = express();
 const httpServer = createServer(app);
@@ -298,6 +299,12 @@ io.on('connection', (socket) => {
   socket.on('admin:runTetherLineCombo', () => {
     runEncounter(game, tetherLineCombo);
     console.log('Admin started tether-line combo');
+  });
+
+  // Run tutorial encounter
+  socket.on('admin:runTutorialEncounter', () => {
+    runEncounter(game, tutorialEncounter);
+    console.log('Admin started tutorial encounter');
   });
 });
 

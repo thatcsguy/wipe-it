@@ -141,3 +141,13 @@ ENC-016: Multi-phase tutorial encounter
 - Phase 4: spawns chariot + spreads on all players simultaneously (no wait)
 - Files: src/server/encounters/scripts/encounters/tutorial-encounter.ts
 - Build passes
+
+ENC-017: Admin runTutorialEncounter handler + button
+- Added socket.on('admin:runTutorialEncounter') handler in src/server/index.ts
+- Handler calls runEncounter(game, tutorialEncounter)
+- Added emitRunTutorialEncounter() to __adminTest in src/client/admin.ts
+- Added button #run-tutorial-btn to admin panel in public/index.html
+- Button click handler emits admin:runTutorialEncounter
+- Playwright verified: all 4 phases execute correctly in sequence
+- Files: src/server/index.ts, src/client/admin.ts, public/index.html
+- Build passes
