@@ -172,3 +172,22 @@ ENC-018: Integration test - targeting selectors
 - Verified all() returns empty when all players dead (hp=0) - Phase 4 no spreads
 - Selectors work correctly through encounter system integration
 - No code changes - verification only
+
+ENC-019: Integration test - waitForResolve
+- Ran tether-line combo with 2 players at different positions
+- Player 3 at (400,400), Player 4 at (780,400)
+- Tether spawned between players, visible in mechanics panel
+- After tether resolved, line AOE spawned immediately
+- Line AOE hit both players (100 damage each) confirming correct endpoints
+- waitForResolve correctly awaited mechanic resolution before continuing
+- No code changes - verification only
+
+ENC-020: Integration test - full tutorial encounter
+- Ran tutorial encounter end-to-end with 2 players
+- Phase 1: chariot spawned at center, hit Player 3 (25 damage)
+- Phase 2: spreads on all players, both took 25 damage + vulnerability
+- Phase 3: tether-line combo executed (sub-script via runner.run)
+- Phase 4: skipped due to all players dead (all() returns empty)
+- No console errors during entire encounter
+- Encounter completed without crashing
+- No code changes - verification only

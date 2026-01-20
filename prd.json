@@ -277,7 +277,7 @@
             "Verify line AOE spawns immediately after tether resolves",
             "Verify line AOE endpoints match where players were standing when tether resolved"
         ],
-        "passes": false
+        "passes": true
     },
     {
         "id": "ENC-020",
@@ -295,7 +295,7 @@
             "Check browser console for errors - should be none",
             "Verify encounter completes without crashing"
         ],
-        "passes": false
+        "passes": true
     },
     {
         "id": "ENC-021",
