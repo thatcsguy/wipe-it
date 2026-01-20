@@ -1,224 +1,159 @@
-[
+{
+  "feature": "Doodads",
+  "description": "Visual-only elements on arena with no gameplay effect. Canvas-drawn graphics (portals, rectangles, circles) that can be positioned at fixed coordinates or anchored to players. Primary use case: portals outside arena edges indicating incoming line AOEs.",
+  "items": [
     {
-        "id": "MECH-001",
-        "category": "server",
-        "description": "Migrate Chariot mechanic to script-driven effects. Remove effects parameter from ChariotMechanic constructor, game.spawnChariot(), and ChariotMechanicState in shared/types.ts. The mechanic already has getResult() returning playersHit - update resolve() to be a no-op (remove damage application). Update MechanicParams in encounters/types.ts to remove effects from chariot type.",
-        "steps_to_verify": [
-            "Verify ChariotMechanic constructor no longer takes effects parameter",
-            "Verify ChariotMechanic.resolve() does not apply damage",
-            "Verify ChariotMechanic.getResult() returns { playersHit: string[] }",
-            "Verify game.spawnChariot() signature no longer includes effects parameter",
-            "Verify ChariotMechanicState in src/shared/types.ts has no effects field",
-            "Verify MechanicParams chariot type in encounters/types.ts has no effects field",
-            "Verify script-runner.ts spawn() for chariot does not pass effects",
-            "Run npm run build - should pass with no TypeScript errors"
-        ],
-        "passes": true
+      "id": "DOODAD-001",
+      "category": "types",
+      "description": "Add DoodadState interface to shared/types.ts with fields: id, type ('portal'|'rect'|'circle'), width, height, rotation, startTime, endTime, optional opacity, layer ('background'|'foreground'), color, data. Position via x/y OR anchorPlayerId+anchorOffset. Add doodads array to GameState interface.",
+      "steps_to_verify": [
+        "DoodadState interface exists in src/shared/types.ts",
+        "GameState interface includes 'doodads: DoodadState[]' field",
+        "Type supports both fixed position (x, y) and player anchor (anchorPlayerId, anchorOffset)",
+        "TypeScript compilation succeeds: npm run build"
+      ],
+      "passes": false
     },
     {
-        "id": "MECH-002",
-        "category": "server",
-        "description": "Update admin handler for chariot to not pass effects. In src/server/index.ts, update admin:spawnChariot and admin:spawnMechanic (chariot case) to call game.spawnChariot without effects. The admin button becomes a pure visual/hitbox test with no damage.",
-        "steps_to_verify": [
-            "Verify admin:spawnChariot handler calls game.spawnChariot without effects",
-            "Verify admin:spawnMechanic chariot case calls game.spawnChariot without effects",
-            "Run npm run build - should pass",
-            "Start dev server, click Spawn Chariot button via Playwright",
-            "Verify chariot appears visually",
-            "Verify player standing in chariot does NOT take damage when it resolves"
-        ],
-        "passes": true
+      "id": "DOODAD-002",
+      "category": "server",
+      "description": "Create DoodadManager class in src/server/doodads/manager.ts with methods: spawn(params) returns id, remove(id), tick(now) auto-removes expired doodads, getStates() returns DoodadState[].",
+      "steps_to_verify": [
+        "File exists: src/server/doodads/manager.ts",
+        "DoodadManager class exports spawn(), remove(), tick(), getStates() methods",
+        "spawn() generates unique id and returns it",
+        "tick() removes doodads where endTime < now",
+        "TypeScript compilation succeeds: npm run build"
+      ],
+      "passes": false
     },
     {
-        "id": "MECH-003",
-        "category": "server",
-        "description": "Migrate Spread mechanic to script-driven effects. Remove effects parameter from SpreadMechanic constructor, game.spawnSpread(), and SpreadMechanicState. Remove the auto-applied 1s vulnerability from resolve(). The mechanic already has getResult() - update resolve() to be a no-op. Update MechanicParams in encounters/types.ts.",
-        "steps_to_verify": [
-            "Verify SpreadMechanic constructor no longer takes effects parameter",
-            "Verify SpreadMechanic.resolve() does not apply damage",
-            "Verify SpreadMechanic.resolve() does not apply auto-vulnerability",
-            "Verify SpreadMechanic.getResult() returns { playersHit: string[], position: {x,y} | null }",
-            "Verify game.spawnSpread() signature no longer includes effects parameter",
-            "Verify SpreadMechanicState in src/shared/types.ts has no effects field",
-            "Verify MechanicParams spread type in encounters/types.ts has no effects field",
-            "Run npm run build - should pass with no TypeScript errors"
-        ],
-        "passes": true
+      "id": "DOODAD-003",
+      "category": "server",
+      "description": "Integrate DoodadManager into Game class. Instantiate manager, call tick() in game loop, include doodads in GameState broadcast.",
+      "steps_to_verify": [
+        "Game class creates DoodadManager instance",
+        "Game tick loop calls doodadManager.tick()",
+        "GameState broadcast includes doodads array from doodadManager.getStates()",
+        "TypeScript compilation succeeds: npm run build"
+      ],
+      "passes": false
     },
     {
-        "id": "MECH-004",
-        "category": "server",
-        "description": "Update admin handler for spreads to not pass effects. In src/server/index.ts, update admin:spawnSpreads and admin:spawnMechanic (spreads case) to call game.spawnSpread without effects.",
-        "steps_to_verify": [
-            "Verify admin:spawnSpreads handler calls game.spawnSpread without effects",
-            "Verify admin:spawnMechanic spreads case calls game.spawnSpread without effects",
-            "Run npm run build - should pass",
-            "Start dev server, click Spawn Spreads button via Playwright",
-            "Verify spreads appear on players visually",
-            "Verify players do NOT take damage when spreads resolve",
-            "Verify players do NOT receive vulnerability when spreads resolve"
-        ],
-        "passes": true
+      "id": "DOODAD-004",
+      "category": "client",
+      "description": "Create client doodad rendering system in src/client/doodads/. Create index.ts with renderDoodads() dispatcher and resolvePosition() for anchored doodads. Create portal.ts with animated swirling vortex effect using gradients and rotation.",
+      "steps_to_verify": [
+        "File exists: src/client/doodads/index.ts with renderDoodads() function",
+        "File exists: src/client/doodads/portal.ts with renderPortal() function",
+        "renderDoodads() filters by layer and dispatches to type-specific renderers",
+        "resolvePosition() returns player position + offset for anchored doodads",
+        "Portal renderer uses serverTime to animate (rotation, pulsing)",
+        "TypeScript compilation succeeds: npm run build"
+      ],
+      "passes": false
     },
     {
-        "id": "MECH-005",
-        "category": "server",
-        "description": "Migrate ConalAoe mechanic to script-driven effects. Remove effects parameter from ConalAoeMechanic constructor, game.spawnConalAoe(), and ConalAoeMechanicState. Add getResult() method returning { playersHit: string[] }. Update resolve() to be a no-op. Update MechanicParams in encounters/types.ts.",
-        "steps_to_verify": [
-            "Verify ConalAoeMechanic constructor no longer takes effects parameter",
-            "Verify ConalAoeMechanic has getResult() method returning { playersHit: string[] }",
-            "Verify ConalAoeMechanic.resolve() does not apply damage",
-            "Verify game.spawnConalAoe() signature no longer includes effects parameter",
-            "Verify ConalAoeMechanicState in src/shared/types.ts has no effects field",
-            "Verify MechanicParams conalAoe type in encounters/types.ts has no effects field",
-            "Run npm run build - should pass with no TypeScript errors"
-        ],
-        "passes": true
+      "id": "DOODAD-005",
+      "category": "client",
+      "description": "Create rect.ts and circle.ts renderers in src/client/doodads/. Both should support color, opacity, rotation, and use serverTime for potential animation.",
+      "steps_to_verify": [
+        "File exists: src/client/doodads/rect.ts with renderRect() function",
+        "File exists: src/client/doodads/circle.ts with renderCircle() function",
+        "Both renderers apply rotation transform",
+        "Both renderers respect color and opacity properties",
+        "TypeScript compilation succeeds: npm run build"
+      ],
+      "passes": false
     },
     {
-        "id": "MECH-006",
-        "category": "server",
-        "description": "Update admin handler for conal AOE to not pass effects. In src/server/index.ts, update admin:spawnConalAoe to call game.spawnConalAoe without effects.",
-        "steps_to_verify": [
-            "Verify admin:spawnConalAoe handler calls game.spawnConalAoe without effects",
-            "Run npm run build - should pass",
-            "Start dev server, click Spawn Conal AOE button via Playwright",
-            "Verify conal AOE appears visually",
-            "Verify player standing in conal AOE does NOT take damage when it resolves"
-        ],
-        "passes": true
+      "id": "DOODAD-006",
+      "category": "client",
+      "description": "Integrate doodad rendering into renderer.ts. Call renderDoodads() twice: once for 'background' layer after arena border (before mechanics), once for 'foreground' layer after players. Pass player positions map for anchor resolution.",
+      "steps_to_verify": [
+        "renderer.ts imports renderDoodads from doodads/index",
+        "Background doodads render before mechanics",
+        "Foreground doodads render after players",
+        "Player positions passed to renderDoodads for anchor resolution",
+        "TypeScript compilation succeeds: npm run build"
+      ],
+      "passes": false
     },
     {
-        "id": "MECH-007",
-        "category": "server",
-        "description": "Migrate Tower mechanic to script-driven effects. Remove failureEffects and successEffects parameters from TowerMechanic constructor, game.spawnTower(), and TowerMechanicState. Update getResult() to return { success: boolean, playersInside: string[] } where success is true if playersInside.length >= requiredPlayers. Update resolve() to be a no-op. Update MechanicParams in encounters/types.ts.",
-        "steps_to_verify": [
-            "Verify TowerMechanic constructor no longer takes failureEffects or successEffects",
-            "Verify TowerMechanic.getResult() returns { success: boolean, playersInside: string[] }",
-            "Verify success is true when playersInside.length >= requiredPlayers",
-            "Verify TowerMechanic.resolve() does not apply damage",
-            "Verify game.spawnTower() signature no longer includes failureEffects or successEffects",
-            "Verify TowerMechanicState in src/shared/types.ts has no effects fields",
-            "Verify MechanicParams tower type in encounters/types.ts has no effects fields",
-            "Run npm run build - should pass with no TypeScript errors"
-        ],
-        "passes": true
+      "id": "DOODAD-007",
+      "category": "debug",
+      "description": "Add doodad entries to debug panel in src/client/debugPanel.ts. Create .debug-doodad elements with data attributes: data-doodad-id, data-type, data-x, data-y, data-anchor-player (if anchored), data-expires.",
+      "steps_to_verify": [
+        "Debug panel renders .debug-doodad elements for each active doodad",
+        "Each element has data-doodad-id, data-type, data-expires attributes",
+        "Fixed-position doodads show data-x, data-y",
+        "Anchored doodads show data-anchor-player",
+        "Use Playwright: navigate to localhost:3000?debug=1, spawn a portal via admin, verify page.locator('.debug-doodad') exists with correct attributes"
+      ],
+      "passes": false
     },
     {
-        "id": "MECH-008",
-        "category": "server",
-        "description": "Update admin handler for tower to not pass effects. In src/server/index.ts, update admin:spawnTower to call game.spawnTower without failureEffects or successEffects.",
-        "steps_to_verify": [
-            "Verify admin:spawnTower handler calls game.spawnTower without effects",
-            "Run npm run build - should pass",
-            "Start dev server, click Spawn Tower button via Playwright",
-            "Verify tower appears visually",
-            "Verify players do NOT take damage when tower resolves (even if failed)"
-        ],
-        "passes": true
+      "id": "DOODAD-008",
+      "category": "admin",
+      "description": "Add 'Spawn Portal' admin button with id='spawn-portal-btn'. Add server handler for 'admin:spawnPortal' event. Add __adminTest.emitSpawnPortal(overrides?) method that spawns a test portal at a random arena edge position.",
+      "steps_to_verify": [
+        "Button with id='spawn-portal-btn' exists in admin panel",
+        "Server handles 'admin:spawnPortal' socket event",
+        "__adminTest.emitSpawnPortal() is callable from browser console",
+        "Use Playwright: click #spawn-portal-btn, verify .debug-doodad[data-type='portal'] appears within 1 second",
+        "Portal renders visually on canvas (take screenshot to verify)"
+      ],
+      "passes": false
     },
     {
-        "id": "MECH-009",
-        "category": "server",
-        "description": "Migrate Tether mechanic to script-driven effects. Remove damage parameter from TetherMechanic constructor, game.spawnTether(), and TetherMechanicState. The mechanic already has getResult() returning stretched boolean and positions - update resolve() to be a no-op (remove damage application on fail). Update MechanicParams in encounters/types.ts to remove damage field.",
-        "steps_to_verify": [
-            "Verify TetherMechanic constructor no longer takes damage parameter",
-            "Verify TetherMechanic.resolve() does not apply damage on failed stretch",
-            "Verify TetherMechanic.getResult() still returns { player1, player2, stretched }",
-            "Verify game.spawnTether() signature no longer includes damage parameter",
-            "Verify TetherMechanicState in src/shared/types.ts has no damage field",
-            "Verify MechanicParams tether type in encounters/types.ts has no damage field",
-            "Run npm run build - should pass with no TypeScript errors"
-        ],
-        "passes": true
+      "id": "DOODAD-009",
+      "category": "scripting",
+      "description": "Extend ScriptRunner interface and implementation with spawnDoodad(params) and removeDoodad(id) methods. spawnDoodad should delegate to DoodadManager.spawn() and return the id.",
+      "steps_to_verify": [
+        "ScriptRunner interface in src/server/encounters/types.ts includes spawnDoodad() and removeDoodad()",
+        "ScriptRunnerImpl in src/server/encounters/script-runner.ts implements both methods",
+        "spawnDoodad() returns doodad id",
+        "removeDoodad() removes doodad before natural expiration",
+        "TypeScript compilation succeeds: npm run build"
+      ],
+      "passes": false
     },
     {
-        "id": "MECH-010",
-        "category": "server",
-        "description": "Update admin handlers for tethers to not pass damage. In src/server/index.ts, update admin:spawnPointTethers, admin:spawnPlayerTethers, and admin:spawnMechanic (tether cases) to call game.spawnTether without damage parameter.",
-        "steps_to_verify": [
-            "Verify admin:spawnPointTethers handler calls game.spawnTether without damage",
-            "Verify admin:spawnPlayerTethers handler calls game.spawnTether without damage",
-            "Verify admin:spawnMechanic pointTethers case calls game.spawnTether without damage",
-            "Verify admin:spawnMechanic playerTethers case calls game.spawnTether without damage",
-            "Run npm run build - should pass",
-            "Start dev server, click Spawn Point Tethers button via Playwright",
-            "Verify tether appears visually",
-            "Let tether resolve without stretching - verify player does NOT take damage"
-        ],
-        "passes": true
+      "id": "DOODAD-010",
+      "category": "integration",
+      "description": "Update orbital-omen script to spawn portal doodads at line AOE origin points before each wave. Portals should appear outside arena edge, indicating where the line AOE will come from.",
+      "steps_to_verify": [
+        "orbital-omen.ts imports and uses runner.spawnDoodad()",
+        "Portals spawn at positions outside arena bounds (negative x/y or > 800)",
+        "Portals appear before corresponding line AOEs",
+        "Use Playwright: run orbital-omen via #run-orbital-omen-btn, take screenshot, verify portal visuals appear at arena edges before line AOEs fire"
+      ],
+      "passes": false
     },
     {
-        "id": "MECH-011",
-        "category": "server",
-        "description": "Update tether-line-combo.ts script to handle tether failure effects. After waitForResolve, check if result.data.stretched is false. If not stretched, apply appropriate effect to the tethered player(s) using runner.applyStatus() or runner.damage(). This replaces the built-in damage that was removed.",
-        "steps_to_verify": [
-            "Verify tether-line-combo.ts checks result.data.stretched after waitForResolve",
-            "Verify script applies effect (damage or status) when stretched is false",
-            "Verify script does NOT apply effect when stretched is true",
-            "Run npm run build - should pass",
-            "Start dev server via Playwright, run tether-line combo",
-            "Have players NOT stretch the tether (stay close together)",
-            "Verify appropriate effect is applied to player(s) when tether resolves"
-        ],
-        "passes": true
+      "id": "DOODAD-011",
+      "category": "integration",
+      "description": "Verify player-anchored doodads follow player movement. Create a test or use admin to spawn a circle doodad anchored to a player, then move the player and verify the doodad follows.",
+      "steps_to_verify": [
+        "Use Playwright: spawn circle doodad anchored to local player via browser evaluate",
+        "Move player using keyboard input (WASD)",
+        "Verify .debug-doodad data-x/data-y attributes update as player moves OR verify visually via screenshot that doodad follows player",
+        "Doodad maintains correct offset from player position"
+      ],
+      "passes": false
     },
     {
-        "id": "MECH-012",
-        "category": "server",
-        "description": "Update tutorial-encounter.ts script to apply effects for mechanics. After each mechanic resolves (chariot, spread), apply damage to hit players. Use waitForResolve to get playersHit from each mechanic and call runner.damage() for each hit player.",
-        "steps_to_verify": [
-            "Verify tutorial-encounter.ts stores mechanic IDs when spawning",
-            "Verify script uses waitForResolve to get results for chariot/spread mechanics",
-            "Verify script calls runner.damage() for each player in playersHit",
-            "Run npm run build - should pass",
-            "Start dev server via Playwright, run tutorial encounter",
-            "Stand in chariot AOE, verify damage is applied when it resolves",
-            "Stand in spread AOE, verify damage is applied when it resolves"
-        ],
-        "passes": true
-    },
-    {
-        "id": "MECH-013",
-        "category": "cleanup",
-        "description": "Remove unused Effect import and DEFAULT_DAMAGE_EFFECT constant from script-runner.ts if no longer used after all mechanics migrated. Clean up any other unused effect-related code.",
-        "steps_to_verify": [
-            "Check if Effect type is still imported in script-runner.ts - remove if unused",
-            "Check if DEFAULT_DAMAGE_EFFECT is still used - remove if unused",
-            "Search for other unused effect-related imports/constants across codebase",
-            "Run npm run build - should pass with no TypeScript errors",
-            "Run npm run build - should have no unused variable warnings"
-        ],
-        "passes": true
-    },
-    {
-        "id": "MECH-014",
-        "category": "docs",
-        "description": "Update CLAUDE.md to document the script-driven effects pattern. Document that mechanics return playersHit via getResult(), scripts use waitForResolve() to get results, and scripts call runner.damage() / runner.applyStatus() to apply effects. Update MechanicParams documentation to reflect removed effects fields.",
-        "steps_to_verify": [
-            "Verify CLAUDE.md documents that mechanics no longer apply effects directly",
-            "Verify CLAUDE.md documents getResult() return values for each mechanic type",
-            "Verify CLAUDE.md shows example of using waitForResolve + runner.damage()",
-            "Verify MechanicParams section updated to remove effects fields",
-            "Verify runner.damage(playerId, amount) method is documented"
-        ],
-        "passes": true
-    },
-    {
-        "id": "MECH-015",
-        "category": "integration",
-        "description": "End-to-end verification that all mechanics work correctly with script-driven effects. Run orbital-omen script and verify damage + vulnerability are applied. Run tutorial encounter and verify all phases apply appropriate effects. Verify no regressions in existing functionality.",
-        "steps_to_verify": [
-            "Start dev server, open localhost:3000?debug=1 with Playwright",
-            "Run Orbital Omen via admin button",
-            "Stand in line AOE, verify 50 damage applied when it resolves",
-            "Verify vulnerability status appears for 5 seconds after being hit",
-            "Run Tutorial Encounter via admin button",
-            "Verify chariot damage is applied to players hit",
-            "Verify spread damage is applied to players hit",
-            "Verify tether-line combo applies effects on tether failure",
-            "Check browser console for errors - should be none"
-        ],
-        "passes": true
+      "id": "DOODAD-012",
+      "category": "integration",
+      "description": "Verify doodad auto-expiration works correctly. Spawn a doodad with short duration, wait for expiration, verify it disappears from both rendering and debug panel.",
+      "steps_to_verify": [
+        "Use Playwright: spawn portal with duration 2000ms",
+        "Verify .debug-doodad element appears",
+        "Wait 2500ms",
+        "Verify .debug-doodad element is removed",
+        "Verify doodad no longer renders on canvas"
+      ],
+      "passes": false
     }
-]
+  ]
+}
