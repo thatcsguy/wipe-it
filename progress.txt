@@ -121,3 +121,13 @@ ENC-014: Tether to line AOE combo script
 - Early return if < 2 players available
 - Files: src/server/encounters/scripts/combos/tether-line-combo.ts
 - Build passes
+
+ENC-015: Admin runTetherLineCombo handler + button
+- Added socket.on('admin:runTetherLineCombo') handler in src/server/index.ts
+- Handler calls runEncounter(game, tetherLineCombo)
+- Added emitRunTetherLineCombo() to __adminTest in src/client/admin.ts
+- Added button #run-tether-line-btn to admin panel in public/index.html
+- Button click handler emits admin:runTetherLineCombo
+- Playwright verified: tether spawns between 2 players
+- Files: src/server/index.ts, src/client/admin.ts, public/index.html
+- Build passes

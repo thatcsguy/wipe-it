@@ -125,6 +125,16 @@ export function initAdmin(socket: Socket): void {
       }
     });
   }
+
+  const runTetherLineBtn = document.getElementById('run-tether-line-btn');
+  if (runTetherLineBtn) {
+    runTetherLineBtn.addEventListener('click', () => {
+      if (adminSocket) {
+        adminSocket.emit('admin:runTetherLineCombo');
+        logCombat('Started tether-line combo');
+      }
+    });
+  }
 }
 
 export function setChangeNameCallback(callback: () => void): void {
@@ -187,6 +197,11 @@ export function setChangeNameCallback(callback: () => void): void {
   emitRunTestScript: () => {
     if (adminSocket) {
       adminSocket.emit('admin:runTestScript');
+    }
+  },
+  emitRunTetherLineCombo: () => {
+    if (adminSocket) {
+      adminSocket.emit('admin:runTetherLineCombo');
     }
   }
 };

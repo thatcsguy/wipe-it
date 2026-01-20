@@ -7,6 +7,7 @@ import { PlayerInput, ARENA_WIDTH, ARENA_HEIGHT } from '../shared/types';
 import { StatusEffect } from './statusEffect';
 import { runEncounter } from './encounters/script-runner';
 import { testSequenceScript } from './encounters/scripts/test-sequence';
+import { tetherLineCombo } from './encounters/scripts/combos/tether-line-combo';
 
 const app = express();
 const httpServer = createServer(app);
@@ -291,6 +292,12 @@ io.on('connection', (socket) => {
   socket.on('admin:runTestScript', () => {
     runEncounter(game, testSequenceScript);
     console.log('Admin started test sequence script');
+  });
+
+  // Run tether-line combo encounter
+  socket.on('admin:runTetherLineCombo', () => {
+    runEncounter(game, tetherLineCombo);
+    console.log('Admin started tether-line combo');
   });
 });
 

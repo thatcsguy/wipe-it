@@ -218,7 +218,7 @@
             "Wait for tether to resolve",
             "Verify line AOE spawns connecting the two player positions"
         ],
-        "passes": false
+        "passes": true
     },
     {
         "id": "ENC-016",
