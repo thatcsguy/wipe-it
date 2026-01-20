@@ -82,3 +82,12 @@ MECH-013: Cleanup - removed unused Effect imports and DEFAULT_DAMAGE_EFFECT
 - Removed Effect import and re-export from mechanics/types.ts (never imported by other files)
 - Build passes with no warnings
 - Files: script-runner.ts, mechanics/types.ts
+
+MECH-014: CLAUDE.md updated with script-driven effects documentation
+- Added damage()/applyStatus() to ScriptRunner API table
+- Removed deprecated damage field from tether MechanicParams
+- Added "Script-Driven Effects" section explaining the pattern
+- Documented getResult() return values for each mechanic type
+- Added examples: chariot damage application, tether failure handling
+- Build passes
+- Files: CLAUDE.md

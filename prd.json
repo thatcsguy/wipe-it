@@ -202,7 +202,7 @@
             "Verify MechanicParams section updated to remove effects fields",
             "Verify runner.damage(playerId, amount) method is documented"
         ],
-        "passes": false
+        "passes": true
     },
     {
         "id": "MECH-015",

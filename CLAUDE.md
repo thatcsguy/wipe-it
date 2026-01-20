@@ -193,6 +193,8 @@ Available to scripts via `runner` parameter:
 | `select(selector)` | Get players matching selector |
 | `waitForResolve(id)` | Await mechanic resolution, returns MechanicResult |
 | `run(script)` | Execute sub-script with fresh context |
+| `damage(playerId, amount)` | Deal `amount` damage to player |
+| `applyStatus(playerId, type, duration)` | Apply status effect (e.g., 'vulnerability') |
 
 ### Targeting Selectors (`src/server/encounters/targeting.ts`)
 
@@ -218,12 +220,60 @@ Available to scripts via `runner` parameter:
 ```typescript
 { type: 'chariot'; x: number; y: number; radius?; duration? }
 { type: 'spread'; targetPlayerId: string; radius?; duration? }
-{ type: 'tether'; endpointA: endpoint; endpointB: endpoint; requiredDistance?; damage?; duration? }
+{ type: 'tether'; endpointA: endpoint; endpointB: endpoint; requiredDistance?; duration? }
 { type: 'tower'; x: number; y: number; radius?; duration?; requiredPlayers? }
 { type: 'lineAoe'; startX; startY; endX; endY; width?; duration? }
 { type: 'conalAoe'; centerX; centerY; endpointX; endpointY; angle?; duration? }
 { type: 'radialKnockback'; originX; originY; delay?; knockbackDistance?; knockbackDuration? }
 { type: 'linearKnockback'; lineStartX; lineStartY; lineEndX; lineEndY; delay?; knockbackDistance?; knockbackDuration? }
+```
+
+### Script-Driven Effects
+
+Mechanics do **not** apply damage/effects directly. Instead:
+1. Mechanic detects hits/success and returns result via `getResult()`
+2. Script uses `waitForResolve(id)` to get `MechanicResult`
+3. Script calls `runner.damage()` / `runner.applyStatus()` to apply effects
+
+**getResult() return values by mechanic type:**
+
+| Mechanic | Result Data |
+|----------|-------------|
+| chariot | `{ playersHit: string[] }` |
+| spread | `{ playersHit: string[], position: {x,y} \| null }` |
+| lineAoe | `{ playersHit: string[] }` |
+| conalAoe | `{ playersHit: string[] }` |
+| tower | `{ success: boolean, playersInside: string[] }` |
+| tether | `{ player1: {position}, player2: {position}, stretched: boolean }` |
+
+**Example: Applying damage after mechanic resolves**
+
+```typescript
+const chariotId = runner.spawn({ type: 'chariot', x: 400, y: 300 });
+const result = await runner.waitForResolve(chariotId);
+const { playersHit } = result.data as { playersHit: string[] };
+for (const playerId of playersHit) {
+  runner.damage(playerId, 50);
+}
+```
+
+**Example: Handling tether failure**
+
+```typescript
+const tetherId = runner.spawn({
+  type: 'tether',
+  endpointA: { type: 'player', playerId: p1.id },
+  endpointB: { type: 'player', playerId: p2.id }
+});
+const result = await runner.waitForResolve(tetherId);
+const data = result.data as { stretched: boolean; player1: { position: {x,y} }; player2: { position: {x,y} } };
+if (!data.stretched) {
+  // Tether failed - apply damage to both players
+  runner.damage(p1.id, 100);
+  runner.damage(p2.id, 100);
+  runner.applyStatus(p1.id, 'vulnerability', 5000);
+  runner.applyStatus(p2.id, 'vulnerability', 5000);
+}
 ```
 
 ### Example Script
