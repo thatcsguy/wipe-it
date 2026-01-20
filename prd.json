@@ -66,7 +66,7 @@
         "Exports isRooted(): boolean - returns true if local player has 'rooted' status",
         "TypeScript compilation succeeds: npm run build"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "id": "ROOT-007",
@@ -78,7 +78,7 @@
         "updateLocalStatuses(myPlayer.statusEffects) called in state handler",
         "TypeScript compilation succeeds: npm run build"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "id": "ROOT-008",
@@ -90,7 +90,7 @@
         "If rooted, function returns early without updating localX/localY or pendingInputs",
         "TypeScript compilation succeeds: npm run build"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "id": "ROOT-009",
@@ -101,7 +101,7 @@
         "If rooted, position is synced from server and input replay is skipped",
         "TypeScript compilation succeeds: npm run build"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "id": "ROOT-010",

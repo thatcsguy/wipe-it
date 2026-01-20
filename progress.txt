@@ -24,3 +24,17 @@ Files: public/assets/rooted_icon.png
 - Verified via Playwright: WASD blocked while rooted, knockback blocked, movement restored after expiry
 
 Files: src/server/player.ts, src/server/index.ts, src/client/admin.ts
+
+## ROOT-006/007/008/009: Client-side rooted input blocking
+
+- Created src/client/localStatus.ts: tracks local player status effects
+  - setLocalPlayerId(id): set local player for filtering
+  - updateLocalStatuses(statuses): sync from server state
+  - isRooted(): returns true if local player has rooted status
+- game.ts: call setLocalPlayerId on join, updateLocalStatuses in state handler
+- network.ts applyInput(): after knockback check, return early if isRooted()
+- network.ts reconcile(): after knockback block, skip input replay if isRooted()
+- Follows knockback pattern for client-side movement blocking
+- Verified via Playwright: movement blocked while rooted, restored after expiry
+
+Files: src/client/localStatus.ts, src/client/game.ts, src/client/network.ts

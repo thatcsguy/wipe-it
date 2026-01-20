@@ -13,6 +13,7 @@ import { render, initRenderer } from './renderer';
 import { updateDebugPanel } from './debugPanel';
 import { logCombat } from './combatLog';
 import { addTowerExplosion } from './mechanics/towerExplosion';
+import { setLocalPlayerId, updateLocalStatuses } from './localStatus';
 
 // Game state
 let socket: Socket | null = null;
@@ -197,6 +198,9 @@ export function startGame(
   localPlayerName = playerName;
   gameRunning = true;
 
+  // Initialize local status tracking
+  setLocalPlayerId(playerId);
+
   // Initialize renderer
   initRenderer();
 
@@ -242,6 +246,8 @@ export function startGame(
     if (myPlayer) {
       // Store color for rendering
       localPlayerColor = myPlayer.color;
+      // Update local status tracking for input blocking
+      updateLocalStatuses(myPlayer.statusEffects);
       // Reconcile with server state
       reconcile(state, localPlayerId!);
     }
