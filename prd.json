@@ -90,7 +90,7 @@
         "Anchored doodads show data-anchor-player",
         "Use Playwright: navigate to localhost:3000?debug=1, spawn a portal via admin, verify page.locator('.debug-doodad') exists with correct attributes"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "id": "DOODAD-008",
@@ -103,7 +103,7 @@
         "Use Playwright: click #spawn-portal-btn, verify .debug-doodad[data-type='portal'] appears within 1 second",
         "Portal renders visually on canvas (take screenshot to verify)"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "id": "DOODAD-009",

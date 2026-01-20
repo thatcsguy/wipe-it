@@ -47,3 +47,21 @@
 - Updated client game.ts to pass currentGameState.doodads to render()
 - Validated: doodads array flows through GameState (Playwright confirmed)
 - Files: src/client/renderer.ts, src/client/game.ts
+
+## DOODAD-007: Debug Panel for Doodads
+- Added doodadsSection variable and "Doodads" section in initDebugPanel HTML
+- Created updateDoodadsSection() following mechanics pattern
+- .debug-doodad elements with: data-doodad-id, data-type, data-expires
+- Fixed-position doodads: data-x, data-y attributes
+- Anchored doodads: data-anchor-player attribute, resolved pos from player lookup
+- Display text shows type, resolved position, time remaining
+- Files: src/client/debugPanel.ts
+
+## DOODAD-008: Admin Spawn Portal Button
+- Added "Doodads" section to admin panel in public/index.html
+- Button id='spawn-portal-btn' spawns portal via admin:spawnPortal event
+- Server handler: random arena edge position (N/S/E/W sides, offset=-50)
+- Supports overrides: duration, x, y via params
+- __adminTest.emitSpawnPortal(params?) method added for testing
+- Portal: 80x80, #8844ff color, background layer, 5s default duration
+- Files: public/index.html, src/server/index.ts, src/client/admin.ts
