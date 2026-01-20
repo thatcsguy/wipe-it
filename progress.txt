@@ -18,3 +18,14 @@
 - broadcast() + getState() use doodadManager.getStates() instead of empty []
 - Added getDoodadManager() accessor for script-runner access
 - Files: src/server/game.ts
+
+## DOODAD-004: Client Doodad Rendering System
+- Created src/client/doodads/index.ts: renderDoodads(ctx, doodads, layer, serverTime, posData) + resolvePosition()
+- DoodadPositionData interface mirrors PlayerPositionData for consistent position resolution
+- resolvePosition() handles fixed (x,y) and player-anchored positions w/ offset
+- renderDoodads() filters by layer, dispatches to type renderers (portal/rect/circle)
+- Created src/client/doodads/portal.ts: animated swirling vortex effect
+- Portal uses serverTime for animation: rotation (ROTATION_SPEED), pulsing opacity
+- 4 spiral arms with SPIRAL_TWIST, radial gradients, bright core, edge ring
+- parseColor() supports hex (#xxx, #xxxxxx) and named colors
+- Files: src/client/doodads/index.ts, src/client/doodads/portal.ts

@@ -51,7 +51,7 @@
         "Portal renderer uses serverTime to animate (rotation, pulsing)",
         "TypeScript compilation succeeds: npm run build"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "id": "DOODAD-005",
