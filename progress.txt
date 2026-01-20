@@ -7,3 +7,10 @@
 Files: src/shared/types.ts, src/server/statusEffect.ts
 
 Note: ROOT-002 (asset download) still needed before icon displays
+
+## ROOT-002: Download rooted icon asset
+
+- Downloaded bind icon from FFXIV wiki to public/assets/rooted_icon.png
+- Verified: valid PNG 24x32 RGBA, loads at localhost:3000/assets/rooted_icon.png
+
+Files: public/assets/rooted_icon.png

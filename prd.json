@@ -20,7 +20,7 @@
         "File exists: public/assets/rooted_icon.png",
         "Image loads correctly when accessed via browser at localhost:3000/assets/rooted_icon.png"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "id": "ROOT-003",
