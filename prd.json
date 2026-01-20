@@ -145,7 +145,7 @@
         "Verify player position HAS changed (knockback was applied despite being bubbled)",
         "This confirms bubbled differs from rooted in knockback handling"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "id": "BUBBLE-013",
