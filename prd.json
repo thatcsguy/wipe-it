@@ -310,6 +310,6 @@
             "Verify new admin buttons documented: #run-test-script-btn, #run-tether-line-btn, #run-tutorial-btn",
             "Verify __adminTest methods documented: emitRunTestScript, emitRunTetherLineCombo, emitRunTutorialEncounter"
         ],
-        "passes": false
+        "passes": true
     }
 ]

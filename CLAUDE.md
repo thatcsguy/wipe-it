@@ -160,3 +160,140 @@ const hpBefore = await page.locator('.debug-player').first().getAttribute('data-
 // ... trigger damage ...
 await expect(page.locator('.debug-player').first()).not.toHaveAttribute('data-hp', hpBefore);
 ```
+
+## Encounter System
+
+Server-side scripting system for multi-phase encounters with sequenced mechanics.
+
+### Core Types (`src/server/encounters/types.ts`)
+
+```typescript
+// Script: async function defining encounter logic
+type Script = (runner: ScriptRunner, ctx: Context) => Promise<void>;
+
+// Context: key-value store for passing data between phases
+interface Context { [key: string]: unknown; }
+
+// Selector: function selecting players from game state
+type Selector = (state: GameState, ctx: Context) => PlayerState[];
+
+// MechanicResult: returned when mechanic resolves
+interface MechanicResult { mechanicId: string; type: string; data: unknown; }
+```
+
+### ScriptRunner API
+
+Available to scripts via `runner` parameter:
+
+| Method | Description |
+|--------|-------------|
+| `spawn(params)` | Spawn mechanic, returns mechanic ID |
+| `wait(ms)` | Async wait for ms milliseconds |
+| `getState()` | Get current GameState |
+| `select(selector)` | Get players matching selector |
+| `waitForResolve(id)` | Await mechanic resolution, returns MechanicResult |
+| `run(script)` | Execute sub-script with fresh context |
+
+### Targeting Selectors (`src/server/encounters/targeting.ts`)
+
+**Basic selectors:**
+- `all()` - all living players (hp > 0)
+- `random(n)` - n random living players
+- `closest(point)` - single player nearest to {x, y}
+- `furthest(point)` - single player farthest from {x, y}
+
+**Advanced selectors:**
+- `nClosest(n, point)` - n players closest to point
+- `nFurthest(n, point)` - n players farthest from point
+- `withStatus(effect)` - players with status effect
+- `withoutStatus(effect)` - players without status effect
+
+**Combinators:**
+- `exclude(selector, excluded)` - results minus excluded
+- `first(n, selector)` - first n results
+- `union(...selectors)` - combine results, deduped by id
+
+### MechanicParams Types
+
+```typescript
+{ type: 'chariot'; x: number; y: number; radius?; duration? }
+{ type: 'spread'; targetPlayerId: string; radius?; duration? }
+{ type: 'tether'; endpointA: endpoint; endpointB: endpoint; requiredDistance?; damage?; duration? }
+{ type: 'tower'; x: number; y: number; radius?; duration?; requiredPlayers? }
+{ type: 'lineAoe'; startX; startY; endX; endY; width?; duration? }
+{ type: 'conalAoe'; centerX; centerY; endpointX; endpointY; angle?; duration? }
+{ type: 'radialKnockback'; originX; originY; delay?; knockbackDistance?; knockbackDuration? }
+{ type: 'linearKnockback'; lineStartX; lineStartY; lineEndX; lineEndY; delay?; knockbackDistance?; knockbackDuration? }
+```
+
+### Example Script
+
+```typescript
+import { Script } from './types';
+import { all, random } from './targeting';
+
+export const myEncounter: Script = async (runner, ctx) => {
+  // Phase 1: spawn chariot, wait
+  runner.spawn({ type: 'chariot', x: 400, y: 300 });
+  await runner.wait(3000);
+
+  // Phase 2: spreads on random 2 players
+  const targets = runner.select(random(2));
+  for (const p of targets) {
+    runner.spawn({ type: 'spread', targetPlayerId: p.id });
+  }
+  await runner.wait(3000);
+
+  // Phase 3: tether + wait for resolve + spawn line at result positions
+  const players = runner.select(random(2));
+  if (players.length >= 2) {
+    const id = runner.spawn({
+      type: 'tether',
+      endpointA: { type: 'player', playerId: players[0].id },
+      endpointB: { type: 'player', playerId: players[1].id }
+    });
+    const result = await runner.waitForResolve(id);
+    const data = result.data as { player1: { position: {x,y} }, player2: { position: {x,y} } };
+    runner.spawn({
+      type: 'lineAoe',
+      startX: data.player1.position.x,
+      startY: data.player1.position.y,
+      endX: data.player2.position.x,
+      endY: data.player2.position.y
+    });
+  }
+};
+```
+
+### Running Encounters
+
+```typescript
+import { runEncounter } from './script-runner';
+import { myEncounter } from './scripts/my-encounter';
+
+runEncounter(game, myEncounter);
+```
+
+### Script Admin Buttons
+
+| Button | ID | __adminTest Method | Script |
+|--------|----|--------------------|--------|
+| Run Test Script | `#run-test-script-btn` | `emitRunTestScript()` | testSequenceScript |
+| Run Tether→Line Combo | `#run-tether-line-btn` | `emitRunTetherLineCombo()` | tetherLineCombo |
+| Run Tutorial Encounter | `#run-tutorial-btn` | `emitRunTutorialEncounter()` | tutorialEncounter |
+
+### File Structure
+
+```
+src/server/encounters/
+├── types.ts          # Core types: Script, ScriptRunner, Selector, etc.
+├── targeting.ts      # Selector functions and combinators
+├── context.ts        # createContext() factory
+├── script-runner.ts  # ScriptRunnerImpl + runEncounter()
+└── scripts/
+    ├── test-sequence.ts           # Basic spawn+wait test
+    └── combos/
+    │   └── tether-line-combo.ts   # Tether → waitForResolve → line AOE
+    └── encounters/
+        └── tutorial-encounter.ts  # Multi-phase encounter example
+```

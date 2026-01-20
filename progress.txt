@@ -151,3 +151,15 @@ ENC-017: Admin runTutorialEncounter handler + button
 - Playwright verified: all 4 phases execute correctly in sequence
 - Files: src/server/index.ts, src/client/admin.ts, public/index.html
 - Build passes
+
+ENC-021: Document encounter system in CLAUDE.md
+- Added "Encounter System" section to CLAUDE.md
+- Documented core types: Script, Context, Selector, MechanicResult
+- Documented ScriptRunner API with all 6 methods
+- Listed all targeting selectors (basic, advanced, combinators)
+- Listed all MechanicParams types with their fields
+- Added example script showing spawn, wait, select, waitForResolve usage
+- Documented runEncounter() entry point
+- Added table of admin buttons with IDs and __adminTest methods
+- Added file structure overview
+- Files: CLAUDE.md
