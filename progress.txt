@@ -19,3 +19,14 @@ MECH-003 + MECH-004: Spread mechanic migrated to script-driven effects
 - Updated admin handlers in index.ts (admin:spawnSpreads, admin:spawnMechanic spreads case)
 - Build passes, Playwright verified: spread appears, no damage, no vulnerability on resolve
 - Files: spread.ts, game.ts, script-runner.ts, index.ts
+
+MECH-005 + MECH-006: ConalAoe mechanic migrated to script-driven effects
+- Removed effects param from ConalAoeMechanic ctor
+- resolve() now no-op
+- Added getResult(players) returning MechanicResult { mechanicId, type: 'conalAoe', data: { playersHit } }
+- Updated game.spawnConalAoe() sig (no effects)
+- Updated script-runner.ts conalAoe spawn (no DEFAULT_DAMAGE_EFFECT)
+- Updated admin handler admin:spawnConalAoe (no effects)
+- Removed effects field from ConalAoeMechanicState in shared/types.ts
+- Build passes
+- Files: conalAoe.ts, game.ts, script-runner.ts, index.ts, shared/types.ts

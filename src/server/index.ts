@@ -247,8 +247,7 @@ io.on('connection', (socket) => {
     const endpointY = centerY;
     const angle = Math.PI / 2;
     const duration = params?.duration ?? 3000;
-    const effects = [{ type: 'damage' as const, amount: 25 }];
-    game.spawnConalAoe(centerX, centerY, endpointX, endpointY, angle, duration, effects);
+    game.spawnConalAoe(centerX, centerY, endpointX, endpointY, angle, duration);
     console.log(`Admin spawned conal AOE at (${centerX}, ${centerY}) endpoint=(${endpointX}, ${endpointY}) angle=${angle} duration=${duration}ms`);
   });
 

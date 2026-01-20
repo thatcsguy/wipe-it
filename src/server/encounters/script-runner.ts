@@ -132,8 +132,7 @@ export class ScriptRunnerImpl implements ScriptRunner {
           mechanic.endpointX,
           mechanic.endpointY,
           angle,
-          duration,
-          [DEFAULT_DAMAGE_EFFECT]
+          duration
         );
       }
 

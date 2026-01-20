@@ -302,10 +302,9 @@ export class Game extends EventEmitter {
     endpointX: number,
     endpointY: number,
     angle: number,
-    duration: number,
-    effects: Effect[]
+    duration: number
   ): string {
-    const mechanic = new ConalAoeMechanic(centerX, centerY, endpointX, endpointY, angle, duration, effects);
+    const mechanic = new ConalAoeMechanic(centerX, centerY, endpointX, endpointY, angle, duration);
     this.mechanicManager.add(mechanic);
     return mechanic.id;
   }

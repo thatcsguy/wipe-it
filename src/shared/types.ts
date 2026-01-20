@@ -169,7 +169,6 @@ export interface ConalAoeMechanicState {
   angle: number;
   startTime: number;
   endTime: number;
-  effects: Effect[];
 }
 
 // Union of all mechanic states

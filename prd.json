@@ -73,7 +73,7 @@
             "Verify MechanicParams conalAoe type in encounters/types.ts has no effects field",
             "Run npm run build - should pass with no TypeScript errors"
         ],
-        "passes": false
+        "passes": true
     },
     {
         "id": "MECH-006",
@@ -86,7 +86,7 @@
             "Verify conal AOE appears visually",
             "Verify player standing in conal AOE does NOT take damage when it resolves"
         ],
-        "passes": false
+        "passes": true
     },
     {
         "id": "MECH-007",

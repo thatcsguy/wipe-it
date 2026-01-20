@@ -1,6 +1,7 @@
 import { Player } from '../player';
-import { BaseMechanic, Effect, MechanicState } from './types';
+import { BaseMechanic, MechanicState } from './types';
 import { ConalAoeMechanicState } from '../../shared/types';
+import { MechanicResult } from '../encounters/types';
 
 export class ConalAoeMechanic implements BaseMechanic {
   id: string;
@@ -12,7 +13,6 @@ export class ConalAoeMechanic implements BaseMechanic {
   radius: number;
   startTime: number;
   endTime: number;
-  effects: Effect[];
 
   constructor(
     centerX: number,
@@ -20,8 +20,7 @@ export class ConalAoeMechanic implements BaseMechanic {
     endpointX: number,
     endpointY: number,
     angle: number,
-    duration: number,
-    effects: Effect[]
+    duration: number
   ) {
     this.id = `conalAoe-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
     this.centerX = centerX;
@@ -35,7 +34,6 @@ export class ConalAoeMechanic implements BaseMechanic {
     );
     this.startTime = Date.now();
     this.endTime = this.startTime + duration;
-    this.effects = effects;
   }
 
   tick(now: number): void {
@@ -88,17 +86,23 @@ export class ConalAoeMechanic implements BaseMechanic {
     return angleDiff >= -halfAngle && angleDiff <= halfAngle;
   }
 
-  resolve(players: Map<string, Player>): void {
+  resolve(_players: Map<string, Player>): void {
+    // No-op: effects are now applied by scripts via waitForResolve + runner.damage()
+  }
+
+  getResult(players: Map<string, Player>): MechanicResult {
+    // Find players hit by this mechanic
+    const playersHit: string[] = [];
     for (const player of players.values()) {
       if (this.isPointInSector(player.x, player.y)) {
-        // Player is inside the sector - apply all effects
-        for (const effect of this.effects) {
-          if (effect.type === 'damage') {
-            player.takeDamage(effect.amount);
-          }
-        }
+        playersHit.push(player.id);
       }
     }
+    return {
+      mechanicId: this.id,
+      type: 'conalAoe',
+      data: { playersHit },
+    };
   }
 
   toState(): MechanicState {
@@ -112,7 +116,6 @@ export class ConalAoeMechanic implements BaseMechanic {
       angle: this.angle,
       startTime: this.startTime,
       endTime: this.endTime,
-      effects: this.effects,
     };
     return state;
   }
