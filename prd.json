@@ -12,7 +12,7 @@
             "Verify ScriptRunner interface is exported with all methods: spawn, wait, getState, select, waitForResolve, run",
             "Run npm run build - should pass with no TypeScript errors"
         ],
-        "passes": false
+        "passes": true
     },
     {
         "id": "ENC-002",

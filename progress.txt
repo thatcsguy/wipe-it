@@ -1,0 +1,5 @@
+ENC-001: Core type definitions
+- Created src/server/encounters/types.ts
+- Exports: Context, Selector, MechanicResult, Script, MechanicParams, ScriptRunner
+- MechanicParams = discriminated union for all mechanic types with optional defaults
+- Build passes
