@@ -100,3 +100,12 @@ ENC-012: Admin runTestScript handler + button
 - Playwright verified: chariot → 3s wait → spreads → 3s wait → chariot
 - Files: src/server/index.ts, src/client/admin.ts, public/index.html
 - Build passes
+
+ENC-013: Stretch tether mechanic result data
+- Added getResult() method to TetherMechanic in src/server/mechanics/tether.ts
+- Result includes player1: { id, position }, player2: { id, position }, stretched: boolean
+- stretched = distance >= requiredDistance at resolve time
+- For point endpoints, id is null but position is returned
+- Reuses existing resolveEndpointPosition() method for consistency
+- Files: src/server/mechanics/tether.ts
+- Build passes

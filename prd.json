@@ -186,7 +186,7 @@
             "Verify 'mechanicResolved' event for tether includes this data",
             "Run npm run build - should pass"
         ],
-        "passes": false
+        "passes": true
     },
     {
         "id": "ENC-014",

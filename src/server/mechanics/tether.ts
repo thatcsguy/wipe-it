@@ -1,6 +1,7 @@
 import { Player } from '../player';
 import { BaseMechanic, MechanicResolutionResult } from './types';
 import { TetherEndpoint, TetherMechanicState, TetherResolutionEvent } from '../../shared/types';
+import { MechanicResult } from '../encounters/types';
 
 export class TetherMechanic implements BaseMechanic {
   id: string;
@@ -116,6 +117,40 @@ export class TetherMechanic implements BaseMechanic {
       damage: this.damage,
       startTime: this.startTime,
       endTime: this.endTime,
+    };
+  }
+
+  getResult(players: Map<string, Player>): MechanicResult {
+    // Resolve endpoint positions
+    const posA = this.resolveEndpointPosition(this.endpointA, players);
+    const posB = this.resolveEndpointPosition(this.endpointB, players);
+
+    // Calculate distance and stretched status
+    let distance = 0;
+    if (posA && posB) {
+      const dx = posB.x - posA.x;
+      const dy = posB.y - posA.y;
+      distance = Math.sqrt(dx * dx + dy * dy);
+    }
+    const stretched = distance >= this.requiredDistance;
+
+    // Build player1 and player2 result objects
+    const player1 = this.endpointA.type === 'player'
+      ? { id: this.endpointA.playerId, position: posA || { x: 0, y: 0 } }
+      : { id: null, position: posA || { x: 0, y: 0 } };
+
+    const player2 = this.endpointB.type === 'player'
+      ? { id: this.endpointB.playerId, position: posB || { x: 0, y: 0 } }
+      : { id: null, position: posB || { x: 0, y: 0 } };
+
+    return {
+      mechanicId: this.id,
+      type: 'tether',
+      data: {
+        player1,
+        player2,
+        stretched,
+      },
     };
   }
 }
