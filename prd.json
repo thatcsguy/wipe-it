@@ -189,7 +189,7 @@
             "Run npm run build - should pass with no TypeScript errors",
             "Run npm run build - should have no unused variable warnings"
         ],
-        "passes": false
+        "passes": true
     },
     {
         "id": "MECH-014",

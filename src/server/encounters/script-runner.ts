@@ -16,9 +16,6 @@ const DEFAULTS = {
   conalAoe: { angle: Math.PI / 2, duration: 3000 },
 };
 
-// Default effects
-const DEFAULT_DAMAGE_EFFECT = { type: 'damage' as const, amount: 25 };
-
 /**
  * Implementation of ScriptRunner that executes encounter scripts
  */

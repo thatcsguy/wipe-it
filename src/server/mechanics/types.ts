@@ -1,10 +1,10 @@
 import { Player } from '../player';
 import { StatusEffectManager } from '../statusEffectManager';
-import { MechanicState, Effect, TetherResolutionEvent, TowerResolutionEvent } from '../../shared/types';
+import { MechanicState, TetherResolutionEvent, TowerResolutionEvent } from '../../shared/types';
 import { MechanicResult } from '../encounters/types';
 
 // Re-export for convenience
-export { MechanicState, Effect };
+export { MechanicState };
 
 // Legacy resolution result - tethers and towers return resolution events for socket.io
 export type MechanicResolutionResult = TetherResolutionEvent | TowerResolutionEvent | void;
