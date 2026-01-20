@@ -124,7 +124,7 @@
             "Verify errors from script propagate up (not caught/swallowed)",
             "Run npm run build - should pass"
         ],
-        "passes": false
+        "passes": true
     },
     {
         "id": "ENC-010",

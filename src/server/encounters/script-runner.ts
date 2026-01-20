@@ -171,8 +171,10 @@ export class ScriptRunnerImpl implements ScriptRunner {
     });
   }
 
-  // NOT implemented yet per ENC-006 requirements
-  run(_script: Script): Promise<void> {
-    throw new Error('run not implemented yet');
+  async run(script: Script): Promise<void> {
+    // Create fresh context for sub-script execution
+    const ctx = createContext();
+    // Execute script, propagating any errors
+    await script(this, ctx);
   }
 }

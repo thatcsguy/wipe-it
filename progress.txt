@@ -65,3 +65,11 @@ ENC-008: waitForResolve implementation
 - Unsubscribes handler after receiving matching event
 - Files: src/server/encounters/script-runner.ts
 - Build passes
+
+ENC-009: run(script) for sub-script execution
+- Implemented async run(script) in ScriptRunnerImpl
+- Creates fresh context via createContext() for each sub-script
+- Calls script(this, ctx) and awaits completion
+- Errors propagate naturally (not caught/swallowed)
+- Files: src/server/encounters/script-runner.ts
+- Build passes
