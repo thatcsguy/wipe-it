@@ -34,3 +34,11 @@ BUBBLE-010: Integration test - bubble-warning status displays icon
 - Confirmed .debug-status[data-effect='bubble-warning'] appears in debug panel
 - Screenshot confirms icon renders inside player circle on canvas
 - No code changes needed - existing implementation works correctly
+
+BUBBLE-011: Integration test - bubbled prevents movement + visual bubble renders
+- Verified via Playwright: navigate to localhost:3000?debug=1
+- Applied bubbled via __adminTest.emitApplyStatus({ statusType: 'bubbled', duration: 10000 })
+- Confirmed .debug-status[data-effect='bubbled'] appears in debug panel
+- WASD input (w,a,s,d held 300ms each): position remained (400,400) - movement blocked
+- Screenshot confirms translucent cyan bubble around player model + name
+- No code changes needed - existing implementation works correctly

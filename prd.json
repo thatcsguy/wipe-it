@@ -129,7 +129,7 @@
         "Verify position attributes unchanged while bubbled",
         "Take screenshot to verify translucent bubble is drawn around player model and name"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "id": "BUBBLE-012",
