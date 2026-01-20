@@ -1,4 +1,4 @@
-import { GameState, PlayerState } from '../../shared/types';
+import { GameState, PlayerState, StatusEffectType } from '../../shared/types';
 
 /**
  * Context passed to scripts for storing arbitrary data between phases
@@ -72,4 +72,9 @@ export interface ScriptRunner {
    * Run a sub-script
    */
   run(script: Script): Promise<void>;
+
+  /**
+   * Apply a status effect to a player
+   */
+  applyStatus(playerId: string, statusType: StatusEffectType, duration: number): void;
 }

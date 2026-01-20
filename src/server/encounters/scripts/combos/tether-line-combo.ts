@@ -1,29 +1,42 @@
 import { Script } from '../../types';
 import { random } from '../../targeting';
+import { ARENA_WIDTH, ARENA_HEIGHT } from '../../../../shared/types';
+
+// Wall midpoints (game coords: 0 to ARENA_WIDTH/HEIGHT)
+const WALL_MIDPOINTS = [
+  { x: ARENA_WIDTH / 2, y: 0 }, // Top
+  { x: ARENA_WIDTH / 2, y: ARENA_HEIGHT }, // Bottom
+  { x: 0, y: ARENA_HEIGHT / 2 }, // Left
+  { x: ARENA_WIDTH, y: ARENA_HEIGHT / 2 }, // Right
+];
 
 /**
  * Tether to Line AOE combo:
- * 1. Select 2 random players
- * 2. Spawn stretch tether between them
- * 3. Wait for tether to resolve
- * 4. Spawn line AOE from player1's position to player2's position
+ * 1. Select 1 random player
+ * 2. Pick a random wall midpoint
+ * 3. Spawn stretch tether between player and wall
+ * 4. Wait for tether to resolve
+ * 5. Spawn line AOE from player's position to wall point
  */
 export const tetherLineCombo: Script = async (runner, ctx) => {
-  // Select 2 random players for the tether
-  const targets = runner.select(random(2));
-  if (targets.length < 2) {
-    // Not enough players - exit early
+  // Select 1 random player for the tether
+  const targets = runner.select(random(1));
+  if (targets.length < 1) {
     return;
   }
 
-  // Store tether targets in context for potential reuse
-  ctx.tetherTargets = [targets[0].id, targets[1].id];
+  // Pick a random wall midpoint
+  const wallPoint = WALL_MIDPOINTS[Math.floor(Math.random() * WALL_MIDPOINTS.length)];
 
-  // Spawn stretch tether between the two players
+  // Store tether target in context for potential reuse
+  ctx.tetherTarget = targets[0].id;
+  ctx.wallPoint = wallPoint;
+
+  // Spawn stretch tether from wall midpoint to player (pulse animates A→B)
   const tetherId = runner.spawn({
     type: 'tether',
-    endpointA: { type: 'player', playerId: targets[0].id },
-    endpointB: { type: 'player', playerId: targets[1].id },
+    endpointA: { type: 'point', x: wallPoint.x, y: wallPoint.y },
+    endpointB: { type: 'player', playerId: targets[0].id },
   });
 
   // Wait for tether to resolve
@@ -36,12 +49,29 @@ export const tetherLineCombo: Script = async (runner, ctx) => {
     stretched: boolean;
   };
 
-  // Spawn line AOE from player1's position to player2's position
+  // If tether wasn't stretched, apply vulnerability to the player
+  if (!data.stretched) {
+    runner.applyStatus(targets[0].id, 'vulnerability', 1000);
+  }
+
+  // Calculate direction vector and extend line by 200px on both sides
+  const p1 = data.player1.position;
+  const p2 = data.player2.position;
+  const dx = p2.x - p1.x;
+  const dy = p2.y - p1.y;
+  const len = Math.sqrt(dx * dx + dy * dy);
+  const ux = dx / len;
+  const uy = dy / len;
+  const extend = 200;
+
+  // Spawn line AOE extended 200px past both endpoints
   runner.spawn({
     type: 'lineAoe',
-    startX: data.player1.position.x,
-    startY: data.player1.position.y,
-    endX: data.player2.position.x,
-    endY: data.player2.position.y,
+    startX: p1.x - ux * extend,
+    startY: p1.y - uy * extend,
+    endX: p2.x + ux * extend,
+    endY: p2.y + uy * extend,
+    width: 200,
+    duration: 300,
   });
 };

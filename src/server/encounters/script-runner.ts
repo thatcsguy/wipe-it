@@ -1,7 +1,8 @@
 import { Game } from '../game';
-import { GameState, PlayerState, ARENA_WIDTH, ARENA_HEIGHT } from '../../shared/types';
+import { GameState, PlayerState, StatusEffectType, ARENA_WIDTH, ARENA_HEIGHT } from '../../shared/types';
 import { Context, MechanicParams, MechanicResult, Script, ScriptRunner, Selector } from './types';
 import { createContext } from './context';
+import { StatusEffect } from '../statusEffect';
 
 // Default values for mechanics (mirroring admin handlers)
 const DEFAULTS = {
@@ -176,6 +177,11 @@ export class ScriptRunnerImpl implements ScriptRunner {
     const ctx = createContext();
     // Execute script, propagating any errors
     await script(this, ctx);
+  }
+
+  applyStatus(playerId: string, statusType: StatusEffectType, duration: number): void {
+    const status = new StatusEffect(statusType, playerId, duration);
+    this.game.getStatusEffectManager().add(status);
   }
 
   async execute(script: Script): Promise<void> {
