@@ -11,3 +11,10 @@
 - tick(now) auto-removes expired doodads (endTime < now)
 - SpawnDoodadParams interface for typed spawn params
 - Files: src/server/doodads/manager.ts
+
+## DOODAD-003: Integrate DoodadManager into Game
+- Import DoodadManager, instantiate as private field
+- tick() calls doodadManager.tick(now) after status effects
+- broadcast() + getState() use doodadManager.getStates() instead of empty []
+- Added getDoodadManager() accessor for script-runner access
+- Files: src/server/game.ts

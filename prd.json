@@ -37,7 +37,7 @@
         "GameState broadcast includes doodads array from doodadManager.getStates()",
         "TypeScript compilation succeeds: npm run build"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "id": "DOODAD-004",

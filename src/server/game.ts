@@ -15,6 +15,7 @@ import { ConalAoeMechanic } from './mechanics/conalAoe';
 import { TetherEndpoint } from '../shared/types';
 import { StatusEffectManager } from './statusEffectManager';
 import { MechanicResult } from './encounters/types';
+import { DoodadManager } from './doodads/manager';
 
 // Color pool for players
 const COLOR_POOL = ['#e74c3c', '#3498db', '#2ecc71', '#f39c12'];
@@ -28,6 +29,7 @@ export class Game extends EventEmitter {
   private broadcastInterval: ReturnType<typeof setInterval> | null = null;
   private mechanicManager: MechanicManager = new MechanicManager();
   private statusEffectManager: StatusEffectManager = new StatusEffectManager();
+  private doodadManager: DoodadManager = new DoodadManager();
   private playerCounter: number = 0;
 
   constructor(io: Server) {
@@ -168,6 +170,9 @@ export class Game extends EventEmitter {
 
     // Update status effects
     this.statusEffectManager.tick(now, this.players);
+
+    // Update doodads (remove expired)
+    this.doodadManager.tick(now);
   }
 
   private broadcast(): void {
@@ -181,7 +186,7 @@ export class Game extends EventEmitter {
       }),
       mechanics: this.mechanicManager.getStates(),
       statusEffects: allStatusEffects,
-      doodads: [], // TODO: populate from DoodadManager once implemented
+      doodads: this.doodadManager.getStates(),
       timestamp: Date.now(),
     };
     this.io.emit('state', state);
@@ -327,8 +332,12 @@ export class Game extends EventEmitter {
       }),
       mechanics: this.mechanicManager.getStates(),
       statusEffects: allStatusEffects,
-      doodads: [], // TODO: populate from DoodadManager once implemented
+      doodads: this.doodadManager.getStates(),
       timestamp: Date.now(),
     };
+  }
+
+  getDoodadManager(): DoodadManager {
+    return this.doodadManager;
   }
 }
