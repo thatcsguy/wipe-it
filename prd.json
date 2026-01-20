@@ -1,149 +1,167 @@
 {
-  "feature": "Rooted Status Effect",
-  "description": "New status effect that prevents player movement (WASD ignored) and grants knockback immunity. Uses FFXIV bind icon. Follows knockback pattern for input blocking on both client and server.",
+  "feature": "Bubbled Status Effect",
+  "description": "New status effects 'bubbled' and 'bubble-warning'. Bubbled prevents player movement (WASD ignored) but does NOT grant knockback immunity (unlike rooted). Bubble-warning is cosmetic only. Bubbled players get a visual bubble drawn around their player model and name.",
   "items": [
     {
-      "id": "ROOT-001",
+      "id": "BUBBLE-001",
       "category": "types",
-      "description": "Add 'rooted' to StatusEffectType union in src/shared/types.ts.",
+      "description": "Add 'bubbled' and 'bubble-warning' to StatusEffectType union in src/shared/types.ts.",
       "steps_to_verify": [
-        "StatusEffectType includes 'rooted': export type StatusEffectType = 'vulnerability' | 'rooted'",
+        "StatusEffectType includes 'bubbled' and 'bubble-warning'",
         "TypeScript compilation succeeds: npm run build"
       ],
-      "passes": true
+      "passes": false
     },
     {
-      "id": "ROOT-002",
+      "id": "BUBBLE-002",
       "category": "asset",
-      "description": "Download bind icon from https://ffxiv.consolegameswiki.com/mediawiki/images/8/89/Bind_icon1.png and save to public/assets/rooted_icon.png.",
+      "description": "Download bubble-warning icon from https://ffxiv.consolegameswiki.com/mediawiki/images/9/95/Bubble_weave_icon.png and save to public/assets/bubble-warning_icon.png.",
       "steps_to_verify": [
-        "File exists: public/assets/rooted_icon.png",
-        "Image loads correctly when accessed via browser at localhost:3000/assets/rooted_icon.png"
+        "File exists: public/assets/bubble-warning_icon.png",
+        "Image loads correctly when accessed via browser at localhost:3000/assets/bubble-warning_icon.png"
       ],
-      "passes": true
+      "passes": false
     },
     {
-      "id": "ROOT-003",
+      "id": "BUBBLE-003",
       "category": "server",
-      "description": "Add rooted icon path to STATUS_ICONS mapping in src/server/statusEffect.ts.",
+      "description": "Add bubbled and bubble-warning icon paths to STATUS_ICONS mapping in src/server/statusEffect.ts. Both should use '/assets/bubble-warning_icon.png'.",
       "steps_to_verify": [
-        "STATUS_ICONS includes: rooted: '/assets/rooted_icon.png'",
+        "STATUS_ICONS includes: bubbled: '/assets/bubble-warning_icon.png'",
+        "STATUS_ICONS includes: 'bubble-warning': '/assets/bubble-warning_icon.png'",
         "TypeScript compilation succeeds: npm run build"
       ],
-      "passes": true
+      "passes": false
     },
     {
-      "id": "ROOT-004",
+      "id": "BUBBLE-004",
+      "category": "client",
+      "description": "Add isBubbled() function to src/client/localStatus.ts. Pattern matches isRooted() - returns true if local player has 'bubbled' status.",
+      "steps_to_verify": [
+        "localStatus.ts exports isBubbled(): boolean",
+        "isBubbled() returns true when localStatuses contains type 'bubbled'",
+        "TypeScript compilation succeeds: npm run build"
+      ],
+      "passes": false
+    },
+    {
+      "id": "BUBBLE-005",
+      "category": "client",
+      "description": "Add bubbled input blocking in applyInput() in src/client/network.ts. After the isRooted() check, add: if isBubbled() returns true, return early (skip local input application).",
+      "steps_to_verify": [
+        "network.ts imports isBubbled from ./localStatus",
+        "applyInput() checks isBubbled() after isRooted() check",
+        "If bubbled, function returns early without updating localX/localY or pendingInputs",
+        "TypeScript compilation succeeds: npm run build"
+      ],
+      "passes": false
+    },
+    {
+      "id": "BUBBLE-006",
+      "category": "client",
+      "description": "Add bubbled handling in reconcile() in src/client/network.ts. After the isRooted() block, add: if isBubbled(), use server position and skip input replay.",
+      "steps_to_verify": [
+        "reconcile() checks isBubbled() after isRooted() handling block",
+        "If bubbled, position is synced from server and input replay is skipped",
+        "TypeScript compilation succeeds: npm run build"
+      ],
+      "passes": false
+    },
+    {
+      "id": "BUBBLE-007",
       "category": "server",
-      "description": "Add rooted movement block in Player.processInput() in src/server/player.ts. After knockback check, before WASD processing: if player has 'rooted' status, return early (skip WASD, freeze position).",
+      "description": "Add bubbled movement block in Player.processInput() in src/server/player.ts. After the isRooted check, add: if player has 'bubbled' status, return early (skip WASD, freeze position). Do NOT add knockback immunity for bubbled.",
       "steps_to_verify": [
-        "processInput() checks statusEffectManager.getStatusesForPlayer() for 'rooted' type",
-        "If rooted, function returns early without applying WASD movement",
-        "lastProcessedInput is still updated even when rooted (for reconciliation)",
+        "processInput() checks statusEffectManager for 'bubbled' type after rooted check",
+        "If bubbled, function returns early without applying WASD movement",
+        "applyKnockback() does NOT have any check for bubbled status (knockbacks still work)",
         "TypeScript compilation succeeds: npm run build"
       ],
-      "passes": true
+      "passes": false
     },
     {
-      "id": "ROOT-005",
-      "category": "server",
-      "description": "Add knockback immunity for rooted players in Player.applyKnockback() in src/server/player.ts. At start of method: if player has 'rooted' status, return early (immune to knockback).",
-      "steps_to_verify": [
-        "applyKnockback() checks statusEffectManager.getStatusesForPlayer() for 'rooted' type",
-        "If rooted, function returns early without applying knockback",
-        "TypeScript compilation succeeds: npm run build"
-      ],
-      "passes": true
-    },
-    {
-      "id": "ROOT-006",
+      "id": "BUBBLE-008",
       "category": "client",
-      "description": "Create src/client/localStatus.ts module to track local player's status effects. Exports: setLocalPlayerId(id), updateLocalStatuses(statuses), isRooted() -> boolean.",
+      "description": "Add drawBubble(ctx, x, y) function in src/client/renderer.ts that draws a translucent bubble around the player. The bubble should: (1) be large enough to enclose both the player circle (radius 20, at y) and the player name (at y - PLAYER_RADIUS - 10), (2) use a semi-transparent cyan/blue fill, (3) have a subtle highlight arc on the upper-left for a 3D bubble effect, (4) have a soft white/light border.",
       "steps_to_verify": [
-        "File exists: src/client/localStatus.ts",
-        "Exports setLocalPlayerId(id: string): void",
-        "Exports updateLocalStatuses(statuses: StatusEffectState[]): void - filters to local player",
-        "Exports isRooted(): boolean - returns true if local player has 'rooted' status",
+        "renderer.ts exports or contains drawBubble(ctx, x, y) function",
+        "Bubble radius is approximately 45-50 pixels to enclose player + name",
+        "Bubble center is offset upward from player center to encompass the name",
+        "Fill is semi-transparent cyan/blue (e.g., rgba with low alpha)",
+        "Has a highlight arc or gradient for bubble effect",
         "TypeScript compilation succeeds: npm run build"
       ],
-      "passes": true
+      "passes": false
     },
     {
-      "id": "ROOT-007",
+      "id": "BUBBLE-009",
       "category": "client",
-      "description": "Wire up local status tracking in src/client/game.ts. Import localStatus module. Call setLocalPlayerId() when player joins. Call updateLocalStatuses() in socket 'state' handler after finding local player.",
+      "description": "Call drawBubble() when rendering players who have 'bubbled' status in src/client/renderer.ts. Draw the bubble BEFORE drawing the player (so player appears inside bubble). Check player.statusEffects for type 'bubbled'.",
       "steps_to_verify": [
-        "game.ts imports setLocalPlayerId and updateLocalStatuses from ./localStatus",
-        "setLocalPlayerId(playerId) called in startGame() after join",
-        "updateLocalStatuses(myPlayer.statusEffects) called in state handler",
+        "In player rendering loop, check if player has 'bubbled' status effect",
+        "If bubbled, call drawBubble() before drawing the player circle/name",
+        "Bubble is drawn at correct position (player x, offset y to center around player+name)",
         "TypeScript compilation succeeds: npm run build"
       ],
-      "passes": true
+      "passes": false
     },
     {
-      "id": "ROOT-008",
-      "category": "client",
-      "description": "Add rooted input blocking in applyInput() in src/client/network.ts. After knockback check: if isRooted() returns true, return early (skip local input application).",
-      "steps_to_verify": [
-        "network.ts imports isRooted from ./localStatus",
-        "applyInput() checks isRooted() after localKnockback check",
-        "If rooted, function returns early without updating localX/localY or pendingInputs",
-        "TypeScript compilation succeeds: npm run build"
-      ],
-      "passes": true
-    },
-    {
-      "id": "ROOT-009",
-      "category": "client",
-      "description": "Add rooted handling in reconcile() in src/client/network.ts. After knockback block: if isRooted(), use server position and skip input replay (similar to knockback handling).",
-      "steps_to_verify": [
-        "reconcile() checks isRooted() after knockback handling block",
-        "If rooted, position is synced from server and input replay is skipped",
-        "TypeScript compilation succeeds: npm run build"
-      ],
-      "passes": true
-    },
-    {
-      "id": "ROOT-010",
+      "id": "BUBBLE-010",
       "category": "integration",
-      "description": "Verify rooted status prevents movement. Apply rooted status to player, verify WASD inputs have no effect on position.",
+      "description": "Verify bubble-warning status displays icon. Apply bubble-warning status and verify the icon appears on the player.",
       "steps_to_verify": [
         "Use Playwright: navigate to localhost:3000?debug=1",
-        "Apply rooted status via browser evaluate: socket.emit('admin:testApplyStatus', { statusType: 'rooted', duration: 10000 }) or equivalent",
+        "Apply bubble-warning status via: socket.emit('admin:applyStatus', { statusType: 'bubble-warning', duration: 10000 })",
+        "Verify .debug-status[data-effect='bubble-warning'] appears in debug panel",
+        "Take screenshot to verify bubble icon displays on player"
+      ],
+      "passes": false
+    },
+    {
+      "id": "BUBBLE-011",
+      "category": "integration",
+      "description": "Verify bubbled status prevents movement but visual bubble renders. Apply bubbled status, verify WASD has no effect, and bubble visual is visible around player.",
+      "steps_to_verify": [
+        "Use Playwright: navigate to localhost:3000?debug=1",
+        "Apply bubbled status via: socket.emit('admin:applyStatus', { statusType: 'bubbled', duration: 10000 })",
         "Record player position from .debug-player[data-x], [data-y]",
-        "Send WASD keyboard inputs",
-        "Verify position attributes unchanged while rooted",
-        "Verify rooted icon displays on player (take screenshot)"
+        "Send WASD keyboard inputs (keyboard.down('w'), wait, keyboard.up('w'))",
+        "Verify position attributes unchanged while bubbled",
+        "Take screenshot to verify translucent bubble is drawn around player model and name"
       ],
-      "passes": true
+      "passes": false
     },
     {
-      "id": "ROOT-011",
+      "id": "BUBBLE-012",
       "category": "integration",
-      "description": "Verify rooted grants knockback immunity. Apply rooted status, trigger knockback, verify player position unchanged.",
+      "description": "Verify bubbled does NOT grant knockback immunity. Apply bubbled status, trigger knockback, verify player position DOES change from knockback.",
       "steps_to_verify": [
         "Use Playwright: navigate to localhost:3000?debug=1",
-        "Apply rooted status to player with 10s duration",
+        "Move player to known position (e.g., center of arena)",
+        "Apply bubbled status with 10s duration",
         "Record player position",
         "Spawn radial knockback at player position via __adminTest.emitSpawnRadialKnockback({ delay: 1000 })",
-        "Wait for knockback to resolve (2s)",
-        "Verify player position unchanged (knockback had no effect)"
+        "Wait for knockback to resolve (2-3s)",
+        "Verify player position HAS changed (knockback was applied despite being bubbled)",
+        "This confirms bubbled differs from rooted in knockback handling"
       ],
-      "passes": true
+      "passes": false
     },
     {
-      "id": "ROOT-012",
+      "id": "BUBBLE-013",
       "category": "integration",
-      "description": "Verify rooted status expires correctly and movement resumes. Apply short-duration rooted, wait for expiration, verify WASD works again.",
+      "description": "Verify bubbled status expires correctly and movement resumes. Apply short-duration bubbled, wait for expiration, verify WASD works again and bubble visual disappears.",
       "steps_to_verify": [
         "Use Playwright: navigate to localhost:3000?debug=1",
-        "Apply rooted status with 2000ms duration",
-        "Verify .debug-status[data-effect='rooted'] appears",
+        "Apply bubbled status with 2000ms duration",
+        "Verify .debug-status[data-effect='bubbled'] appears",
+        "Take screenshot to confirm bubble visual present",
         "Wait 2500ms",
-        "Verify .debug-status[data-effect='rooted'] removed",
+        "Verify .debug-status[data-effect='bubbled'] removed",
+        "Take screenshot to confirm bubble visual gone",
         "Send WASD input, verify player position changes (movement restored)"
       ],
-      "passes": true
+      "passes": false
     }
   ]
 }
