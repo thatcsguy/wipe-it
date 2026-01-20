@@ -202,7 +202,7 @@
             "Verify script spawns lineAoe using result.data.player1.position and result.data.player2.position",
             "Run npm run build - should pass"
         ],
-        "passes": false
+        "passes": true
     },
     {
         "id": "ENC-015",

@@ -109,3 +109,15 @@ ENC-013: Stretch tether mechanic result data
 - Reuses existing resolveEndpointPosition() method for consistency
 - Files: src/server/mechanics/tether.ts
 - Build passes
+
+ENC-014: Tether to line AOE combo script
+- Created src/server/encounters/scripts/combos/tether-line-combo.ts
+- tetherLineCombo exported as Script type
+- Uses runner.select(random(2)) to get 2 players
+- Stores selected player IDs in ctx.tetherTargets
+- Spawns stretchTether mechanic between both players
+- Calls runner.waitForResolve(tetherId) to await resolution
+- Extracts player positions from result.data and spawns lineAoe connecting them
+- Early return if < 2 players available
+- Files: src/server/encounters/scripts/combos/tether-line-combo.ts
+- Build passes
