@@ -3,3 +3,12 @@ ENC-001: Core type definitions
 - Exports: Context, Selector, MechanicResult, Script, MechanicParams, ScriptRunner
 - MechanicParams = discriminated union for all mechanic types with optional defaults
 - Build passes
+
+ENC-002: Basic targeting selectors
+- Created src/server/encounters/targeting.ts
+- all(): filters hp > 0
+- random(n): Fisher-Yates shuffle, handles n > players.length
+- closest(point): Euclidean distance, returns single-element array
+- furthest(point): Euclidean distance, returns single-element array
+- All return Selector functions (not results)
+- Build passes

@@ -27,7 +27,7 @@
             "Verify all functions return Selector functions, not direct results",
             "Run npm run build - should pass"
         ],
-        "passes": false
+        "passes": true
     },
     {
         "id": "ENC-003",
