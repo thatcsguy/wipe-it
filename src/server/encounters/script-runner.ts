@@ -177,4 +177,22 @@ export class ScriptRunnerImpl implements ScriptRunner {
     // Execute script, propagating any errors
     await script(this, ctx);
   }
+
+  async execute(script: Script): Promise<void> {
+    // Create initial context for the encounter
+    const ctx = createContext();
+    try {
+      await script(this, ctx);
+    } catch (error) {
+      console.error('Encounter script error:', error);
+    }
+  }
+}
+
+/**
+ * Convenience function to create a ScriptRunner and execute an encounter script
+ */
+export function runEncounter(game: Game, script: Script): Promise<void> {
+  const runner = new ScriptRunnerImpl(game);
+  return runner.execute(script);
 }

@@ -73,3 +73,12 @@ ENC-009: run(script) for sub-script execution
 - Errors propagate naturally (not caught/swallowed)
 - Files: src/server/encounters/script-runner.ts
 - Build passes
+
+ENC-010: execute(script) entry point + runEncounter helper
+- Added execute(script) method to ScriptRunnerImpl
+- Creates initial context via createContext()
+- Wraps script execution in try/catch, logs errors via console.error
+- Added runEncounter(game, script) convenience function export
+- Creates ScriptRunnerImpl and calls execute()
+- Files: src/server/encounters/script-runner.ts
+- Build passes

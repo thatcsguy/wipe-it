@@ -139,7 +139,7 @@
             "Verify runEncounter creates ScriptRunner and calls execute()",
             "Run npm run build - should pass"
         ],
-        "passes": false
+        "passes": true
     },
     {
         "id": "ENC-011",
