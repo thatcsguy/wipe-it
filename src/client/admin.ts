@@ -116,16 +116,6 @@ export function initAdmin(socket: Socket): void {
     });
   }
 
-  const runTestScriptBtn = document.getElementById('run-test-script-btn');
-  if (runTestScriptBtn) {
-    runTestScriptBtn.addEventListener('click', () => {
-      if (adminSocket) {
-        adminSocket.emit('admin:runTestScript');
-        logCombat('Started test sequence script');
-      }
-    });
-  }
-
   const runTetherLineBtn = document.getElementById('run-tether-line-btn');
   if (runTetherLineBtn) {
     runTetherLineBtn.addEventListener('click', () => {
@@ -202,11 +192,6 @@ export function setChangeNameCallback(callback: () => void): void {
   emitSpawnConalAoe: (params?: { duration?: number }) => {
     if (adminSocket) {
       adminSocket.emit('admin:spawnConalAoe', params);
-    }
-  },
-  emitRunTestScript: () => {
-    if (adminSocket) {
-      adminSocket.emit('admin:runTestScript');
     }
   },
   emitRunTetherLineCombo: () => {

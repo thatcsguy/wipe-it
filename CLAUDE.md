@@ -278,7 +278,6 @@ runEncounter(game, myEncounter);
 
 | Button | ID | __adminTest Method | Script |
 |--------|----|--------------------|--------|
-| Run Test Script | `#run-test-script-btn` | `emitRunTestScript()` | testSequenceScript |
 | Run Tether→Line Combo | `#run-tether-line-btn` | `emitRunTetherLineCombo()` | tetherLineCombo |
 | Run Tutorial Encounter | `#run-tutorial-btn` | `emitRunTutorialEncounter()` | tutorialEncounter |
 
@@ -291,7 +290,6 @@ src/server/encounters/
 ├── context.ts        # createContext() factory
 ├── script-runner.ts  # ScriptRunnerImpl + runEncounter()
 └── scripts/
-    ├── test-sequence.ts           # Basic spawn+wait test
     └── combos/
     │   └── tether-line-combo.ts   # Tether → waitForResolve → line AOE
     └── encounters/

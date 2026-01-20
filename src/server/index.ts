@@ -6,7 +6,6 @@ import { Game } from './game';
 import { PlayerInput, ARENA_WIDTH, ARENA_HEIGHT } from '../shared/types';
 import { StatusEffect } from './statusEffect';
 import { runEncounter } from './encounters/script-runner';
-import { testSequenceScript } from './encounters/scripts/test-sequence';
 import { tetherLineCombo } from './encounters/scripts/combos/tether-line-combo';
 import { tutorialEncounter } from './encounters/scripts/encounters/tutorial-encounter';
 
@@ -287,12 +286,6 @@ io.on('connection', (socket) => {
   socket.on('admin:healAll', () => {
     game.healAllPlayers();
     console.log('Admin healed all players');
-  });
-
-  // Run test script encounter
-  socket.on('admin:runTestScript', () => {
-    runEncounter(game, testSequenceScript);
-    console.log('Admin started test sequence script');
   });
 
   // Run tether-line combo encounter
