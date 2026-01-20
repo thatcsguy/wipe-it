@@ -172,7 +172,7 @@
             "Click 'Run Test Script' button",
             "Verify using Playwright: chariot spawns, then after ~3s spreads appear on 2 players, then after ~3s another chariot spawns"
         ],
-        "passes": false
+        "passes": true
     },
     {
         "id": "ENC-013",

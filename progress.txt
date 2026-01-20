@@ -90,3 +90,13 @@ ENC-011: First test script
 - Uses runner.select(random(2)) for targeting
 - Files: src/server/encounters/scripts/test-sequence.ts
 - Build passes
+
+ENC-012: Admin runTestScript handler + button
+- Added socket.on('admin:runTestScript') handler in src/server/index.ts
+- Handler calls runEncounter(game, testSequenceScript)
+- Added emitRunTestScript() to __adminTest in src/client/admin.ts
+- Added button #run-test-script-btn to admin panel in public/index.html
+- Button click handler emits admin:runTestScript
+- Playwright verified: chariot → 3s wait → spreads → 3s wait → chariot
+- Files: src/server/index.ts, src/client/admin.ts, public/index.html
+- Build passes
