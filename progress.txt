@@ -6,3 +6,16 @@ MECH-001: Chariot mechanic migrated to script-driven effects
 - getResult() returns { playersHit: string[] }
 - Build passes, Playwright verified: chariot appears, no damage on resolve
 - Files: chariot.ts, game.ts, script-runner.ts, index.ts
+
+MECH-002: Admin chariot handlers verified (was done in MECH-001)
+- Playwright verified: chariot spawns, no damage on resolve
+
+MECH-003 + MECH-004: Spread mechanic migrated to script-driven effects
+- Removed effects param from SpreadMechanic ctor
+- resolve() now no-op (removed damage + auto-vulnerability)
+- getResult() returns { playersHit: string[], position: {x,y}|null }
+- Updated game.spawnSpread() sig (no effects)
+- Updated script-runner.ts spread spawn (no DEFAULT_DAMAGE_EFFECT)
+- Updated admin handlers in index.ts (admin:spawnSpreads, admin:spawnMechanic spreads case)
+- Build passes, Playwright verified: spread appears, no damage, no vulnerability on resolve
+- Files: spread.ts, game.ts, script-runner.ts, index.ts

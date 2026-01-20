@@ -85,9 +85,8 @@ io.on('connection', (socket) => {
     if (players.length > 0) {
       const radius = ARENA_HEIGHT * 0.15;
       const duration = params?.duration ?? 3000;
-      const effects = [{ type: 'damage' as const, amount: 25 }];
       for (const targetId of players) {
-        game.spawnSpread(targetId, radius, duration, effects);
+        game.spawnSpread(targetId, radius, duration);
       }
       console.log(`Admin spawned spreads on ${players.length} players`);
     } else {
@@ -167,9 +166,8 @@ io.on('connection', (socket) => {
       if (players.length > 0) {
         const radius = ARENA_HEIGHT * 0.15;
         const duration = 3000;
-        const effects = [{ type: 'damage' as const, amount: 25 }];
         for (const targetId of players) {
-          game.spawnSpread(targetId, radius, duration, effects);
+          game.spawnSpread(targetId, radius, duration);
         }
         console.log(`Admin spawned spreads on ${players.length} players`);
       } else {

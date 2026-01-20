@@ -27,7 +27,7 @@
             "Verify chariot appears visually",
             "Verify player standing in chariot does NOT take damage when it resolves"
         ],
-        "passes": false
+        "passes": true
     },
     {
         "id": "MECH-003",
@@ -43,7 +43,7 @@
             "Verify MechanicParams spread type in encounters/types.ts has no effects field",
             "Run npm run build - should pass with no TypeScript errors"
         ],
-        "passes": false
+        "passes": true
     },
     {
         "id": "MECH-004",
@@ -58,7 +58,7 @@
             "Verify players do NOT take damage when spreads resolve",
             "Verify players do NOT receive vulnerability when spreads resolve"
         ],
-        "passes": false
+        "passes": true
     },
     {
         "id": "MECH-005",

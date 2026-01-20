@@ -193,8 +193,8 @@ export class Game extends EventEmitter {
     return mechanic.id;
   }
 
-  spawnSpread(playerId: string, radius: number, duration: number, effects: Effect[]): string {
-    const mechanic = new SpreadMechanic(playerId, radius, duration, effects);
+  spawnSpread(playerId: string, radius: number, duration: number): string {
+    const mechanic = new SpreadMechanic(playerId, radius, duration);
     this.mechanicManager.add(mechanic);
     return mechanic.id;
   }

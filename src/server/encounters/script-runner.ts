@@ -50,8 +50,7 @@ export class ScriptRunnerImpl implements ScriptRunner {
         return this.game.spawnSpread(
           mechanic.targetPlayerId,
           radius,
-          duration,
-          [DEFAULT_DAMAGE_EFFECT]
+          duration
         );
       }
 
