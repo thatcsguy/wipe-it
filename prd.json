@@ -1,315 +1,224 @@
 [
     {
-        "id": "ENC-001",
-        "category": "shared",
-        "description": "Create src/server/encounters/types.ts with core type definitions. Define: Selector type as (state: GameState, ctx: Context) => PlayerState[]. Define Context interface as { [key: string]: unknown }. Define Script type as (runner: ScriptRunner, ctx: Context) => Promise<void>. Define MechanicResult interface with mechanicId: string, type: string, data: unknown. Define ScriptRunner interface with methods: spawn(mechanic: MechanicParams) => string, wait(ms: number) => Promise<void>, getState() => GameState, select(selector: Selector) => PlayerState[], waitForResolve(mechanicId: string) => Promise<MechanicResult>, run(script: Script) => Promise<void>.",
+        "id": "MECH-001",
+        "category": "server",
+        "description": "Migrate Chariot mechanic to script-driven effects. Remove effects parameter from ChariotMechanic constructor, game.spawnChariot(), and ChariotMechanicState in shared/types.ts. The mechanic already has getResult() returning playersHit - update resolve() to be a no-op (remove damage application). Update MechanicParams in encounters/types.ts to remove effects from chariot type.",
         "steps_to_verify": [
-            "Verify src/server/encounters/types.ts exists",
-            "Verify Selector type is exported: (state: GameState, ctx: Context) => PlayerState[]",
-            "Verify Context interface is exported: { [key: string]: unknown }",
-            "Verify Script type is exported: (runner: ScriptRunner, ctx: Context) => Promise<void>",
-            "Verify MechanicResult interface is exported with mechanicId, type, data fields",
-            "Verify ScriptRunner interface is exported with all methods: spawn, wait, getState, select, waitForResolve, run",
+            "Verify ChariotMechanic constructor no longer takes effects parameter",
+            "Verify ChariotMechanic.resolve() does not apply damage",
+            "Verify ChariotMechanic.getResult() returns { playersHit: string[] }",
+            "Verify game.spawnChariot() signature no longer includes effects parameter",
+            "Verify ChariotMechanicState in src/shared/types.ts has no effects field",
+            "Verify MechanicParams chariot type in encounters/types.ts has no effects field",
+            "Verify script-runner.ts spawn() for chariot does not pass effects",
             "Run npm run build - should pass with no TypeScript errors"
         ],
-        "passes": true
+        "passes": false
     },
     {
-        "id": "ENC-002",
+        "id": "MECH-002",
         "category": "server",
-        "description": "Create src/server/encounters/targeting.ts with basic selector functions. Implement: all() returns all living players (hp > 0). random(n: number) returns n random players from living players. closest(point: {x,y}) returns single player closest to point. furthest(point: {x,y}) returns single player furthest from point. Each function returns a Selector (a function, not the result directly).",
+        "description": "Update admin handler for chariot to not pass effects. In src/server/index.ts, update admin:spawnChariot and admin:spawnMechanic (chariot case) to call game.spawnChariot without effects. The admin button becomes a pure visual/hitbox test with no damage.",
         "steps_to_verify": [
-            "Verify src/server/encounters/targeting.ts exists",
-            "Verify all() returns Selector that filters players with hp > 0",
-            "Verify random(n) returns Selector that returns n random living players (handles n > players.length)",
-            "Verify closest(point) returns Selector that returns single-element array with nearest player by Euclidean distance",
-            "Verify furthest(point) returns Selector that returns single-element array with farthest player",
-            "Verify all functions return Selector functions, not direct results",
-            "Run npm run build - should pass"
+            "Verify admin:spawnChariot handler calls game.spawnChariot without effects",
+            "Verify admin:spawnMechanic chariot case calls game.spawnChariot without effects",
+            "Run npm run build - should pass",
+            "Start dev server, click Spawn Chariot button via Playwright",
+            "Verify chariot appears visually",
+            "Verify player standing in chariot does NOT take damage when it resolves"
         ],
-        "passes": true
+        "passes": false
     },
     {
-        "id": "ENC-003",
+        "id": "MECH-003",
         "category": "server",
-        "description": "Add advanced targeting selectors to src/server/encounters/targeting.ts. Implement: nClosest(n: number, point: {x,y}) returns n players closest to point. nFurthest(n: number, point: {x,y}) returns n players furthest from point. withStatus(effect: string) returns players that have the specified status effect. withoutStatus(effect: string) returns players that do not have the specified status effect.",
+        "description": "Migrate Spread mechanic to script-driven effects. Remove effects parameter from SpreadMechanic constructor, game.spawnSpread(), and SpreadMechanicState. Remove the auto-applied 1s vulnerability from resolve(). The mechanic already has getResult() - update resolve() to be a no-op. Update MechanicParams in encounters/types.ts.",
         "steps_to_verify": [
-            "Verify nClosest(n, point) returns Selector returning n closest players sorted by distance",
-            "Verify nFurthest(n, point) returns Selector returning n furthest players sorted by distance descending",
-            "Verify withStatus(effect) returns Selector filtering players where statusEffects includes effect",
-            "Verify withoutStatus(effect) returns Selector filtering players where statusEffects does not include effect",
-            "Verify all selectors handle edge cases (n > players, no players with status, etc.)",
-            "Run npm run build - should pass"
+            "Verify SpreadMechanic constructor no longer takes effects parameter",
+            "Verify SpreadMechanic.resolve() does not apply damage",
+            "Verify SpreadMechanic.resolve() does not apply auto-vulnerability",
+            "Verify SpreadMechanic.getResult() returns { playersHit: string[], position: {x,y} | null }",
+            "Verify game.spawnSpread() signature no longer includes effects parameter",
+            "Verify SpreadMechanicState in src/shared/types.ts has no effects field",
+            "Verify MechanicParams spread type in encounters/types.ts has no effects field",
+            "Run npm run build - should pass with no TypeScript errors"
         ],
-        "passes": true
+        "passes": false
     },
     {
-        "id": "ENC-004",
+        "id": "MECH-004",
         "category": "server",
-        "description": "Add selector combinators to src/server/encounters/targeting.ts. Implement: exclude(selector: Selector, excluded: Selector) returns selector results minus excluded results (by player id). first(n: number, selector: Selector) returns first n results from selector. union(...selectors: Selector[]) combines results from all selectors, deduped by player id.",
+        "description": "Update admin handler for spreads to not pass effects. In src/server/index.ts, update admin:spawnSpreads and admin:spawnMechanic (spreads case) to call game.spawnSpread without effects.",
         "steps_to_verify": [
-            "Verify exclude(selector, excluded) returns Selector that filters out players present in excluded results",
-            "Verify first(n, selector) returns Selector that returns only first n results from inner selector",
-            "Verify union(...selectors) returns Selector that combines all results, removing duplicates by player id",
-            "Verify combinators work with other selectors: e.g., exclude(random(2), closest(point))",
-            "Run npm run build - should pass"
+            "Verify admin:spawnSpreads handler calls game.spawnSpread without effects",
+            "Verify admin:spawnMechanic spreads case calls game.spawnSpread without effects",
+            "Run npm run build - should pass",
+            "Start dev server, click Spawn Spreads button via Playwright",
+            "Verify spreads appear on players visually",
+            "Verify players do NOT take damage when spreads resolve",
+            "Verify players do NOT receive vulnerability when spreads resolve"
         ],
-        "passes": true
+        "passes": false
     },
     {
-        "id": "ENC-005",
+        "id": "MECH-005",
         "category": "server",
-        "description": "Create src/server/encounters/context.ts with context factory. Export createContext() function that returns an empty Context object {}. This is simple now but provides a place to add context initialization logic later.",
+        "description": "Migrate ConalAoe mechanic to script-driven effects. Remove effects parameter from ConalAoeMechanic constructor, game.spawnConalAoe(), and ConalAoeMechanicState. Add getResult() method returning { playersHit: string[] }. Update resolve() to be a no-op. Update MechanicParams in encounters/types.ts.",
         "steps_to_verify": [
-            "Verify src/server/encounters/context.ts exists",
-            "Verify createContext() function is exported",
-            "Verify createContext() returns empty object of type Context",
-            "Run npm run build - should pass"
+            "Verify ConalAoeMechanic constructor no longer takes effects parameter",
+            "Verify ConalAoeMechanic has getResult() method returning { playersHit: string[] }",
+            "Verify ConalAoeMechanic.resolve() does not apply damage",
+            "Verify game.spawnConalAoe() signature no longer includes effects parameter",
+            "Verify ConalAoeMechanicState in src/shared/types.ts has no effects field",
+            "Verify MechanicParams conalAoe type in encounters/types.ts has no effects field",
+            "Run npm run build - should pass with no TypeScript errors"
         ],
-        "passes": true
+        "passes": false
     },
     {
-        "id": "ENC-006",
+        "id": "MECH-006",
         "category": "server",
-        "description": "Create src/server/encounters/script-runner.ts with basic ScriptRunner implementation. Constructor takes Game instance. Implement spawn() that calls appropriate game.spawn* method based on mechanic type and returns mechanic ID. Implement wait(ms) returning Promise that resolves after ms milliseconds. Implement getState() returning game.getState(). Implement select(selector) that calls selector with current state and empty context. Do NOT implement waitForResolve or run yet.",
+        "description": "Update admin handler for conal AOE to not pass effects. In src/server/index.ts, update admin:spawnConalAoe to call game.spawnConalAoe without effects.",
         "steps_to_verify": [
-            "Verify src/server/encounters/script-runner.ts exists",
-            "Verify ScriptRunner class constructor takes Game instance",
-            "Verify spawn() accepts mechanic params object with 'type' field and routes to correct game method",
-            "Verify spawn() returns the mechanic ID (string)",
-            "Verify wait(ms) returns Promise<void> that resolves after specified milliseconds",
-            "Verify getState() returns current GameState from game instance",
-            "Verify select(selector) invokes selector with current state and returns PlayerState[]",
-            "Run npm run build - should pass"
+            "Verify admin:spawnConalAoe handler calls game.spawnConalAoe without effects",
+            "Run npm run build - should pass",
+            "Start dev server, click Spawn Conal AOE button via Playwright",
+            "Verify conal AOE appears visually",
+            "Verify player standing in conal AOE does NOT take damage when it resolves"
         ],
-        "passes": true
+        "passes": false
     },
     {
-        "id": "ENC-007",
+        "id": "MECH-007",
         "category": "server",
-        "description": "Add MechanicResult emission to mechanic resolution. In src/server/game.ts, when a mechanic resolves (in the tick loop where expired mechanics are processed), emit a 'mechanicResolved' event with { mechanicId, type, data }. The data field should contain mechanic-specific resolution info. For now, data can be minimal: { position } for positional mechanics, { targetIds } for player-targeted mechanics. This requires mechanics to have a getResult() method or similar.",
+        "description": "Migrate Tower mechanic to script-driven effects. Remove failureEffects and successEffects parameters from TowerMechanic constructor, game.spawnTower(), and TowerMechanicState. Update getResult() to return { success: boolean, playersInside: string[] } where success is true if playersInside.length >= requiredPlayers. Update resolve() to be a no-op. Update MechanicParams in encounters/types.ts.",
         "steps_to_verify": [
-            "Verify Game class extends EventEmitter or has event emission capability",
-            "Verify mechanic resolution in tick() emits 'mechanicResolved' event",
-            "Verify event payload includes mechanicId (string), type (string), data (object)",
-            "Verify at least one mechanic type returns meaningful result data",
-            "Run npm run build - should pass"
+            "Verify TowerMechanic constructor no longer takes failureEffects or successEffects",
+            "Verify TowerMechanic.getResult() returns { success: boolean, playersInside: string[] }",
+            "Verify success is true when playersInside.length >= requiredPlayers",
+            "Verify TowerMechanic.resolve() does not apply damage",
+            "Verify game.spawnTower() signature no longer includes failureEffects or successEffects",
+            "Verify TowerMechanicState in src/shared/types.ts has no effects fields",
+            "Verify MechanicParams tower type in encounters/types.ts has no effects fields",
+            "Run npm run build - should pass with no TypeScript errors"
         ],
-        "passes": true
+        "passes": false
     },
     {
-        "id": "ENC-008",
+        "id": "MECH-008",
         "category": "server",
-        "description": "Implement waitForResolve(mechanicId) in ScriptRunner. Method returns Promise<MechanicResult> that resolves when the mechanic with given ID resolves. Subscribe to game's 'mechanicResolved' event, filter by mechanicId, resolve promise with result, unsubscribe. Handle case where mechanic doesn't exist or already resolved (reject with error).",
+        "description": "Update admin handler for tower to not pass effects. In src/server/index.ts, update admin:spawnTower to call game.spawnTower without failureEffects or successEffects.",
         "steps_to_verify": [
-            "Verify waitForResolve(mechanicId) is implemented in ScriptRunner",
-            "Verify it returns Promise<MechanicResult>",
-            "Verify it subscribes to game 'mechanicResolved' event",
-            "Verify it filters events to match the requested mechanicId",
-            "Verify it unsubscribes after receiving matching event",
-            "Verify promise resolves with MechanicResult containing mechanicId, type, data",
-            "Run npm run build - should pass"
+            "Verify admin:spawnTower handler calls game.spawnTower without effects",
+            "Run npm run build - should pass",
+            "Start dev server, click Spawn Tower button via Playwright",
+            "Verify tower appears visually",
+            "Verify players do NOT take damage when tower resolves (even if failed)"
         ],
-        "passes": true
+        "passes": false
     },
     {
-        "id": "ENC-009",
+        "id": "MECH-009",
         "category": "server",
-        "description": "Implement run(script) in ScriptRunner for sub-script execution. Method accepts a Script function and executes it with 'this' runner and a context. For now, use a fresh context per run() call (can be changed later if scripts need shared context). Await the script's completion. Propagate any errors (abort behavior).",
+        "description": "Migrate Tether mechanic to script-driven effects. Remove damage parameter from TetherMechanic constructor, game.spawnTether(), and TetherMechanicState. The mechanic already has getResult() returning stretched boolean and positions - update resolve() to be a no-op (remove damage application on fail). Update MechanicParams in encounters/types.ts to remove damage field.",
         "steps_to_verify": [
-            "Verify run(script) is implemented in ScriptRunner",
-            "Verify it accepts Script type (async function)",
-            "Verify it calls script with (this, context)",
-            "Verify it awaits script completion",
-            "Verify errors from script propagate up (not caught/swallowed)",
-            "Run npm run build - should pass"
+            "Verify TetherMechanic constructor no longer takes damage parameter",
+            "Verify TetherMechanic.resolve() does not apply damage on failed stretch",
+            "Verify TetherMechanic.getResult() still returns { player1, player2, stretched }",
+            "Verify game.spawnTether() signature no longer includes damage parameter",
+            "Verify TetherMechanicState in src/shared/types.ts has no damage field",
+            "Verify MechanicParams tether type in encounters/types.ts has no damage field",
+            "Run npm run build - should pass with no TypeScript errors"
         ],
-        "passes": true
+        "passes": false
     },
     {
-        "id": "ENC-010",
+        "id": "MECH-010",
         "category": "server",
-        "description": "Add execute(script) method to ScriptRunner as the main entry point for running an encounter. This method creates initial context via createContext(), runs the script, and handles top-level error catching (logs error, could trigger cleanup later). Export a convenience function runEncounter(game, script) that creates runner and calls execute().",
+        "description": "Update admin handlers for tethers to not pass damage. In src/server/index.ts, update admin:spawnPointTethers, admin:spawnPlayerTethers, and admin:spawnMechanic (tether cases) to call game.spawnTether without damage parameter.",
         "steps_to_verify": [
-            "Verify execute(script) method exists on ScriptRunner",
-            "Verify it creates context using createContext()",
-            "Verify it calls script(this, context) and awaits",
-            "Verify errors are caught and logged (console.error or similar)",
-            "Verify runEncounter(game, script) function is exported",
-            "Verify runEncounter creates ScriptRunner and calls execute()",
-            "Run npm run build - should pass"
+            "Verify admin:spawnPointTethers handler calls game.spawnTether without damage",
+            "Verify admin:spawnPlayerTethers handler calls game.spawnTether without damage",
+            "Verify admin:spawnMechanic pointTethers case calls game.spawnTether without damage",
+            "Verify admin:spawnMechanic playerTethers case calls game.spawnTether without damage",
+            "Run npm run build - should pass",
+            "Start dev server, click Spawn Point Tethers button via Playwright",
+            "Verify tether appears visually",
+            "Let tether resolve without stretching - verify player does NOT take damage"
         ],
-        "passes": true
+        "passes": false
     },
     {
-        "id": "ENC-011",
+        "id": "MECH-011",
         "category": "server",
-        "description": "Create first test script in src/server/encounters/scripts/test-sequence.ts. Script spawns a chariot, waits 3 seconds, spawns spreads on 2 random players using targeting selector, waits 3 seconds, spawns another chariot. Export as testSequenceScript. This proves basic spawn + wait + select flow.",
+        "description": "Update tether-line-combo.ts script to handle tether failure effects. After waitForResolve, check if result.data.stretched is false. If not stretched, apply appropriate effect to the tethered player(s) using runner.applyStatus() or runner.damage(). This replaces the built-in damage that was removed.",
         "steps_to_verify": [
-            "Verify src/server/encounters/scripts/test-sequence.ts exists",
-            "Verify testSequenceScript is exported as Script type",
-            "Verify script spawns chariot mechanic",
-            "Verify script waits 3000ms",
-            "Verify script uses runner.select(random(2)) to get 2 random players",
-            "Verify script spawns spread on each selected player",
-            "Verify script waits another 3000ms",
-            "Verify script spawns final chariot",
-            "Run npm run build - should pass"
+            "Verify tether-line-combo.ts checks result.data.stretched after waitForResolve",
+            "Verify script applies effect (damage or status) when stretched is false",
+            "Verify script does NOT apply effect when stretched is true",
+            "Run npm run build - should pass",
+            "Start dev server via Playwright, run tether-line combo",
+            "Have players NOT stretch the tether (stay close together)",
+            "Verify appropriate effect is applied to player(s) when tether resolves"
         ],
-        "passes": true
+        "passes": false
     },
     {
-        "id": "ENC-012",
+        "id": "MECH-012",
         "category": "server",
-        "description": "Add admin:runTestScript socket handler in src/server/index.ts. When received, call runEncounter(game, testSequenceScript). Add corresponding emitRunTestScript() method to __adminTest on client. Add button 'Run Test Script' with id='run-test-script-btn' to admin panel.",
+        "description": "Update tutorial-encounter.ts script to apply effects for mechanics. After each mechanic resolves (chariot, spread), apply damage to hit players. Use waitForResolve to get playersHit from each mechanic and call runner.damage() for each hit player.",
         "steps_to_verify": [
-            "Verify socket.on('admin:runTestScript') handler exists in src/server/index.ts",
-            "Verify handler calls runEncounter(game, testSequenceScript)",
-            "Verify __adminTest.emitRunTestScript() exists in src/client/admin.ts",
-            "Verify button #run-test-script-btn exists in public/index.html",
-            "Verify button click handler calls emitRunTestScript()",
-            "Start dev server, open localhost:3000?debug=1",
-            "Click 'Run Test Script' button",
-            "Verify using Playwright: chariot spawns, then after ~3s spreads appear on 2 players, then after ~3s another chariot spawns"
+            "Verify tutorial-encounter.ts stores mechanic IDs when spawning",
+            "Verify script uses waitForResolve to get results for chariot/spread mechanics",
+            "Verify script calls runner.damage() for each player in playersHit",
+            "Run npm run build - should pass",
+            "Start dev server via Playwright, run tutorial encounter",
+            "Stand in chariot AOE, verify damage is applied when it resolves",
+            "Stand in spread AOE, verify damage is applied when it resolves"
         ],
-        "passes": true
+        "passes": false
     },
     {
-        "id": "ENC-013",
-        "category": "server",
-        "description": "Add stretch tether mechanic result data. When stretch tether resolves, its result should include: player1: { id, position }, player2: { id, position }, stretched: boolean (whether distance >= minDistance at resolve time). Update the tether mechanic to track this and return it via getResult() or similar mechanism used by mechanicResolved event.",
+        "id": "MECH-013",
+        "category": "cleanup",
+        "description": "Remove unused Effect import and DEFAULT_DAMAGE_EFFECT constant from script-runner.ts if no longer used after all mechanics migrated. Clean up any other unused effect-related code.",
         "steps_to_verify": [
-            "Verify stretch tether mechanic has getResult() method or equivalent",
-            "Verify result includes player1 object with id and position at resolve time",
-            "Verify result includes player2 object with id and position at resolve time",
-            "Verify result includes stretched boolean based on distance vs minDistance",
-            "Verify 'mechanicResolved' event for tether includes this data",
-            "Run npm run build - should pass"
+            "Check if Effect type is still imported in script-runner.ts - remove if unused",
+            "Check if DEFAULT_DAMAGE_EFFECT is still used - remove if unused",
+            "Search for other unused effect-related imports/constants across codebase",
+            "Run npm run build - should pass with no TypeScript errors",
+            "Run npm run build - should have no unused variable warnings"
         ],
-        "passes": true
+        "passes": false
     },
     {
-        "id": "ENC-014",
-        "category": "server",
-        "description": "Create stretch tether to line AOE combo script in src/server/encounters/scripts/combos/tether-line-combo.ts. Script: select 2 random players, spawn stretch tether between them, waitForResolve, spawn line AOE from player1's position to player2's position (using result data). Store tether targets in context for potential reuse. Export as tetherLineCombo.",
-        "steps_to_verify": [
-            "Verify src/server/encounters/scripts/combos/tether-line-combo.ts exists",
-            "Verify tetherLineCombo is exported as Script type",
-            "Verify script uses runner.select(random(2)) to get 2 players",
-            "Verify script stores selected player IDs in ctx.tetherTargets",
-            "Verify script spawns stretchTether mechanic with both player IDs",
-            "Verify script calls runner.waitForResolve(tetherId)",
-            "Verify script spawns lineAoe using result.data.player1.position and result.data.player2.position",
-            "Run npm run build - should pass"
-        ],
-        "passes": true
-    },
-    {
-        "id": "ENC-015",
-        "category": "server",
-        "description": "Add admin:runTetherLineCombo socket handler. When received, call runEncounter(game, tetherLineCombo). Add emitRunTetherLineCombo() to __adminTest. Add button 'Run Tether→Line Combo' with id='run-tether-line-btn' to admin panel.",
-        "steps_to_verify": [
-            "Verify socket.on('admin:runTetherLineCombo') handler exists",
-            "Verify __adminTest.emitRunTetherLineCombo() exists",
-            "Verify button #run-tether-line-btn exists in admin panel",
-            "Start dev server, open localhost:3000?debug=1 with Playwright",
-            "Click 'Run Tether→Line Combo' button",
-            "Verify stretch tether appears between 2 players",
-            "Wait for tether to resolve",
-            "Verify line AOE spawns connecting the two player positions"
-        ],
-        "passes": true
-    },
-    {
-        "id": "ENC-016",
-        "category": "server",
-        "description": "Create first multi-phase encounter in src/server/encounters/scripts/encounters/tutorial-encounter.ts. Phase 1: spawn chariot at center, wait 4s. Phase 2: spawn spreads on all players, wait 4s. Phase 3: run tetherLineCombo. Phase 4: spawn chariot + spreads simultaneously. Export as tutorialEncounter.",
-        "steps_to_verify": [
-            "Verify src/server/encounters/scripts/encounters/tutorial-encounter.ts exists",
-            "Verify tutorialEncounter is exported as Script type",
-            "Verify Phase 1: spawns chariot at arena center, waits 4000ms",
-            "Verify Phase 2: spawns spread on each player from runner.select(all()), waits 4000ms",
-            "Verify Phase 3: calls runner.run(tetherLineCombo)",
-            "Verify Phase 4: spawns chariot AND spreads on all players (no wait between them)",
-            "Run npm run build - should pass"
-        ],
-        "passes": true
-    },
-    {
-        "id": "ENC-017",
-        "category": "server",
-        "description": "Add admin:runTutorialEncounter socket handler. When received, call runEncounter(game, tutorialEncounter). Add emitRunTutorialEncounter() to __adminTest. Add button 'Run Tutorial Encounter' with id='run-tutorial-btn' to admin panel.",
-        "steps_to_verify": [
-            "Verify socket.on('admin:runTutorialEncounter') handler exists",
-            "Verify __adminTest.emitRunTutorialEncounter() exists",
-            "Verify button #run-tutorial-btn exists in admin panel",
-            "Start dev server, open localhost:3000?debug=1 with Playwright",
-            "Click 'Run Tutorial Encounter' button",
-            "Observe full encounter sequence: chariot → spreads → tether+line → chariot+spreads",
-            "Verify mechanics spawn at correct times with expected delays"
-        ],
-        "passes": true
-    },
-    {
-        "id": "ENC-018",
-        "category": "integration",
-        "description": "Verify targeting selectors work correctly with Playwright. Test random(n) returns n players. Test closest(point) returns nearest player. Test exclude combinator filters correctly. Use browser_evaluate to run scripts and verify selector results match expected players.",
-        "steps_to_verify": [
-            "Start dev server, open localhost:3000?debug=1 with Playwright",
-            "Join with at least 2 players (or use existing player)",
-            "Use browser_evaluate to access game state and test selectors",
-            "Verify random(1) returns exactly 1 player",
-            "Verify all() returns all living players",
-            "Verify closest({x:0,y:0}) returns player nearest to top-left corner",
-            "Verify exclude(all(), closest(point)) returns all players except closest"
-        ],
-        "passes": true
-    },
-    {
-        "id": "ENC-019",
-        "category": "integration",
-        "description": "Verify waitForResolve works correctly. Spawn a tether with known duration, call waitForResolve, verify promise resolves after mechanic expires with correct result data. Use Playwright to trigger combo script and verify line AOE spawns at correct positions based on tether result.",
-        "steps_to_verify": [
-            "Start dev server, open localhost:3000?debug=1 with Playwright",
-            "Run tether-line combo via admin button",
-            "Verify tether spawns and is visible",
-            "Wait for tether duration to expire",
-            "Verify line AOE spawns immediately after tether resolves",
-            "Verify line AOE endpoints match where players were standing when tether resolved"
-        ],
-        "passes": true
-    },
-    {
-        "id": "ENC-020",
-        "category": "integration",
-        "description": "Verify full tutorial encounter executes correctly end-to-end. Use Playwright to start encounter and verify each phase executes in order with correct timing. Verify no errors in console. Verify all mechanics spawn and resolve as expected.",
-        "steps_to_verify": [
-            "Start dev server, open localhost:3000?debug=1 with Playwright",
-            "Click 'Run Tutorial Encounter' button",
-            "Verify Phase 1: chariot appears at center",
-            "Wait ~4 seconds, verify chariot resolves",
-            "Verify Phase 2: spreads appear on all players",
-            "Wait ~4 seconds, verify spreads resolve",
-            "Verify Phase 3: tether appears, then line AOE after tether resolves",
-            "Verify Phase 4: chariot AND spreads appear simultaneously",
-            "Check browser console for errors - should be none",
-            "Verify encounter completes without crashing"
-        ],
-        "passes": true
-    },
-    {
-        "id": "ENC-021",
+        "id": "MECH-014",
         "category": "docs",
-        "description": "Update CLAUDE.md to document the encounter system. Add section describing Script type, ScriptRunner methods, targeting selectors, and how to create new scripts. Document new admin buttons and __adminTest methods for running scripts/encounters.",
+        "description": "Update CLAUDE.md to document the script-driven effects pattern. Document that mechanics return playersHit via getResult(), scripts use waitForResolve() to get results, and scripts call runner.damage() / runner.applyStatus() to apply effects. Update MechanicParams documentation to reflect removed effects fields.",
         "steps_to_verify": [
-            "Open CLAUDE.md",
-            "Verify new section exists documenting encounter system",
-            "Verify Script type and ScriptRunner interface are documented",
-            "Verify targeting selectors (all, random, closest, etc.) are listed with descriptions",
-            "Verify example script usage is shown",
-            "Verify new admin buttons documented: #run-test-script-btn, #run-tether-line-btn, #run-tutorial-btn",
-            "Verify __adminTest methods documented: emitRunTestScript, emitRunTetherLineCombo, emitRunTutorialEncounter"
+            "Verify CLAUDE.md documents that mechanics no longer apply effects directly",
+            "Verify CLAUDE.md documents getResult() return values for each mechanic type",
+            "Verify CLAUDE.md shows example of using waitForResolve + runner.damage()",
+            "Verify MechanicParams section updated to remove effects fields",
+            "Verify runner.damage(playerId, amount) method is documented"
         ],
-        "passes": true
+        "passes": false
+    },
+    {
+        "id": "MECH-015",
+        "category": "integration",
+        "description": "End-to-end verification that all mechanics work correctly with script-driven effects. Run orbital-omen script and verify damage + vulnerability are applied. Run tutorial encounter and verify all phases apply appropriate effects. Verify no regressions in existing functionality.",
+        "steps_to_verify": [
+            "Start dev server, open localhost:3000?debug=1 with Playwright",
+            "Run Orbital Omen via admin button",
+            "Stand in line AOE, verify 50 damage applied when it resolves",
+            "Verify vulnerability status appears for 5 seconds after being hit",
+            "Run Tutorial Encounter via admin button",
+            "Verify chariot damage is applied to players hit",
+            "Verify spread damage is applied to players hit",
+            "Verify tether-line combo applies effects on tether failure",
+            "Check browser console for errors - should be none"
+        ],
+        "passes": false
     }
 ]
