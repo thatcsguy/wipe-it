@@ -1,8 +1,9 @@
-import { GameState, PlayerState, MechanicState, TetherMechanicState, TetherEndpoint, TowerMechanicState, RadialKnockbackMechanicState, LinearKnockbackMechanicState } from '../shared/types';
+import { GameState, PlayerState, MechanicState, TetherMechanicState, TetherEndpoint, TowerMechanicState, RadialKnockbackMechanicState, LinearKnockbackMechanicState, DoodadState } from '../shared/types';
 
 let debugPanelElement: HTMLDivElement | null = null;
 let playersSection: HTMLDivElement | null = null;
 let mechanicsSection: HTMLDivElement | null = null;
+let doodadsSection: HTMLDivElement | null = null;
 let isDebugEnabled = false;
 
 export function initDebugPanel(): void {
@@ -12,7 +13,7 @@ export function initDebugPanel(): void {
   const urlParams = new URLSearchParams(window.location.search);
   isDebugEnabled = urlParams.get('debug') === '1';
 
-  // Create sections for players and mechanics
+  // Create sections for players, mechanics, and doodads
   debugPanelElement.innerHTML = `
     <h3>Debug Panel</h3>
     <div id="debug-players" class="debug-section">
@@ -21,20 +22,27 @@ export function initDebugPanel(): void {
     <div id="debug-mechanics" class="debug-section">
       <h4>Mechanics</h4>
     </div>
+    <div id="debug-doodads" class="debug-section">
+      <h4>Doodads</h4>
+    </div>
   `;
 
   playersSection = document.getElementById('debug-players') as HTMLDivElement;
   mechanicsSection = document.getElementById('debug-mechanics') as HTMLDivElement;
+  doodadsSection = document.getElementById('debug-doodads') as HTMLDivElement;
 }
 
 export function updateDebugPanel(gameState: GameState, localPlayerId: string | null): void {
-  if (!debugPanelElement || !playersSection || !mechanicsSection) return;
+  if (!debugPanelElement || !playersSection || !mechanicsSection || !doodadsSection) return;
 
   // Update players
   updatePlayersSection(gameState.players, localPlayerId);
 
   // Update mechanics
   updateMechanicsSection(gameState.mechanics, gameState.timestamp);
+
+  // Update doodads
+  updateDoodadsSection(gameState.doodads, gameState.players, gameState.timestamp);
 }
 
 function updatePlayersSection(players: PlayerState[], localPlayerId: string | null): void {
@@ -167,6 +175,73 @@ function updateMechanicsSection(mechanics: MechanicState[], serverTimestamp: num
     // Calculate time remaining
     const timeRemaining = Math.max(0, mechanic.endTime - serverTimestamp);
     mechanicDiv.textContent = `${mechanic.type} - expires ${Math.round(timeRemaining)}ms`;
+  }
+}
+
+function updateDoodadsSection(doodads: DoodadState[], players: PlayerState[], serverTimestamp: number): void {
+  if (!doodadsSection) return;
+
+  const existingDoodads = doodadsSection.querySelectorAll('.debug-doodad');
+  const currentDoodadIds = new Set(doodads.map(d => d.id));
+
+  // Remove doodads no longer present
+  existingDoodads.forEach(el => {
+    const id = el.getAttribute('data-doodad-id');
+    if (id && !currentDoodadIds.has(id)) {
+      el.remove();
+    }
+  });
+
+  // Build player position lookup
+  const playerPositions = new Map<string, { x: number; y: number }>();
+  for (const player of players) {
+    playerPositions.set(player.id, { x: player.x, y: player.y });
+  }
+
+  // Update or add doodads
+  for (const doodad of doodads) {
+    let doodadDiv = doodadsSection.querySelector(`.debug-doodad[data-doodad-id="${doodad.id}"]`) as HTMLDivElement;
+
+    if (!doodadDiv) {
+      doodadDiv = document.createElement('div');
+      doodadDiv.className = 'debug-doodad';
+      doodadDiv.setAttribute('data-doodad-id', doodad.id);
+      doodadsSection.appendChild(doodadDiv);
+    }
+
+    // Required attributes
+    doodadDiv.setAttribute('data-type', doodad.type);
+    doodadDiv.setAttribute('data-expires', String(doodad.endTime));
+
+    // Resolve position
+    let resolvedX: number | undefined;
+    let resolvedY: number | undefined;
+
+    if (doodad.anchorPlayerId && doodad.anchorOffset) {
+      // Anchored doodad - resolve from player position
+      const playerPos = playerPositions.get(doodad.anchorPlayerId);
+      if (playerPos) {
+        resolvedX = playerPos.x + doodad.anchorOffset.x;
+        resolvedY = playerPos.y + doodad.anchorOffset.y;
+      }
+      doodadDiv.setAttribute('data-anchor-player', doodad.anchorPlayerId);
+      doodadDiv.removeAttribute('data-x');
+      doodadDiv.removeAttribute('data-y');
+    } else if (doodad.x !== undefined && doodad.y !== undefined) {
+      // Fixed position doodad
+      resolvedX = doodad.x;
+      resolvedY = doodad.y;
+      doodadDiv.setAttribute('data-x', String(Math.round(doodad.x)));
+      doodadDiv.setAttribute('data-y', String(Math.round(doodad.y)));
+      doodadDiv.removeAttribute('data-anchor-player');
+    }
+
+    // Calculate time remaining
+    const timeRemaining = Math.max(0, doodad.endTime - serverTimestamp);
+    const posInfo = resolvedX !== undefined && resolvedY !== undefined
+      ? ` at (${Math.round(resolvedX)}, ${Math.round(resolvedY)})`
+      : '';
+    doodadDiv.textContent = `${doodad.type}${posInfo} - expires ${Math.round(timeRemaining)}ms`;
   }
 }
 
