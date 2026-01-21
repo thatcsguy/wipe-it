@@ -1,167 +1,141 @@
 {
-  "feature": "Bubbled Status Effect",
-  "description": "New status effects 'bubbled' and 'bubble-warning'. Bubbled prevents player movement (WASD ignored) but does NOT grant knockback immunity (unlike rooted). Bubble-warning is cosmetic only. Bubbled players get a visual bubble drawn around their player model and name.",
+  "feature": "Absolute Trigger Time (triggerAt) for Mechanics",
+  "summary": "Add triggerAt parameter to all mechanics allowing scripts to specify absolute time from script start instead of calculating relative delays. Sub-scripts via run() get their own scoped timeline (T=0 is when the sub-script starts).",
   "items": [
     {
-      "id": "BUBBLE-001",
+      "id": "TRIGGER-001",
       "category": "types",
-      "description": "Add 'bubbled' and 'bubble-warning' to StatusEffectType union in src/shared/types.ts.",
-      "steps_to_verify": [
-        "StatusEffectType includes 'bubbled' and 'bubble-warning'",
-        "TypeScript compilation succeeds: npm run build"
+      "description": "Add triggerAt optional parameter to all MechanicParams types in src/server/encounters/types.ts",
+      "stepsToVerify": [
+        "Open src/server/encounters/types.ts",
+        "Verify each mechanic type in MechanicParams union has 'triggerAt?: number'",
+        "Types to check: chariot, spread, tether, tower, lineAoe, conalAoe, radialKnockback, linearKnockback",
+        "Run 'npm run build' - should compile without errors"
       ],
-      "passes": true
+      "passes": false
     },
     {
-      "id": "BUBBLE-002",
-      "category": "asset",
-      "description": "Download bubble-warning icon from https://ffxiv.consolegameswiki.com/mediawiki/images/9/95/Bubble_weave_icon.png and save to public/assets/bubble-warning_icon.png.",
-      "steps_to_verify": [
-        "File exists: public/assets/bubble-warning_icon.png",
-        "Image loads correctly when accessed via browser at localhost:3000/assets/bubble-warning_icon.png"
+      "id": "TRIGGER-002",
+      "category": "infrastructure",
+      "description": "ScriptRunnerImpl tracks script start time with private field and getElapsedTime() helper",
+      "stepsToVerify": [
+        "Open src/server/encounters/script-runner.ts",
+        "Verify private field 'scriptStartTime: number' exists",
+        "Verify constructor sets 'this.scriptStartTime = Date.now()'",
+        "Verify helper method 'getElapsedTime()' returns 'Date.now() - this.scriptStartTime'",
+        "Run 'npm run build' - should compile without errors"
       ],
-      "passes": true
+      "passes": false
     },
     {
-      "id": "BUBBLE-003",
-      "category": "server",
-      "description": "Add bubbled and bubble-warning icon paths to STATUS_ICONS mapping in src/server/statusEffect.ts. Both should use '/assets/bubble-warning_icon.png'.",
-      "steps_to_verify": [
-        "STATUS_ICONS includes: bubbled: '/assets/bubble-warning_icon.png'",
-        "STATUS_ICONS includes: 'bubble-warning': '/assets/bubble-warning_icon.png'",
-        "TypeScript compilation succeeds: npm run build"
+      "id": "TRIGGER-003",
+      "category": "infrastructure",
+      "description": "ScriptRunnerImpl has computeTiming() helper that converts triggerAt to duration/delay",
+      "stepsToVerify": [
+        "Open src/server/encounters/script-runner.ts",
+        "Verify computeTiming method exists with signature: (triggerAt: number | undefined, timing: number | undefined, defaultTiming: number, timingName: string) => number",
+        "Verify it returns defaultTiming when both triggerAt and timing are undefined",
+        "Verify it returns timing when timing is defined and triggerAt is undefined",
+        "Verify it computes 'triggerAt - getElapsedTime()' when triggerAt is defined"
       ],
-      "passes": true
+      "passes": false
     },
     {
-      "id": "BUBBLE-004",
-      "category": "client",
-      "description": "Add isBubbled() function to src/client/localStatus.ts. Pattern matches isRooted() - returns true if local player has 'bubbled' status.",
-      "steps_to_verify": [
-        "localStatus.ts exports isBubbled(): boolean",
-        "isBubbled() returns true when localStatuses contains type 'bubbled'",
-        "TypeScript compilation succeeds: npm run build"
+      "id": "TRIGGER-004",
+      "category": "error-handling",
+      "description": "computeTiming throws error when both triggerAt and duration/delay are specified",
+      "stepsToVerify": [
+        "Open src/server/encounters/script-runner.ts",
+        "Verify computeTiming throws Error with message containing 'Cannot specify both triggerAt and' when both triggerAt and timing are defined",
+        "Create a test script that spawns a chariot with both triggerAt and duration set",
+        "Verify runtime error is thrown with appropriate message"
       ],
-      "passes": true
+      "passes": false
     },
     {
-      "id": "BUBBLE-005",
-      "category": "client",
-      "description": "Add bubbled input blocking in applyInput() in src/client/network.ts. After the isRooted() check, add: if isBubbled() returns true, return early (skip local input application).",
-      "steps_to_verify": [
-        "network.ts imports isBubbled from ./localStatus",
-        "applyInput() checks isBubbled() after isRooted() check",
-        "If bubbled, function returns early without updating localX/localY or pendingInputs",
-        "TypeScript compilation succeeds: npm run build"
+      "id": "TRIGGER-005",
+      "category": "error-handling",
+      "description": "computeTiming throws error when triggerAt time has already passed",
+      "stepsToVerify": [
+        "Open src/server/encounters/script-runner.ts",
+        "Verify computeTiming throws Error when computed delay is negative",
+        "Error message should indicate triggerAt value and elapsed time",
+        "Create a test: script waits 2000ms, then spawns with triggerAt: 1000 - should throw"
       ],
-      "passes": true
+      "passes": false
     },
     {
-      "id": "BUBBLE-006",
-      "category": "client",
-      "description": "Add bubbled handling in reconcile() in src/client/network.ts. After the isRooted() block, add: if isBubbled(), use server position and skip input replay.",
-      "steps_to_verify": [
-        "reconcile() checks isBubbled() after isRooted() handling block",
-        "If bubbled, position is synced from server and input replay is skipped",
-        "TypeScript compilation succeeds: npm run build"
+      "id": "TRIGGER-006",
+      "category": "spawn-integration",
+      "description": "All 8 mechanic cases in spawn() use computeTiming() for duration/delay calculation",
+      "stepsToVerify": [
+        "Open src/server/encounters/script-runner.ts",
+        "Verify 'chariot' case uses computeTiming(mechanic.triggerAt, mechanic.duration, ...)",
+        "Verify 'spread' case uses computeTiming(mechanic.triggerAt, mechanic.duration, ...)",
+        "Verify 'tether' case uses computeTiming(mechanic.triggerAt, mechanic.duration, ...)",
+        "Verify 'tower' case uses computeTiming(mechanic.triggerAt, mechanic.duration, ...)",
+        "Verify 'lineAoe' case uses computeTiming(mechanic.triggerAt, mechanic.duration, ...)",
+        "Verify 'conalAoe' case uses computeTiming(mechanic.triggerAt, mechanic.duration, ...)",
+        "Verify 'radialKnockback' case uses computeTiming(mechanic.triggerAt, mechanic.delay, ...)",
+        "Verify 'linearKnockback' case uses computeTiming(mechanic.triggerAt, mechanic.delay, ...)"
       ],
-      "passes": true
+      "passes": false
     },
     {
-      "id": "BUBBLE-007",
-      "category": "server",
-      "description": "Add bubbled movement block in Player.processInput() in src/server/player.ts. After the isRooted check, add: if player has 'bubbled' status, return early (skip WASD, freeze position). Do NOT add knockback immunity for bubbled.",
-      "steps_to_verify": [
-        "processInput() checks statusEffectManager for 'bubbled' type after rooted check",
-        "If bubbled, function returns early without applying WASD movement",
-        "applyKnockback() does NOT have any check for bubbled status (knockbacks still work)",
-        "TypeScript compilation succeeds: npm run build"
+      "id": "TRIGGER-006a",
+      "category": "infrastructure",
+      "description": "runner.run() creates new ScriptRunnerImpl for sub-scripts (scoped timeline). Sub-script's T=0 is when run() is called, not when the parent script started.",
+      "stepsToVerify": [
+        "Open src/server/encounters/script-runner.ts",
+        "Verify run() method creates a new ScriptRunnerImpl(this.game) instead of reusing 'this'",
+        "Verify sub-script receives the new runner instance",
+        "Test: parent script waits 5000ms then calls run(subScript), subScript spawns with triggerAt: 1000",
+        "The mechanic should trigger at ~6000ms from parent start (5000 + 1000), not throw an error"
       ],
-      "passes": true
+      "passes": false
     },
     {
-      "id": "BUBBLE-008",
-      "category": "client",
-      "description": "Add drawBubble(ctx, x, y) function in src/client/renderer.ts that draws a translucent bubble around the player. The bubble should: (1) be large enough to enclose both the player circle (radius 20, at y) and the player name (at y - PLAYER_RADIUS - 10), (2) use a semi-transparent cyan/blue fill, (3) have a subtle highlight arc on the upper-left for a 3D bubble effect, (4) have a soft white/light border.",
-      "steps_to_verify": [
-        "renderer.ts exports or contains drawBubble(ctx, x, y) function",
-        "Bubble radius is approximately 45-50 pixels to enclose player + name",
-        "Bubble center is offset upward from player center to encompass the name",
-        "Fill is semi-transparent cyan/blue (e.g., rgba with low alpha)",
-        "Has a highlight arc or gradient for bubble effect",
-        "TypeScript compilation succeeds: npm run build"
+      "id": "TRIGGER-007",
+      "category": "script-migration",
+      "description": "Update quad-knock.ts to use triggerAt instead of calculated delays",
+      "stepsToVerify": [
+        "Open src/server/encounters/scripts/combos/quad-knock.ts",
+        "Verify constants use trigger times not delays: FIRST_KNOCK_TRIGGER = 9500, SECOND_KNOCK_TRIGGER = 11000",
+        "Verify spawnKnockback calls use triggerAt parameter instead of delay",
+        "Timeline comments should reflect absolute times from script start",
+        "Run 'npm run build' - should compile without errors"
       ],
-      "passes": true
+      "passes": false
     },
     {
-      "id": "BUBBLE-009",
-      "category": "client",
-      "description": "Call drawBubble() when rendering players who have 'bubbled' status in src/client/renderer.ts. Draw the bubble BEFORE drawing the player (so player appears inside bubble). Check player.statusEffects for type 'bubbled'.",
-      "steps_to_verify": [
-        "In player rendering loop, check if player has 'bubbled' status effect",
-        "If bubbled, call drawBubble() before drawing the player circle/name",
-        "Bubble is drawn at correct position (player x, offset y to center around player+name)",
-        "TypeScript compilation succeeds: npm run build"
+      "id": "TRIGGER-008",
+      "category": "e2e-test",
+      "description": "Verify triggerAt works correctly via Playwright: mechanic resolves at expected absolute time",
+      "stepsToVerify": [
+        "Start dev server with 'npm run dev'",
+        "Use Playwright to navigate to localhost:3000?debug=1",
+        "Wait for player to join",
+        "Use browser_evaluate to create inline test script that: (1) spawns chariot at T=0 with triggerAt: 3000, (2) waits 1500ms, (3) spawns second chariot with triggerAt: 3000",
+        "Both chariots should resolve at approximately the same time (T=3000) despite different spawn times",
+        "Verify via debug panel: both mechanics should have similar endTime values",
+        "Take screenshot showing both mechanics active simultaneously before resolve"
       ],
-      "passes": true
+      "passes": false
     },
     {
-      "id": "BUBBLE-010",
-      "category": "integration",
-      "description": "Verify bubble-warning status displays icon. Apply bubble-warning status and verify the icon appears on the player.",
-      "steps_to_verify": [
-        "Use Playwright: navigate to localhost:3000?debug=1",
-        "Apply bubble-warning status via: socket.emit('admin:applyStatus', { statusType: 'bubble-warning', duration: 10000 })",
-        "Verify .debug-status[data-effect='bubble-warning'] appears in debug panel",
-        "Take screenshot to verify bubble icon displays on player"
+      "id": "TRIGGER-009",
+      "category": "e2e-test",
+      "description": "Verify quad-knock.ts knockbacks trigger at correct absolute times after migration",
+      "stepsToVerify": [
+        "Start dev server with 'npm run dev'",
+        "Use Playwright to navigate to localhost:3000?debug=1",
+        "Wait for player to join",
+        "Trigger quad-knock encounter via admin API or button",
+        "First pair of knockbacks should trigger at T~9500ms from script start",
+        "Second pair of knockbacks should trigger at T~11000ms from script start",
+        "Verify timing by observing mechanic endTime values in debug panel or by player displacement timing"
       ],
-      "passes": true
-    },
-    {
-      "id": "BUBBLE-011",
-      "category": "integration",
-      "description": "Verify bubbled status prevents movement but visual bubble renders. Apply bubbled status, verify WASD has no effect, and bubble visual is visible around player.",
-      "steps_to_verify": [
-        "Use Playwright: navigate to localhost:3000?debug=1",
-        "Apply bubbled status via: socket.emit('admin:applyStatus', { statusType: 'bubbled', duration: 10000 })",
-        "Record player position from .debug-player[data-x], [data-y]",
-        "Send WASD keyboard inputs (keyboard.down('w'), wait, keyboard.up('w'))",
-        "Verify position attributes unchanged while bubbled",
-        "Take screenshot to verify translucent bubble is drawn around player model and name"
-      ],
-      "passes": true
-    },
-    {
-      "id": "BUBBLE-012",
-      "category": "integration",
-      "description": "Verify bubbled does NOT grant knockback immunity. Apply bubbled status, trigger knockback, verify player position DOES change from knockback.",
-      "steps_to_verify": [
-        "Use Playwright: navigate to localhost:3000?debug=1",
-        "Move player to known position (e.g., center of arena)",
-        "Apply bubbled status with 10s duration",
-        "Record player position",
-        "Spawn radial knockback at player position via __adminTest.emitSpawnRadialKnockback({ delay: 1000 })",
-        "Wait for knockback to resolve (2-3s)",
-        "Verify player position HAS changed (knockback was applied despite being bubbled)",
-        "This confirms bubbled differs from rooted in knockback handling"
-      ],
-      "passes": true
-    },
-    {
-      "id": "BUBBLE-013",
-      "category": "integration",
-      "description": "Verify bubbled status expires correctly and movement resumes. Apply short-duration bubbled, wait for expiration, verify WASD works again and bubble visual disappears.",
-      "steps_to_verify": [
-        "Use Playwright: navigate to localhost:3000?debug=1",
-        "Apply bubbled status with 2000ms duration",
-        "Verify .debug-status[data-effect='bubbled'] appears",
-        "Take screenshot to confirm bubble visual present",
-        "Wait 2500ms",
-        "Verify .debug-status[data-effect='bubbled'] removed",
-        "Take screenshot to confirm bubble visual gone",
-        "Send WASD input, verify player position changes (movement restored)"
-      ],
-      "passes": true
+      "passes": false
     }
   ]
 }
