@@ -76,7 +76,7 @@
         "Test: parent queues items, calls run(subScript), parent's timeline unaffected by sub-script",
         "Sub-script can use its own at() + runTimeline() independently"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "id": "TIMELINE-007",

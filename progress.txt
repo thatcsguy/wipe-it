@@ -28,3 +28,23 @@ Files:
 - src/server/encounters/scripts/tests/dynamic-scheduling-test.ts (new)
 - src/server/index.ts: added admin:runDynamicSchedulingTest handler
 - src/client/admin.ts: added emitRunDynamicSchedulingTest()
+
+## TIMELINE-006: Sub-script timeline isolation
+
+Verified via Playwright E2E test.
+
+Test: parent schedules fn_parent1@T=0, fn_parent2@T=2000. fn_parent1 calls run(subScript).
+subScript schedules fn_sub@T=500 and calls runTimeline().
+
+Expected: sub-script has isolated timeline, fn_sub executes at parent T=500, fn_parent2 at T=2000.
+Confirmed via mechanic spawn positions:
+- T=11ms: chariot at (160,160) = fn_parent1
+- T=513ms: chariot at (400,400) = fn_sub (sub-script isolated, T=500 relative to sub-script start)
+- T=2015ms: chariot at (640,640) = fn_parent2
+
+run() creates new ScriptRunnerImpl → fresh empty timeline array → isolation automatic.
+
+Files:
+- src/server/encounters/scripts/tests/subscript-timeline-isolation-test.ts (new)
+- src/server/index.ts: added admin:runSubscriptTimelineIsolationTest handler
+- src/client/admin.ts: added emitRunSubscriptTimelineIsolationTest()

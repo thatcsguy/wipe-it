@@ -13,6 +13,7 @@ import { tutorialEncounter } from './encounters/scripts/encounters/tutorial-enco
 import { scopedTimelineTest } from './encounters/scripts/tests/scoped-timeline-test';
 import { triggerAtTest } from './encounters/scripts/tests/trigger-at-test';
 import { dynamicSchedulingTest } from './encounters/scripts/tests/dynamic-scheduling-test';
+import { subscriptTimelineIsolationTest } from './encounters/scripts/tests/subscript-timeline-isolation-test';
 
 const app = express();
 const httpServer = createServer(app);
@@ -416,6 +417,12 @@ io.on('connection', (socket) => {
   socket.on('admin:runDynamicSchedulingTest', () => {
     runEncounter(game, dynamicSchedulingTest);
     console.log('Admin started dynamic-scheduling-test');
+  });
+
+  // Test sub-script timeline isolation (TIMELINE-006)
+  socket.on('admin:runSubscriptTimelineIsolationTest', () => {
+    runEncounter(game, subscriptTimelineIsolationTest);
+    console.log('Admin started subscript-timeline-isolation-test');
   });
 });
 
