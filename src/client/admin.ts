@@ -36,6 +36,16 @@ export function initAdmin(socket: Socket): void {
     });
   }
 
+  const spawnStackBtn = document.getElementById('spawn-stack-btn');
+  if (spawnStackBtn) {
+    spawnStackBtn.addEventListener('click', () => {
+      if (adminSocket) {
+        adminSocket.emit('admin:spawnStack');
+        logCombat('Spawned stack');
+      }
+    });
+  }
+
   const spawnPointTethersBtn = document.getElementById('spawn-point-tethers-btn');
   if (spawnPointTethersBtn) {
     spawnPointTethersBtn.addEventListener('click', () => {
