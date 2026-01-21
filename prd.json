@@ -1,141 +1,116 @@
 {
-  "feature": "Absolute Trigger Time (triggerAt) for Mechanics",
-  "summary": "Add triggerAt parameter to all mechanics allowing scripts to specify absolute time from script start instead of calculating relative delays. Sub-scripts via run() get their own scoped timeline (T=0 is when the sub-script starts).",
+  "feature": "Absolute Timeline Scheduler (at() + runTimeline())",
+  "summary": "Add at(absoluteTime, callback) + runTimeline() API to ScriptRunner for declarative scheduling of any action at absolute times from script start. Eliminates manual delta calculations between sequential wait() calls. Supports dynamic scheduling (at() calls during runTimeline() execution).",
   "items": [
     {
-      "id": "TRIGGER-001",
+      "id": "TIMELINE-001",
       "category": "types",
-      "description": "Add triggerAt optional parameter to all MechanicParams types in src/server/encounters/types.ts",
+      "description": "Add at() and runTimeline() methods to ScriptRunner interface in src/server/encounters/types.ts",
       "stepsToVerify": [
         "Open src/server/encounters/types.ts",
-        "Verify each mechanic type in MechanicParams union has 'triggerAt?: number'",
-        "Types to check: chariot, spread, tether, tower, lineAoe, conalAoe, radialKnockback, linearKnockback",
+        "Verify ScriptRunner interface has: at(time: number, fn: () => void | Promise<void>): void",
+        "Verify ScriptRunner interface has: runTimeline(): Promise<void>",
         "Run 'npm run build' - should compile without errors"
       ],
-      "passes": true
+      "passes": false
     },
     {
-      "id": "TRIGGER-002",
+      "id": "TIMELINE-002",
       "category": "infrastructure",
-      "description": "ScriptRunnerImpl tracks script start time with private field and getElapsedTime() helper",
+      "description": "Add private timeline array to ScriptRunnerImpl to store scheduled actions as {time, fn} entries",
       "stepsToVerify": [
         "Open src/server/encounters/script-runner.ts",
-        "Verify private field 'scriptStartTime: number' exists",
-        "Verify constructor sets 'this.scriptStartTime = Date.now()'",
-        "Verify helper method 'getElapsedTime()' returns 'Date.now() - this.scriptStartTime'",
+        "Verify private field exists: timeline: Array<{ time: number; fn: () => void | Promise<void> }> = []",
         "Run 'npm run build' - should compile without errors"
       ],
-      "passes": true
+      "passes": false
     },
     {
-      "id": "TRIGGER-003",
+      "id": "TIMELINE-003",
       "category": "infrastructure",
-      "description": "ScriptRunnerImpl has computeTiming() helper that converts triggerAt to duration/delay",
+      "description": "Implement at(time, fn) method that pushes scheduled action to timeline array",
       "stepsToVerify": [
         "Open src/server/encounters/script-runner.ts",
-        "Verify computeTiming method exists with signature: (triggerAt: number | undefined, timing: number | undefined, defaultTiming: number, timingName: string) => number",
-        "Verify it returns defaultTiming when both triggerAt and timing are undefined",
-        "Verify it returns timing when timing is defined and triggerAt is undefined",
-        "Verify it computes 'triggerAt - getElapsedTime()' when triggerAt is defined"
+        "Verify at() method pushes { time, fn } to this.timeline array",
+        "Method should not execute fn immediately - only queues it",
+        "Run 'npm run build' - should compile without errors"
       ],
-      "passes": true
+      "passes": false
     },
     {
-      "id": "TRIGGER-004",
-      "category": "error-handling",
-      "description": "computeTiming throws error when both triggerAt and duration/delay are specified",
-      "stepsToVerify": [
-        "Open src/server/encounters/script-runner.ts",
-        "Verify computeTiming throws Error with message containing 'Cannot specify both triggerAt and' when both triggerAt and timing are defined",
-        "Create a test script that spawns a chariot with both triggerAt and duration set",
-        "Verify runtime error is thrown with appropriate message"
-      ],
-      "passes": true
-    },
-    {
-      "id": "TRIGGER-005",
-      "category": "error-handling",
-      "description": "computeTiming throws error when triggerAt time has already passed",
-      "stepsToVerify": [
-        "Open src/server/encounters/script-runner.ts",
-        "Verify computeTiming throws Error when computed delay is negative",
-        "Error message should indicate triggerAt value and elapsed time",
-        "Create a test: script waits 2000ms, then spawns with triggerAt: 1000 - should throw"
-      ],
-      "passes": true
-    },
-    {
-      "id": "TRIGGER-006",
-      "category": "spawn-integration",
-      "description": "All 8 mechanic cases in spawn() use computeTiming() for duration/delay calculation",
-      "stepsToVerify": [
-        "Open src/server/encounters/script-runner.ts",
-        "Verify 'chariot' case uses computeTiming(mechanic.triggerAt, mechanic.duration, ...)",
-        "Verify 'spread' case uses computeTiming(mechanic.triggerAt, mechanic.duration, ...)",
-        "Verify 'tether' case uses computeTiming(mechanic.triggerAt, mechanic.duration, ...)",
-        "Verify 'tower' case uses computeTiming(mechanic.triggerAt, mechanic.duration, ...)",
-        "Verify 'lineAoe' case uses computeTiming(mechanic.triggerAt, mechanic.duration, ...)",
-        "Verify 'conalAoe' case uses computeTiming(mechanic.triggerAt, mechanic.duration, ...)",
-        "Verify 'radialKnockback' case uses computeTiming(mechanic.triggerAt, mechanic.delay, ...)",
-        "Verify 'linearKnockback' case uses computeTiming(mechanic.triggerAt, mechanic.delay, ...)"
-      ],
-      "passes": true
-    },
-    {
-      "id": "TRIGGER-006a",
+      "id": "TIMELINE-004",
       "category": "infrastructure",
-      "description": "runner.run() creates new ScriptRunnerImpl for sub-scripts (scoped timeline). Sub-script's T=0 is when run() is called, not when the parent script started.",
+      "description": "Implement runTimeline() that executes queued actions in time order with appropriate waits",
       "stepsToVerify": [
         "Open src/server/encounters/script-runner.ts",
-        "Verify run() method creates a new ScriptRunnerImpl(this.game) instead of reusing 'this'",
-        "Verify sub-script receives the new runner instance",
-        "Test: parent script waits 5000ms then calls run(subScript), subScript spawns with triggerAt: 1000",
-        "The mechanic should trigger at ~6000ms from parent start (5000 + 1000), not throw an error"
+        "Verify runTimeline() loops while this.timeline.length > 0",
+        "Verify it sorts timeline by time ascending each iteration (for dynamic scheduling support)",
+        "Verify it shifts first entry, calculates wait = entry.time - getElapsedTime()",
+        "Verify it calls await this.wait(waitTime) if waitTime > 0",
+        "Verify it awaits the entry's fn() to support async callbacks",
+        "Run 'npm run build' - should compile without errors"
       ],
-      "passes": true
+      "passes": false
     },
     {
-      "id": "TRIGGER-007",
+      "id": "TIMELINE-005",
+      "category": "dynamic-scheduling",
+      "description": "runTimeline() supports dynamic at() calls during execution - new entries get inserted into remaining timeline",
+      "stepsToVerify": [
+        "Create test script that: calls at(0, fn1), at(2000, fn2)",
+        "fn1 should call at(1000, fn3) dynamically",
+        "Call runTimeline()",
+        "Execution order should be: fn1 at T=0, fn3 at T=1000, fn2 at T=2000",
+        "Verify by console.log timestamps or by checking side effects in order"
+      ],
+      "passes": false
+    },
+    {
+      "id": "TIMELINE-006",
+      "category": "scoped-isolation",
+      "description": "Sub-scripts via run() get isolated timeline arrays (new runner = fresh empty timeline)",
+      "stepsToVerify": [
+        "Open src/server/encounters/script-runner.ts",
+        "Verify run() creates new ScriptRunnerImpl (already implemented for triggerAt)",
+        "New instance will have empty timeline array by default",
+        "Test: parent queues items, calls run(subScript), parent's timeline unaffected by sub-script",
+        "Sub-script can use its own at() + runTimeline() independently"
+      ],
+      "passes": false
+    },
+    {
+      "id": "TIMELINE-007",
       "category": "script-migration",
-      "description": "Update quad-knock.ts to use triggerAt instead of calculated delays",
+      "description": "Migrate quad-knock.ts to use at() + runTimeline() instead of sequential await wait() calls",
       "stepsToVerify": [
         "Open src/server/encounters/scripts/combos/quad-knock.ts",
-        "Verify constants use trigger times not delays: FIRST_KNOCK_TRIGGER = 9500, SECOND_KNOCK_TRIGGER = 11000",
-        "Verify spawnKnockback calls use triggerAt parameter instead of delay",
-        "Timeline comments should reflect absolute times from script start",
+        "Replace sequential wait/action pattern with at() calls:",
+        "  - at(0, () => spawn first pair with triggerAt)",
+        "  - at(SECOND_PAIR_SPAWN, () => spawn second pair with triggerAt)",
+        "  - at(WARNING_START, () => apply warning statuses)",
+        "  - at(WARNING_START + WARNING_DURATION, () => convert to final statuses)",
+        "End with: await runner.runTimeline()",
+        "Optionally add final at() or wait() for cleanup timing",
         "Run 'npm run build' - should compile without errors"
       ],
-      "passes": true
+      "passes": false
     },
     {
-      "id": "TRIGGER-008",
+      "id": "TIMELINE-008",
       "category": "e2e-test",
-      "description": "Verify triggerAt works correctly via Playwright: mechanic resolves at expected absolute time",
+      "description": "Verify migrated quad-knock.ts works correctly via Playwright - same timing behavior as before",
       "stepsToVerify": [
         "Start dev server with 'npm run dev'",
         "Use Playwright to navigate to localhost:3000?debug=1",
         "Wait for player to join",
-        "Use browser_evaluate to create inline test script that: (1) spawns chariot at T=0 with triggerAt: 3000, (2) waits 1500ms, (3) spawns second chariot with triggerAt: 3000",
-        "Both chariots should resolve at approximately the same time (T=3000) despite different spawn times",
-        "Verify via debug panel: both mechanics should have similar endTime values",
-        "Take screenshot showing both mechanics active simultaneously before resolve"
+        "Trigger quad-knock encounter via __adminTest.emitRunQuadKnock() or admin button",
+        "Verify first knockback pair triggers at T~9500ms",
+        "Verify second knockback pair triggers at T~11000ms",
+        "Verify warning statuses applied at T~4000ms",
+        "Verify final statuses (rooted/bubbled) applied at T~9000ms",
+        "Timing should match pre-migration behavior (TRIGGER-009 baseline)"
       ],
-      "passes": true
-    },
-    {
-      "id": "TRIGGER-009",
-      "category": "e2e-test",
-      "description": "Verify quad-knock.ts knockbacks trigger at correct absolute times after migration",
-      "stepsToVerify": [
-        "Start dev server with 'npm run dev'",
-        "Use Playwright to navigate to localhost:3000?debug=1",
-        "Wait for player to join",
-        "Trigger quad-knock encounter via admin API or button",
-        "First pair of knockbacks should trigger at T~9500ms from script start",
-        "Second pair of knockbacks should trigger at T~11000ms from script start",
-        "Verify timing by observing mechanic endTime values in debug panel or by player displacement timing"
-      ],
-      "passes": true
+      "passes": false
     }
   ]
 }
