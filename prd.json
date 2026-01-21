@@ -38,7 +38,7 @@
         "Verify it returns timing when timing is defined and triggerAt is undefined",
         "Verify it computes 'triggerAt - getElapsedTime()' when triggerAt is defined"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "id": "TRIGGER-004",
@@ -50,7 +50,7 @@
         "Create a test script that spawns a chariot with both triggerAt and duration set",
         "Verify runtime error is thrown with appropriate message"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "id": "TRIGGER-005",
@@ -62,7 +62,7 @@
         "Error message should indicate triggerAt value and elapsed time",
         "Create a test: script waits 2000ms, then spawns with triggerAt: 1000 - should throw"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "id": "TRIGGER-006",

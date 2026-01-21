@@ -37,6 +37,39 @@ export class ScriptRunnerImpl implements ScriptRunner {
     return Date.now() - this.scriptStartTime;
   }
 
+  /**
+   * Converts triggerAt (absolute time from script start) to duration/delay.
+   * @param triggerAt - Optional absolute time from script start when mechanic should trigger
+   * @param timing - Optional explicit duration/delay value
+   * @param defaultTiming - Default value if neither triggerAt nor timing specified
+   * @param timingName - Name of timing param ('duration' or 'delay') for error messages
+   * @returns The computed timing value to use
+   * @throws Error if both triggerAt and timing are specified
+   * @throws Error if triggerAt time has already passed
+   */
+  computeTiming(
+    triggerAt: number | undefined,
+    timing: number | undefined,
+    defaultTiming: number,
+    timingName: string
+  ): number {
+    if (triggerAt !== undefined && timing !== undefined) {
+      throw new Error(`Cannot specify both triggerAt and ${timingName}`);
+    }
+
+    if (triggerAt === undefined) {
+      return timing ?? defaultTiming;
+    }
+
+    const computed = triggerAt - this.getElapsedTime();
+    if (computed < 0) {
+      throw new Error(
+        `triggerAt time has already passed: triggerAt=${triggerAt}, elapsed=${this.getElapsedTime()}`
+      );
+    }
+    return computed;
+  }
+
   spawn(mechanic: MechanicParams): string {
     switch (mechanic.type) {
       case 'chariot': {

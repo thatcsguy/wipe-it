@@ -9,3 +9,14 @@ TRIGGER-002: ScriptRunnerImpl tracks script start time
 - Added getElapsedTime() helper returning Date.now() - scriptStartTime
 - Build passes
 - File: src/server/encounters/script-runner.ts
+
+TRIGGER-003: computeTiming() helper for triggerAt conversion
+- Method signature: computeTiming(triggerAt, timing, defaultTiming, timingName) => number
+- Returns defaultTiming when both undefined
+- Returns timing when defined, triggerAt undefined
+- Computes triggerAt - getElapsedTime() when triggerAt defined
+- Also implements TRIGGER-004 and TRIGGER-005 error handling:
+  - Throws "Cannot specify both triggerAt and {timingName}" when both defined
+  - Throws with triggerAt/elapsed info when computed delay is negative
+- Build passes
+- File: src/server/encounters/script-runner.ts
