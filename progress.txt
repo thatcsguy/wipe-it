@@ -27,3 +27,20 @@ STACK-008, STACK-009, STACK-010: Added stack to encounter scripting system
 - Follows existing pattern (spread, chariot, etc)
 - Files: src/server/encounters/types.ts, src/server/encounters/script-runner.ts
 - Build verified passing
+
+STACK-011, STACK-012, STACK-013, STACK-014, STACK-015: Client-side stack rendering
+- Created renderStack() in src/client/mechanics/stack.ts
+- Yellow circle (#ffdd00) 2px stroke, 0.6 opacity around target player
+- 8 FFXIV-style arrows outside radius pointing inward, elongated with tails
+- Arrows pulse (scale+opacity) on 800ms cycle
+- Added 'stack' case to renderMechanics() in index.ts
+- Stack follows player position via getPlayerPosition()
+- Files: src/client/mechanics/stack.ts, src/client/mechanics/index.ts
+- Playwright verified: circle renders, arrows animate, follows player movement
+
+STACK-016, STACK-017: Admin testing infrastructure for stack
+- Added emitSpawnStack({duration?, radius?}) to __adminTest in admin.ts
+- Added admin:spawnStack socket handler in server/index.ts
+- Spawns stack on random player with configurable duration/radius
+- Files: src/client/admin.ts, src/server/index.ts
+- Build verified passing

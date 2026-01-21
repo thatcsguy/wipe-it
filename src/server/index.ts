@@ -99,6 +99,20 @@ io.on('connection', (socket) => {
     }
   });
 
+  socket.on('admin:spawnStack', (params?: { duration?: number; radius?: number }) => {
+    const players = Array.from(game.getPlayers().keys());
+    if (players.length > 0) {
+      // Pick a random player as target
+      const targetId = players[Math.floor(Math.random() * players.length)];
+      const radius = params?.radius ?? 80;
+      const duration = params?.duration ?? 3000;
+      game.spawnStack(targetId, radius, duration);
+      console.log(`Admin spawned stack on player ${targetId} radius=${radius} duration=${duration}ms`);
+    } else {
+      console.log('Admin tried to spawn stack but no players in game');
+    }
+  });
+
   socket.on('admin:spawnRadialKnockback', (params?: { delay?: number, knockbackDuration?: number }) => {
     const originX = ARENA_WIDTH / 2;
     const originY = ARENA_HEIGHT / 2;

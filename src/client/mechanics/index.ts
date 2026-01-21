@@ -1,6 +1,7 @@
 import { MechanicState } from '../../shared/types';
 import { renderChariot, cleanupChariotTracking } from './chariot';
 import { renderSpread } from './spread';
+import { renderStack } from './stack';
 import { renderTether } from './tether';
 import { renderTower } from './tower';
 import { renderRadialKnockback } from './radialKnockback';
@@ -28,6 +29,8 @@ export function renderMechanics(
       renderChariot(ctx, mechanic, serverTime);
     } else if (mechanic.type === 'spread' && posData) {
       renderSpread(ctx, mechanic, serverTime, posData);
+    } else if (mechanic.type === 'stack' && posData) {
+      renderStack(ctx, mechanic, serverTime, posData);
     } else if (mechanic.type === 'tether' && posData) {
       renderTether(ctx, mechanic, posData);
     } else if (mechanic.type === 'tower') {

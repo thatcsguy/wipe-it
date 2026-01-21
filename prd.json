@@ -126,7 +126,7 @@
       "Function signature matches (ctx: CanvasRenderingContext2D, mechanic: StackMechanicState, serverTime: number, posData: PlayerPositionData)",
       "Uses getPlayerPosition(mechanic.targetPlayerId, posData) to find target"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "id": "STACK-012",
@@ -139,7 +139,7 @@
       "Verify thin yellow circle is visible around target player",
       "Circle should not animate/pulse (static)"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "id": "STACK-013",
@@ -153,7 +153,7 @@
       "Arrows positioned just outside the radius circle",
       "Arrow style is elongated with tails (not simple triangles)"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "id": "STACK-014",
@@ -165,7 +165,7 @@
       "Compare arrow size/opacity between screenshots",
       "Verify arrows are animating (not static)"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "id": "STACK-015",
@@ -177,7 +177,7 @@
       "Verify case for 'stack' type in renderMechanics switch/if chain",
       "Verify renderStack is called with correct arguments including posData"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "id": "STACK-016",
@@ -189,7 +189,7 @@
       "Run: await page.evaluate(() => __adminTest.emitSpawnStack({ duration: 5000 }))",
       "Verify stack mechanic appears on target player"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "id": "STACK-017",
@@ -200,7 +200,7 @@
       "Find socket handler for admin:spawnStack",
       "Verify it selects a player and calls game.spawnStack()"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "id": "STACK-018",
@@ -213,7 +213,7 @@
       "Take screenshots before and after movement",
       "Verify stack visual moved with player"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "id": "STACK-019",

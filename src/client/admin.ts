@@ -184,6 +184,11 @@ export function setChangeNameCallback(callback: () => void): void {
       adminSocket.emit('admin:spawnSpreads', params);
     }
   },
+  emitSpawnStack: (params?: { duration?: number; radius?: number }) => {
+    if (adminSocket) {
+      adminSocket.emit('admin:spawnStack', params);
+    }
+  },
   emitSpawnPointTethers: (params?: { duration?: number }) => {
     if (adminSocket) {
       adminSocket.emit('admin:spawnPointTethers', params);
