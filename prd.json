@@ -93,7 +93,7 @@
         "Optionally add final at() or wait() for cleanup timing",
         "Run 'npm run build' - should compile without errors"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "id": "TIMELINE-008",

@@ -95,49 +95,59 @@ export const quadKnock: Script = async (runner) => {
     });
   };
 
-  // T=0: Spawn first pair (triggers at T=9500)
-  for (const q of firstPair) {
-    spawnKnockback(q, FIRST_KNOCK_TRIGGER);
-  }
-
-  // T=2000: Spawn second pair (triggers at T=11000)
-  await runner.wait(SECOND_PAIR_SPAWN);
-  for (const q of secondPair) {
-    spawnKnockback(q, SECOND_KNOCK_TRIGGER);
-  }
-
-  // T=4000: Apply warning statuses (distributed equally)
-  await runner.wait(WARNING_START - SECOND_PAIR_SPAWN);
-  const players = runner.select(all());
-  const shuffled = [...players].sort(() => Math.random() - 0.5);
-  const halfCount = Math.floor(shuffled.length / 2);
+  // Track player assignments across timeline callbacks
   const rootedPlayerIds: string[] = [];
   const bubbledPlayerIds: string[] = [];
 
-  for (let i = 0; i < shuffled.length; i++) {
-    const player = shuffled[i];
-    // First half: rooted, second half: bubbled, middle (if odd): random
-    const isMiddle = shuffled.length % 2 === 1 && i === halfCount;
-    const assignRooted = isMiddle ? Math.random() < 0.5 : i < halfCount;
-
-    if (assignRooted) {
-      runner.applyStatus(player.id, 'root-warning', WARNING_DURATION);
-      rootedPlayerIds.push(player.id);
-    } else {
-      runner.applyStatus(player.id, 'bubble-warning', WARNING_DURATION);
-      bubbledPlayerIds.push(player.id);
+  // T=0: Spawn first pair (triggers at T=9500)
+  runner.at(0, () => {
+    for (const q of firstPair) {
+      spawnKnockback(q, FIRST_KNOCK_TRIGGER);
     }
-  }
+  });
+
+  // T=2000: Spawn second pair (triggers at T=11000)
+  runner.at(SECOND_PAIR_SPAWN, () => {
+    for (const q of secondPair) {
+      spawnKnockback(q, SECOND_KNOCK_TRIGGER);
+    }
+  });
+
+  // T=4000: Apply warning statuses (distributed equally)
+  runner.at(WARNING_START, () => {
+    const players = runner.select(all());
+    const shuffled = [...players].sort(() => Math.random() - 0.5);
+    const halfCount = Math.floor(shuffled.length / 2);
+
+    for (let i = 0; i < shuffled.length; i++) {
+      const player = shuffled[i];
+      // First half: rooted, second half: bubbled, middle (if odd): random
+      const isMiddle = shuffled.length % 2 === 1 && i === halfCount;
+      const assignRooted = isMiddle ? Math.random() < 0.5 : i < halfCount;
+
+      if (assignRooted) {
+        runner.applyStatus(player.id, 'root-warning', WARNING_DURATION);
+        rootedPlayerIds.push(player.id);
+      } else {
+        runner.applyStatus(player.id, 'bubble-warning', WARNING_DURATION);
+        bubbledPlayerIds.push(player.id);
+      }
+    }
+  });
 
   // T=9000: Convert warnings to final statuses
-  await runner.wait(WARNING_DURATION);
-  for (const playerId of rootedPlayerIds) {
-    runner.applyStatus(playerId, 'rooted', FINAL_STATUS_DURATION);
-  }
-  for (const playerId of bubbledPlayerIds) {
-    runner.applyStatus(playerId, 'bubbled', FINAL_STATUS_DURATION);
-  }
+  runner.at(WARNING_START + WARNING_DURATION, () => {
+    for (const playerId of rootedPlayerIds) {
+      runner.applyStatus(playerId, 'rooted', FINAL_STATUS_DURATION);
+    }
+    for (const playerId of bubbledPlayerIds) {
+      runner.applyStatus(playerId, 'bubbled', FINAL_STATUS_DURATION);
+    }
+  });
 
-  // Wait for everything to resolve (T=12500)
+  // Execute the timeline
+  await runner.runTimeline();
+
+  // Wait for statuses to expire (T=12500)
   await runner.wait(FINAL_STATUS_DURATION);
 };

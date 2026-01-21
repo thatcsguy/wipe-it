@@ -48,3 +48,30 @@ Files:
 - src/server/encounters/scripts/tests/subscript-timeline-isolation-test.ts (new)
 - src/server/index.ts: added admin:runSubscriptTimelineIsolationTest handler
 - src/client/admin.ts: added emitRunSubscriptTimelineIsolationTest()
+
+## TIMELINE-007: Migrate quad-knock.ts to at() + runTimeline()
+
+Replaced sequential wait() calls with declarative at() scheduling.
+
+Changes:
+- Moved player ID arrays outside at() callbacks for cross-callback access
+- runner.at(0, fn) for first pair spawn
+- runner.at(SECOND_PAIR_SPAWN, fn) for second pair spawn
+- runner.at(WARNING_START, fn) for warning statuses
+- runner.at(WARNING_START + WARNING_DURATION, fn) for final status conversion
+- await runner.runTimeline() executes timeline
+- Final wait(FINAL_STATUS_DURATION) for cleanup
+
+E2E verification (Playwright):
+- T=57ms: first pair spawned (expected T=0)
+- T=2057ms: second pair spawned (expected T=2000)
+- T=4057ms: warning status applied (expected T=4000)
+- T=9023ms: final status applied (expected T=9000)
+- T=9523ms: first knockbacks triggered (expected T=9500)
+- T=11022ms: second knockbacks triggered (expected T=11000)
+- T=12539ms: statuses expired (expected T=12500)
+
+All timings within ~60ms tolerance. Script behavior unchanged.
+
+Files:
+- src/server/encounters/scripts/combos/quad-knock.ts: migrated to at() + runTimeline()
