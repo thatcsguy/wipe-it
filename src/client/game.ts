@@ -236,6 +236,13 @@ export function startGame(
     hideWipeOverlay();
   });
 
+  // 'R' key listener for ready during wipe
+  window.addEventListener('keydown', (e) => {
+    if (e.key.toLowerCase() === 'r' && currentGameState.wipeInProgress && socket) {
+      socket.emit('player:ready');
+    }
+  });
+
   // Track wipe overlay visibility state
   let wipeOverlayShown = false;
 

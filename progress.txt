@@ -110,3 +110,15 @@ Files changed:
 - public/css/style.css (font import + wipe overlay styles)
 
 Playwright verified: trigger wipe -> overlay shows -> banner + ready message + player list visible
+
+WIPE-021 COMPLETE
+
+R key listener for ready during wipe:
+- Added keydown listener in startGame() for 'r' key
+- Checks currentGameState.wipeInProgress before emitting
+- Emits 'player:ready' socket event when conditions met
+
+Files changed:
+- src/client/game.ts (lines 239-244)
+
+Playwright verified: trigger wipe -> press R -> reset triggers -> overlay hides

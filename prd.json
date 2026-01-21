@@ -247,7 +247,7 @@
       "Verify it checks wipeInProgress before emitting",
       "Verify it emits 'player:ready' event"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "id": "WIPE-022",
