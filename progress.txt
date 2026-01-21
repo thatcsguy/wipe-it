@@ -20,3 +20,9 @@ TRIGGER-003: computeTiming() helper for triggerAt conversion
   - Throws with triggerAt/elapsed info when computed delay is negative
 - Build passes
 - File: src/server/encounters/script-runner.ts
+
+TRIGGER-006: All 8 spawn() cases use computeTiming()
+- chariot, spread, tether, tower, lineAoe, conalAoe use computeTiming for 'duration'
+- radialKnockback, linearKnockback use computeTiming for 'delay'
+- Build passes
+- File: src/server/encounters/script-runner.ts

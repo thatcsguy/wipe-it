@@ -74,7 +74,12 @@ export class ScriptRunnerImpl implements ScriptRunner {
     switch (mechanic.type) {
       case 'chariot': {
         const radius = mechanic.radius ?? DEFAULTS.chariot.radius;
-        const duration = mechanic.duration ?? DEFAULTS.chariot.duration;
+        const duration = this.computeTiming(
+          mechanic.triggerAt,
+          mechanic.duration,
+          DEFAULTS.chariot.duration,
+          'duration'
+        );
         return this.game.spawnChariot(
           mechanic.x,
           mechanic.y,
@@ -85,7 +90,12 @@ export class ScriptRunnerImpl implements ScriptRunner {
 
       case 'spread': {
         const radius = mechanic.radius ?? DEFAULTS.spread.radius;
-        const duration = mechanic.duration ?? DEFAULTS.spread.duration;
+        const duration = this.computeTiming(
+          mechanic.triggerAt,
+          mechanic.duration,
+          DEFAULTS.spread.duration,
+          'duration'
+        );
         return this.game.spawnSpread(
           mechanic.targetPlayerId,
           radius,
@@ -95,7 +105,12 @@ export class ScriptRunnerImpl implements ScriptRunner {
 
       case 'tether': {
         const requiredDistance = mechanic.requiredDistance ?? DEFAULTS.tether.requiredDistance;
-        const duration = mechanic.duration ?? DEFAULTS.tether.duration;
+        const duration = this.computeTiming(
+          mechanic.triggerAt,
+          mechanic.duration,
+          DEFAULTS.tether.duration,
+          'duration'
+        );
         return this.game.spawnTether(
           mechanic.endpointA,
           mechanic.endpointB,
@@ -106,7 +121,12 @@ export class ScriptRunnerImpl implements ScriptRunner {
 
       case 'tower': {
         const radius = mechanic.radius ?? DEFAULTS.tower.radius;
-        const duration = mechanic.duration ?? DEFAULTS.tower.duration;
+        const duration = this.computeTiming(
+          mechanic.triggerAt,
+          mechanic.duration,
+          DEFAULTS.tower.duration,
+          'duration'
+        );
         const requiredPlayers = mechanic.requiredPlayers ?? DEFAULTS.tower.requiredPlayers;
         return this.game.spawnTower(
           mechanic.x,
@@ -118,7 +138,12 @@ export class ScriptRunnerImpl implements ScriptRunner {
       }
 
       case 'radialKnockback': {
-        const delay = mechanic.delay ?? DEFAULTS.radialKnockback.delay;
+        const delay = this.computeTiming(
+          mechanic.triggerAt,
+          mechanic.delay,
+          DEFAULTS.radialKnockback.delay,
+          'delay'
+        );
         const knockbackDistance = mechanic.knockbackDistance ?? DEFAULTS.radialKnockback.knockbackDistance;
         const knockbackDuration = mechanic.knockbackDuration ?? DEFAULTS.radialKnockback.knockbackDuration;
         return this.game.spawnRadialKnockback(
@@ -132,7 +157,12 @@ export class ScriptRunnerImpl implements ScriptRunner {
 
       case 'linearKnockback': {
         const width = mechanic.width ?? DEFAULTS.linearKnockback.width;
-        const delay = mechanic.delay ?? DEFAULTS.linearKnockback.delay;
+        const delay = this.computeTiming(
+          mechanic.triggerAt,
+          mechanic.delay,
+          DEFAULTS.linearKnockback.delay,
+          'delay'
+        );
         const knockbackDistance = mechanic.knockbackDistance ?? DEFAULTS.linearKnockback.knockbackDistance;
         const knockbackDuration = mechanic.knockbackDuration ?? DEFAULTS.linearKnockback.knockbackDuration;
         return this.game.spawnLinearKnockback(
@@ -149,7 +179,12 @@ export class ScriptRunnerImpl implements ScriptRunner {
 
       case 'lineAoe': {
         const width = mechanic.width ?? DEFAULTS.lineAoe.width;
-        const duration = mechanic.duration ?? DEFAULTS.lineAoe.duration;
+        const duration = this.computeTiming(
+          mechanic.triggerAt,
+          mechanic.duration,
+          DEFAULTS.lineAoe.duration,
+          'duration'
+        );
         return this.game.spawnLineAoe(
           mechanic.startX,
           mechanic.startY,
@@ -162,7 +197,12 @@ export class ScriptRunnerImpl implements ScriptRunner {
 
       case 'conalAoe': {
         const angle = mechanic.angle ?? DEFAULTS.conalAoe.angle;
-        const duration = mechanic.duration ?? DEFAULTS.conalAoe.duration;
+        const duration = this.computeTiming(
+          mechanic.triggerAt,
+          mechanic.duration,
+          DEFAULTS.conalAoe.duration,
+          'duration'
+        );
         return this.game.spawnConalAoe(
           mechanic.centerX,
           mechanic.centerY,

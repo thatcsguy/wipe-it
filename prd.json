@@ -79,7 +79,7 @@
         "Verify 'radialKnockback' case uses computeTiming(mechanic.triggerAt, mechanic.delay, ...)",
         "Verify 'linearKnockback' case uses computeTiming(mechanic.triggerAt, mechanic.delay, ...)"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "id": "TRIGGER-006a",
