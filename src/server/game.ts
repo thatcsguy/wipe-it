@@ -387,4 +387,39 @@ export class Game extends EventEmitter {
     this.wipeInProgress = true;
     this.io.emit('wipe:started');
   }
+
+  setPlayerReady(socketId: string): void {
+    this.readyPlayers.add(socketId);
+    // Check if all connected players are ready
+    if (this.readyPlayers.size === this.players.size) {
+      this.resetEncounter();
+    }
+  }
+
+  resetEncounter(): void {
+    // Heal all players to full HP
+    for (const player of this.players.values()) {
+      player.hp = MAX_HP;
+      player.setDead(false);
+    }
+
+    // Clear ready state
+    this.readyPlayers.clear();
+    this.wipeInProgress = false;
+
+    // Emit reset event to clients
+    this.io.emit('wipe:reset');
+
+    // Re-run active script if set
+    if (this.activeScript) {
+      // Import runEncounter dynamically to avoid circular dependency
+      import('./encounters/script-runner').then(({ runEncounter }) => {
+        runEncounter(this, this.activeScript!);
+      });
+    }
+  }
+
+  setActiveScript(script: Script | null): void {
+    this.activeScript = script;
+  }
 }

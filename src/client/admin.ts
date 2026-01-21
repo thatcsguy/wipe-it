@@ -312,5 +312,10 @@ export function setChangeNameCallback(callback: () => void): void {
     if (adminSocket) {
       adminSocket.emit('admin:toggleGodMode');
     }
+  },
+  emitPlayerReady: () => {
+    if (adminSocket) {
+      adminSocket.emit('player:ready');
+    }
   }
 };

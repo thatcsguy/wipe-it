@@ -327,6 +327,7 @@ export class ScriptRunnerImpl implements ScriptRunner {
  * Convenience function to create a ScriptRunner and execute an encounter script
  */
 export function runEncounter(game: Game, script: Script): Promise<void> {
+  game.setActiveScript(script);
   const runner = new ScriptRunnerImpl(game);
   return runner.execute(script);
 }

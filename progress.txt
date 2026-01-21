@@ -64,3 +64,19 @@ Files changed:
 - src/client/admin.ts (emitToggleGodMode test method)
 
 Playwright verified: god mode off -> tutorial encounter damage -> hp=0 -> dead=true, wipeInProgress=true
+
+WIPE-009, WIPE-010, WIPE-011 COMPLETE (partial WIPE-014)
+
+Ready/reset system:
+- setPlayerReady(socketId): adds to readyPlayers Set, calls resetEncounter() when all ready
+- resetEncounter(): heals all to MAX_HP, clears dead flags, clears readyPlayers, wipeInProgress=false, emits 'wipe:reset', re-runs activeScript if set
+- setActiveScript(script): stores script for restart after reset
+- player:ready socket handler in index.ts
+- emitPlayerReady() added to __adminTest
+
+Files changed:
+- src/server/game.ts (lines 391-424)
+- src/server/index.ts (player:ready handler)
+- src/client/admin.ts (emitPlayerReady test method)
+
+Playwright verified: death -> wipe -> ready -> reset -> hp=100, dead=false, wipeInProgress=false

@@ -102,7 +102,7 @@
       "Verify it adds socketId to readyPlayers Set",
       "Verify it checks if all players are ready and calls resetEncounter()"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "id": "WIPE-010",
@@ -118,7 +118,7 @@
       "Verify it emits 'wipe:reset'",
       "Verify it runs activeScript if set"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "id": "WIPE-011",
@@ -130,7 +130,7 @@
       "Open src/server/encounters/script-runner.ts",
       "Verify runEncounter() calls game.setActiveScript(script)"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "id": "WIPE-012",

@@ -457,6 +457,12 @@ io.on('connection', (socket) => {
     game.toggleGodMode();
     console.log(`Admin toggled god mode: now ${game.godMode}`);
   });
+
+  // Player ready during wipe (WIPE-014)
+  socket.on('player:ready', () => {
+    game.setPlayerReady(socket.id);
+    console.log(`Player ${socket.id} ready`);
+  });
 });
 
 httpServer.listen(PORT, () => {
