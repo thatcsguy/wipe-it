@@ -8,7 +8,7 @@
       "Find MechanicType union (around line 68)",
       "Verify 'stack' is included in the union"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "id": "STACK-002",
@@ -20,7 +20,7 @@
       "Verify all required fields exist with correct types",
       "Verify interface is exported"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "id": "STACK-003",
@@ -31,7 +31,7 @@
       "Find MechanicState union type",
       "Verify StackMechanicState is included in the union"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "id": "STACK-004",

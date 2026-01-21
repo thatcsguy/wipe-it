@@ -1,0 +1,6 @@
+STACK-001, STACK-002, STACK-003: Added stack mechanic types
+- Added 'stack' to MechanicType union
+- Created StackMechanicState interface: type, id, startTime, endTime, targetPlayerId, radius
+- Added StackMechanicState to MechanicState union
+- Files: src/shared/types.ts
+- Build verified passing

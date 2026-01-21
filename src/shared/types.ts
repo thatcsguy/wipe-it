@@ -65,7 +65,7 @@ export interface PlayerState {
 }
 
 // Mechanic types
-export type MechanicType = 'chariot' | 'spread' | 'tether' | 'tower' | 'radialKnockback' | 'linearKnockback' | 'lineAoe' | 'conalAoe';
+export type MechanicType = 'chariot' | 'spread' | 'tether' | 'tower' | 'radialKnockback' | 'linearKnockback' | 'lineAoe' | 'conalAoe' | 'stack';
 
 // Tether endpoint - either a player or a fixed point
 export type TetherEndpoint =
@@ -169,8 +169,18 @@ export interface ConalAoeMechanicState {
   endTime: number;
 }
 
+// Stack mechanic - circle that follows a player, multiple players must stack inside
+export interface StackMechanicState {
+  type: 'stack';
+  id: string;
+  startTime: number;
+  endTime: number;
+  targetPlayerId: string;
+  radius: number;
+}
+
 // Union of all mechanic states
-export type MechanicState = ChariotMechanicState | SpreadMechanicState | TetherMechanicState | TowerMechanicState | RadialKnockbackMechanicState | LinearKnockbackMechanicState | LineAoeMechanicState | ConalAoeMechanicState;
+export type MechanicState = ChariotMechanicState | SpreadMechanicState | TetherMechanicState | TowerMechanicState | RadialKnockbackMechanicState | LinearKnockbackMechanicState | LineAoeMechanicState | ConalAoeMechanicState | StackMechanicState;
 
 // Doodad types - visual-only elements with no gameplay effect
 export type DoodadType = 'portal' | 'rect' | 'circle';
