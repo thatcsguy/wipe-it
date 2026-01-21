@@ -259,7 +259,7 @@
       "Verify it checks if local player is dead",
       "Verify it skips prediction when player is dead"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "id": "WIPE-023",

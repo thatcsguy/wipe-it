@@ -9,7 +9,7 @@ import {
   ARENA_HEIGHT,
 } from '../shared/types';
 import { getKnockbackPosition } from '../shared/knockback';
-import { isRooted, isBubbled } from './localStatus';
+import { isRooted, isBubbled, isLocalDead } from './localStatus';
 
 // Pending input with predicted position after applying it
 interface PendingInput {
@@ -51,6 +51,11 @@ export function isLocalKnockedBack(): boolean {
 
 // Apply input locally for prediction (same physics as server)
 export function applyInput(input: PlayerInput): void {
+  // If dead, skip prediction (server ignores all input for dead players)
+  if (isLocalDead()) {
+    return;
+  }
+
   // During knockback, ignore WASD input (server ignores it too)
   if (localKnockback) {
     return;

@@ -13,7 +13,7 @@ import { render, initRenderer } from './renderer';
 import { updateDebugPanel } from './debugPanel';
 import { logCombat } from './combatLog';
 import { addTowerExplosion } from './mechanics/towerExplosion';
-import { setLocalPlayerId, updateLocalStatuses } from './localStatus';
+import { setLocalPlayerId, updateLocalStatuses, updateLocalDead } from './localStatus';
 import { initWipeOverlay, showWipeOverlay, hideWipeOverlay, updateReadyState, updatePlayerList } from './wipeOverlay';
 
 // Game state
@@ -289,6 +289,8 @@ export function startGame(
       localPlayerColor = myPlayer.color;
       // Update local status tracking for input blocking
       updateLocalStatuses(myPlayer.statusEffects);
+      // Update local dead state for input blocking
+      updateLocalDead(myPlayer.dead);
       // Reconcile with server state
       reconcile(state, localPlayerId!);
     }

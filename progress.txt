@@ -135,3 +135,18 @@ Files changed:
 - src/client/renderer.ts (drawDeadX fn, dead param in drawPlayerAt, render calls)
 
 Playwright verified: tutorial encounter -> death -> red X visible over player circle
+
+WIPE-022 COMPLETE
+
+Client-side dead player prediction skip:
+- Added localDead tracking in localStatus.ts (updateLocalDead(), isLocalDead())
+- game.ts calls updateLocalDead(myPlayer.dead) on state updates
+- applyInput() in network.ts checks isLocalDead() first, returns early if true
+- Dead players can't move locally even with client prediction
+
+Files changed:
+- src/client/localStatus.ts (localDead var, updateLocalDead, isLocalDead, exports)
+- src/client/game.ts (import updateLocalDead, call in state handler)
+- src/client/network.ts (import isLocalDead, early return in applyInput)
+
+Playwright verified: death -> applyInput with WASD -> position unchanged (400,400)
