@@ -19,3 +19,11 @@ STACK-007: Added spawnStack to Game class
 - Follows pattern of spawnSpread
 - Files: src/server/game.ts (import + method)
 - Build verified passing
+
+STACK-008, STACK-009, STACK-010: Added stack to encounter scripting system
+- MechanicParams union: { type: 'stack'; targetPlayerId: string; radius?; duration?; triggerAt? }
+- DEFAULTS.stack: { radius: 80, duration: 3000 }
+- spawn() case: uses computeTiming for triggerAt, calls game.spawnStack()
+- Follows existing pattern (spread, chariot, etc)
+- Files: src/server/encounters/types.ts, src/server/encounters/script-runner.ts
+- Build verified passing

@@ -14,6 +14,7 @@ const DEFAULTS = {
   linearKnockback: { width: 800, delay: 2000, knockbackDistance: 150, knockbackDuration: 500 },
   lineAoe: { width: 100, duration: 3000 },
   conalAoe: { angle: Math.PI / 2, duration: 3000 },
+  stack: { radius: 80, duration: 3000 },
 };
 
 /**
@@ -210,6 +211,21 @@ export class ScriptRunnerImpl implements ScriptRunner {
           mechanic.endpointX,
           mechanic.endpointY,
           angle,
+          duration
+        );
+      }
+
+      case 'stack': {
+        const radius = mechanic.radius ?? DEFAULTS.stack.radius;
+        const duration = this.computeTiming(
+          mechanic.triggerAt,
+          mechanic.duration,
+          DEFAULTS.stack.duration,
+          'duration'
+        );
+        return this.game.spawnStack(
+          mechanic.targetPlayerId,
+          radius,
           duration
         );
       }
