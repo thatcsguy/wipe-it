@@ -122,3 +122,16 @@ Files changed:
 - src/client/game.ts (lines 239-244)
 
 Playwright verified: trigger wipe -> press R -> reset triggers -> overlay hides
+
+WIPE-014, WIPE-015, WIPE-016 COMPLETE
+
+Dead player visual (red X):
+- drawDeadX() helper draws two diagonal red lines through player circle
+- drawPlayerAt() accepts optional dead param, calls drawDeadX() when true
+- render() passes player.dead to all drawPlayerAt() calls
+- Also marked WIPE-014 complete (socket handlers existed from WIPE-008)
+
+Files changed:
+- src/client/renderer.ts (drawDeadX fn, dead param in drawPlayerAt, render calls)
+
+Playwright verified: tutorial encounter -> death -> red X visible over player circle

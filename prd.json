@@ -165,7 +165,7 @@
       "Verify socket.on('player:ready', ...) handler exists",
       "Verify handlers call correct Game methods"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "id": "WIPE-015",
@@ -177,7 +177,7 @@
       "Verify it accepts a 'dead' parameter",
       "Verify it draws a red X when dead is true"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "id": "WIPE-016",
@@ -188,7 +188,7 @@
       "Find render() function",
       "Verify drawPlayerAt() calls include player.dead parameter"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "id": "WIPE-017",

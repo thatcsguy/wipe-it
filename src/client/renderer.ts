@@ -132,6 +132,21 @@ function drawPlayer(player: PlayerState): void {
   ctx.fillText(name, x, y - PLAYER_RADIUS - 10);
 }
 
+// Draw red X over player (for dead players)
+function drawDeadX(x: number, y: number): void {
+  if (!ctx) return;
+  const size = PLAYER_RADIUS * 0.8;
+  ctx.strokeStyle = '#ff3333';
+  ctx.lineWidth = 4;
+  ctx.lineCap = 'round';
+  ctx.beginPath();
+  ctx.moveTo(x - size, y - size);
+  ctx.lineTo(x + size, y + size);
+  ctx.moveTo(x + size, y - size);
+  ctx.lineTo(x - size, y + size);
+  ctx.stroke();
+}
+
 // Draw a player at specific position (for local player with predicted position)
 export function drawPlayerAt(
   x: number,
@@ -139,7 +154,8 @@ export function drawPlayerAt(
   color: string,
   name: string,
   hp: number,
-  statusEffects?: StatusEffectState[]
+  statusEffects?: StatusEffectState[],
+  dead?: boolean
 ): void {
   if (!ctx) return;
 
@@ -151,6 +167,11 @@ export function drawPlayerAt(
   ctx.strokeStyle = '#ffffff';
   ctx.lineWidth = 2;
   ctx.stroke();
+
+  // Draw red X if dead
+  if (dead) {
+    drawDeadX(x, y);
+  }
 
   // Draw health bar above circle
   drawHealthBar(x, y, hp);
@@ -231,12 +252,12 @@ export function render(
 
     // Draw the player
     if (localPlayerId && player.id === localPlayerId && localPosition) {
-      drawPlayerAt(localPosition.x, localPosition.y, player.color, player.name, player.hp, player.statusEffects);
+      drawPlayerAt(localPosition.x, localPosition.y, player.color, player.name, player.hp, player.statusEffects, player.dead);
     } else if (interpolatedPositions?.get(player.id)) {
       const interpolated = interpolatedPositions.get(player.id)!;
-      drawPlayerAt(interpolated.x, interpolated.y, player.color, player.name, player.hp, player.statusEffects);
+      drawPlayerAt(interpolated.x, interpolated.y, player.color, player.name, player.hp, player.statusEffects, player.dead);
     } else {
-      drawPlayer(player);
+      drawPlayerAt(player.x, player.y, player.color, player.name, player.hp, player.statusEffects, player.dead);
     }
   }
 
