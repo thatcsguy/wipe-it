@@ -49,3 +49,18 @@ Files changed:
 - src/client/admin.ts (emitTriggerWipe test method)
 
 Playwright verified: wipeInProgress false->true after triggerWipe()
+
+WIPE-008 COMPLETE
+
+Death detection in Game.tick():
+- After doodad tick, checks !godMode && !wipeInProgress
+- If player.hp <= 0 && !player.dead: setDead(true), triggerWipe()
+- Break after first death to trigger once per tick
+- Also added admin:toggleGodMode handler (partial WIPE-014)
+
+Files changed:
+- src/server/game.ts (death detection in tick, lines 186-195)
+- src/server/index.ts (admin:toggleGodMode handler)
+- src/client/admin.ts (emitToggleGodMode test method)
+
+Playwright verified: god mode off -> tutorial encounter damage -> hp=0 -> dead=true, wipeInProgress=true

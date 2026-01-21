@@ -307,5 +307,10 @@ export function setChangeNameCallback(callback: () => void): void {
     if (adminSocket) {
       adminSocket.emit('admin:triggerWipe');
     }
+  },
+  emitToggleGodMode: () => {
+    if (adminSocket) {
+      adminSocket.emit('admin:toggleGodMode');
+    }
   }
 };

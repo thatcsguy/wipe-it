@@ -90,7 +90,7 @@
       "Verify it only triggers when godMode is false",
       "Verify it marks the player dead and calls triggerWipe()"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "id": "WIPE-009",

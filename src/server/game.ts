@@ -182,6 +182,17 @@ export class Game extends EventEmitter {
 
     // Update doodads (remove expired)
     this.doodadManager.tick(now);
+
+    // Death detection: check if any player has hp <= 0 (only if god mode off and wipe not in progress)
+    if (!this.godMode && !this.wipeInProgress) {
+      for (const player of this.players.values()) {
+        if (player.hp <= 0 && !player.dead) {
+          player.setDead(true);
+          this.triggerWipe();
+          break; // Only trigger once per tick
+        }
+      }
+    }
   }
 
   private broadcast(): void {

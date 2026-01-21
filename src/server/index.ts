@@ -451,6 +451,12 @@ io.on('connection', (socket) => {
     game.triggerWipe();
     console.log('Admin triggered wipe');
   });
+
+  // Toggle god mode (WIPE-014)
+  socket.on('admin:toggleGodMode', () => {
+    game.toggleGodMode();
+    console.log(`Admin toggled god mode: now ${game.godMode}`);
+  });
 });
 
 httpServer.listen(PORT, () => {
