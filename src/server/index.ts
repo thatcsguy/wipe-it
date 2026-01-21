@@ -445,6 +445,12 @@ io.on('connection', (socket) => {
     runEncounter(game, stackTest);
     console.log('Admin started stack test');
   });
+
+  // Trigger wipe (for testing WIPE-007)
+  socket.on('admin:triggerWipe', () => {
+    game.triggerWipe();
+    console.log('Admin triggered wipe');
+  });
 });
 
 httpServer.listen(PORT, () => {

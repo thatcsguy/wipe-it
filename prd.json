@@ -77,7 +77,7 @@
       "Verify it sets wipeInProgress = true",
       "Verify it emits 'wipe:started' to all clients"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "id": "WIPE-008",

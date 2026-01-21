@@ -34,3 +34,18 @@ Game class wipe control methods:
 
 Files changed:
 - src/server/game.ts (import Script, add field, add methods)
+
+WIPE-007 COMPLETE
+
+triggerWipe() method:
+- Sets wipeInProgress = true
+- Emits 'wipe:started' to all clients via io.emit()
+- Added admin:triggerWipe socket handler for testing
+- Added emitTriggerWipe() to __adminTest
+
+Files changed:
+- src/server/game.ts (triggerWipe method line 375-378)
+- src/server/index.ts (admin:triggerWipe handler)
+- src/client/admin.ts (emitTriggerWipe test method)
+
+Playwright verified: wipeInProgress false->true after triggerWipe()

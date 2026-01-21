@@ -302,5 +302,10 @@ export function setChangeNameCallback(callback: () => void): void {
     if (adminSocket) {
       adminSocket.emit('admin:runStackTest');
     }
+  },
+  emitTriggerWipe: () => {
+    if (adminSocket) {
+      adminSocket.emit('admin:triggerWipe');
+    }
   }
 };

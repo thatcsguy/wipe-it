@@ -371,4 +371,9 @@ export class Game extends EventEmitter {
   isWipeTriggered(): boolean {
     return this.wipeInProgress;
   }
+
+  triggerWipe(): void {
+    this.wipeInProgress = true;
+    this.io.emit('wipe:started');
+  }
 }
