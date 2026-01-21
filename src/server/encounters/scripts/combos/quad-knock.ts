@@ -7,7 +7,7 @@ const KNOCKBACK_DURATION = 1000;
 
 // Quadrant centers
 const HALF_W = ARENA_WIDTH / 2;  // 400
-const HALF_H = ARENA_HEIGHT / 2; // 300
+const HALF_H = ARENA_HEIGHT / 2; // 400
 
 // Timeline (absolute times from script start):
 // T=0ms      First knockback pair spawns (NW/SE or NE/SW)
