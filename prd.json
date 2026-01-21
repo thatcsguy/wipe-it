@@ -1,254 +1,483 @@
 [
   {
-    "id": "STACK-001",
+    "id": "WIPE-001",
     "category": "types",
-    "description": "Add 'stack' to MechanicType union in src/shared/types.ts",
+    "description": "Add 'dead: boolean' field to PlayerState interface in src/shared/types.ts",
     "steps_to_verify": [
       "Open src/shared/types.ts",
-      "Find MechanicType union (around line 68)",
-      "Verify 'stack' is included in the union"
+      "Find PlayerState interface (around line 55)",
+      "Verify 'dead: boolean' field exists in the interface"
     ],
-    "passes": true
+    "passes": false
   },
   {
-    "id": "STACK-002",
+    "id": "WIPE-002",
     "category": "types",
-    "description": "Create StackMechanicState interface in src/shared/types.ts with fields: type: 'stack', id: string, startTime: number, endTime: number, targetPlayerId: string, radius: number",
+    "description": "Add 'godMode: boolean', 'wipeInProgress: boolean', and 'readyPlayerIds: string[]' fields to GameState interface in src/shared/types.ts",
     "steps_to_verify": [
       "Open src/shared/types.ts",
-      "Find StackMechanicState interface",
-      "Verify all required fields exist with correct types",
-      "Verify interface is exported"
+      "Find GameState interface (around line 241)",
+      "Verify all three fields exist: godMode: boolean, wipeInProgress: boolean, readyPlayerIds: string[]"
     ],
-    "passes": true
+    "passes": false
   },
   {
-    "id": "STACK-003",
-    "category": "types",
-    "description": "Add StackMechanicState to MechanicState union in src/shared/types.ts",
-    "steps_to_verify": [
-      "Open src/shared/types.ts",
-      "Find MechanicState union type",
-      "Verify StackMechanicState is included in the union"
-    ],
-    "passes": true
-  },
-  {
-    "id": "STACK-004",
+    "id": "WIPE-003",
     "category": "server",
-    "description": "Create StackMechanic class in src/server/mechanics/stack.ts implementing BaseMechanic interface. Constructor takes (targetPlayerId: string, radius: number, duration: number). Must generate unique ID with format 'stack-{timestamp}-{random}'",
+    "description": "Add 'dead: boolean = false' field to Player class in src/server/player.ts. Add setDead(dead: boolean) method. Include 'dead' in toState() return value",
     "steps_to_verify": [
-      "File src/server/mechanics/stack.ts exists",
-      "Class implements BaseMechanic interface",
-      "Constructor accepts targetPlayerId, radius, duration parameters",
-      "ID is generated in correct format",
-      "startTime and endTime are calculated correctly from duration"
+      "Open src/server/player.ts",
+      "Verify 'dead' field exists on Player class, initialized to false",
+      "Verify setDead(dead: boolean) method exists",
+      "Verify toState() includes 'dead: this.dead' in returned object"
     ],
-    "passes": true
+    "passes": false
   },
   {
-    "id": "STACK-005",
+    "id": "WIPE-004",
     "category": "server",
-    "description": "StackMechanic.getResult() returns { mechanicId, type: 'stack', data: { playersInside: string[], targetPosition: {x,y} | null } }. Must find target player position from players map, then check all players within radius using distance formula",
+    "description": "Modify Player.processInput() to early return (skip all movement) if this.dead is true. Dead players should be completely frozen - no WASD, no knockback processing",
     "steps_to_verify": [
-      "getResult method exists on StackMechanic",
-      "Returns MechanicResult with correct structure",
-      "playersInside contains IDs of all players within radius of target",
-      "targetPosition is {x,y} of target player, or null if target not found",
-      "Distance calculation uses sqrt((dx)^2 + (dy)^2) <= radius"
+      "Open src/server/player.ts",
+      "Find processInput() method",
+      "Verify there is an early return at the start if this.dead is true",
+      "This check should come before knockback processing"
     ],
-    "passes": true
+    "passes": false
   },
   {
-    "id": "STACK-006",
+    "id": "WIPE-005",
     "category": "server",
-    "description": "StackMechanic.toState() returns StackMechanicState with all required fields for client rendering",
+    "description": "Add game state fields to Game class in src/server/game.ts: godMode: boolean = true, wipeInProgress: boolean = false, readyPlayers: Set<string> = new Set(), activeScript: Script | null = null",
     "steps_to_verify": [
-      "toState method exists",
-      "Returns object with type: 'stack'",
-      "Includes id, startTime, endTime, targetPlayerId, radius"
+      "Open src/server/game.ts",
+      "Verify all four fields exist on Game class with correct initial values",
+      "godMode defaults to true (current behavior is god mode)"
     ],
-    "passes": true
+    "passes": false
   },
   {
-    "id": "STACK-007",
+    "id": "WIPE-006",
     "category": "server",
-    "description": "Add spawnStack(targetPlayerId: string, radius: number, duration: number): string method to Game class in src/server/game.ts. Creates StackMechanic, adds to mechanicManager, returns mechanic ID",
+    "description": "Add toggleGodMode() method to Game class that flips godMode boolean. Add isWipeTriggered() method that returns wipeInProgress boolean",
     "steps_to_verify": [
-      "spawnStack method exists on Game class",
-      "Creates new StackMechanic with provided parameters",
-      "Adds mechanic to this.mechanicManager",
-      "Returns the mechanic ID string"
+      "Open src/server/game.ts",
+      "Verify toggleGodMode() method exists and flips this.godMode",
+      "Verify isWipeTriggered() method exists and returns this.wipeInProgress"
     ],
-    "passes": true
+    "passes": false
   },
   {
-    "id": "STACK-008",
+    "id": "WIPE-007",
     "category": "server",
-    "description": "Add stack to MechanicParams union in src/server/encounters/types.ts: { type: 'stack'; targetPlayerId: string; radius?: number; duration?: number; triggerAt?: number }",
+    "description": "Add triggerWipe() method to Game class: sets wipeInProgress = true, emits 'wipe:started' event to all connected clients via io.emit()",
     "steps_to_verify": [
-      "Open src/server/encounters/types.ts",
-      "Find MechanicParams union",
-      "Verify stack variant exists with correct optional fields"
+      "Open src/server/game.ts",
+      "Verify triggerWipe() method exists",
+      "Verify it sets wipeInProgress = true",
+      "Verify it emits 'wipe:started' to all clients"
     ],
-    "passes": true
+    "passes": false
   },
   {
-    "id": "STACK-009",
+    "id": "WIPE-008",
     "category": "server",
-    "description": "Add stack defaults to DEFAULTS object in src/server/encounters/script-runner.ts: { radius: 80, duration: 3000 }",
+    "description": "Add death detection in Game.tick(): after processing inputs, check if any player has hp <= 0 AND !godMode AND !wipeInProgress. If so, mark that player as dead (player.setDead(true)) and call triggerWipe()",
+    "steps_to_verify": [
+      "Open src/server/game.ts",
+      "Find tick() method",
+      "Verify death check logic exists after input processing",
+      "Verify it only triggers when godMode is false",
+      "Verify it marks the player dead and calls triggerWipe()"
+    ],
+    "passes": false
+  },
+  {
+    "id": "WIPE-009",
+    "category": "server",
+    "description": "Add setPlayerReady(socketId: string) method to Game class: adds socketId to readyPlayers Set. If all connected players are ready (readyPlayers.size === players.size), call resetEncounter()",
+    "steps_to_verify": [
+      "Open src/server/game.ts",
+      "Verify setPlayerReady(socketId) method exists",
+      "Verify it adds socketId to readyPlayers Set",
+      "Verify it checks if all players are ready and calls resetEncounter()"
+    ],
+    "passes": false
+  },
+  {
+    "id": "WIPE-010",
+    "category": "server",
+    "description": "Add resetEncounter() method to Game class: heals all players to full HP, clears dead flags on all players, clears readyPlayers Set, sets wipeInProgress = false, emits 'wipe:reset' to all clients, runs activeScript if not null via runEncounter()",
+    "steps_to_verify": [
+      "Open src/server/game.ts",
+      "Verify resetEncounter() method exists",
+      "Verify it heals all players (set hp to MAX_HP)",
+      "Verify it clears dead flags (player.setDead(false))",
+      "Verify it clears readyPlayers Set",
+      "Verify it sets wipeInProgress = false",
+      "Verify it emits 'wipe:reset'",
+      "Verify it runs activeScript if set"
+    ],
+    "passes": false
+  },
+  {
+    "id": "WIPE-011",
+    "category": "server",
+    "description": "Add setActiveScript(script: Script | null) method to Game class. Modify runEncounter() in script-runner.ts to call game.setActiveScript(script) before running",
+    "steps_to_verify": [
+      "Open src/server/game.ts",
+      "Verify setActiveScript() method exists",
+      "Open src/server/encounters/script-runner.ts",
+      "Verify runEncounter() calls game.setActiveScript(script)"
+    ],
+    "passes": false
+  },
+  {
+    "id": "WIPE-012",
+    "category": "server",
+    "description": "Update Game.broadcast() to include godMode, wipeInProgress, and readyPlayerIds (Array.from(readyPlayers)) in the GameState sent to clients",
+    "steps_to_verify": [
+      "Open src/server/game.ts",
+      "Find broadcast() method",
+      "Verify the state object includes godMode, wipeInProgress, and readyPlayerIds fields"
+    ],
+    "passes": false
+  },
+  {
+    "id": "WIPE-013",
+    "category": "server",
+    "description": "Modify ScriptRunnerImpl.spawn() in script-runner.ts: at the start of spawn(), check if this.game.isWipeTriggered() returns true. If so, return empty string immediately without spawning any mechanic",
     "steps_to_verify": [
       "Open src/server/encounters/script-runner.ts",
-      "Find DEFAULTS object",
-      "Verify stack entry exists with radius: 80, duration: 3000"
+      "Find spawn() method",
+      "Verify there is a check for this.game.isWipeTriggered() at the start",
+      "Verify it returns '' (empty string) if wipe is triggered"
     ],
-    "passes": true
+    "passes": false
   },
   {
-    "id": "STACK-010",
+    "id": "WIPE-014",
     "category": "server",
-    "description": "Add stack case to spawn() method in ScriptRunnerImpl. Must call game.spawnStack() with merged defaults",
-    "steps_to_verify": [
-      "Find spawn() method in script-runner.ts",
-      "Verify case for type === 'stack' exists",
-      "Calls this.game.spawnStack() with correct parameters",
-      "Returns mechanic ID"
-    ],
-    "passes": true
-  },
-  {
-    "id": "STACK-011",
-    "category": "client",
-    "description": "Create src/client/mechanics/stack.ts with renderStack(ctx, mechanic, serverTime, posData) function. Must get target player position using getPlayerPosition() helper",
-    "steps_to_verify": [
-      "File src/client/mechanics/stack.ts exists",
-      "renderStack function is exported",
-      "Function signature matches (ctx: CanvasRenderingContext2D, mechanic: StackMechanicState, serverTime: number, posData: PlayerPositionData)",
-      "Uses getPlayerPosition(mechanic.targetPlayerId, posData) to find target"
-    ],
-    "passes": true
-  },
-  {
-    "id": "STACK-012",
-    "category": "client",
-    "description": "renderStack draws thin static yellow radius circle: color #ffdd00, 2px stroke width, ~0.6 opacity, centered on target player position",
-    "steps_to_verify": [
-      "Use Playwright to navigate to localhost:3000?debug=1",
-      "Join game and spawn stack via __adminTest.emitSpawnStack({ duration: 10000 })",
-      "Take screenshot",
-      "Verify thin yellow circle is visible around target player",
-      "Circle should not animate/pulse (static)"
-    ],
-    "passes": true
-  },
-  {
-    "id": "STACK-013",
-    "category": "client",
-    "description": "renderStack draws 8 FFXIV-style arrows positioned slightly outside radius circle, pointing inward toward target center. Arrows are yellow (#ffdd00), elongated with tails",
-    "steps_to_verify": [
-      "Use Playwright to spawn stack with long duration",
-      "Take screenshot",
-      "Verify 8 arrows visible around the circle",
-      "Arrows point toward center",
-      "Arrows positioned just outside the radius circle",
-      "Arrow style is elongated with tails (not simple triangles)"
-    ],
-    "passes": true
-  },
-  {
-    "id": "STACK-014",
-    "category": "client",
-    "description": "Arrows have pulsing animation: scale and opacity pulse inward with 800ms cycle",
-    "steps_to_verify": [
-      "Use Playwright to spawn stack",
-      "Take multiple screenshots 400ms apart",
-      "Compare arrow size/opacity between screenshots",
-      "Verify arrows are animating (not static)"
-    ],
-    "passes": true
-  },
-  {
-    "id": "STACK-015",
-    "category": "client",
-    "description": "Add stack case to renderMechanics() in src/client/mechanics/index.ts. Import renderStack and call it when mechanic.type === 'stack'",
-    "steps_to_verify": [
-      "Open src/client/mechanics/index.ts",
-      "Verify import statement for renderStack exists",
-      "Verify case for 'stack' type in renderMechanics switch/if chain",
-      "Verify renderStack is called with correct arguments including posData"
-    ],
-    "passes": true
-  },
-  {
-    "id": "STACK-016",
-    "category": "integration",
-    "description": "Add admin button #spawn-stack-btn and __adminTest.emitSpawnStack(options?) method for testing. Options should support { duration?: number, radius?: number }",
-    "steps_to_verify": [
-      "Use Playwright to navigate to localhost:3000?debug=1",
-      "Verify #spawn-stack-btn button exists in admin panel",
-      "Run: await page.evaluate(() => __adminTest.emitSpawnStack({ duration: 5000 }))",
-      "Verify stack mechanic appears on target player"
-    ],
-    "passes": true
-  },
-  {
-    "id": "STACK-017",
-    "category": "integration",
-    "description": "Add socket handler for 'admin:spawnStack' in src/server/index.ts that calls game.spawnStack() on a random player",
+    "description": "Add socket handlers in src/server/index.ts: 'admin:toggleGodMode' calls game.toggleGodMode(), 'player:ready' calls game.setPlayerReady(socket.id)",
     "steps_to_verify": [
       "Open src/server/index.ts",
-      "Find socket handler for admin:spawnStack",
-      "Verify it selects a player and calls game.spawnStack()"
+      "Verify socket.on('admin:toggleGodMode', ...) handler exists",
+      "Verify socket.on('player:ready', ...) handler exists",
+      "Verify handlers call correct Game methods"
     ],
-    "passes": true
+    "passes": false
   },
   {
-    "id": "STACK-018",
-    "category": "e2e",
-    "description": "Stack mechanic follows target player position (renders at player's interpolated position, not fixed coordinates)",
+    "id": "WIPE-015",
+    "category": "client",
+    "description": "Modify drawPlayerAt() in src/client/renderer.ts: add optional 'dead' parameter. If dead is true, draw a red X over the player circle after drawing the player. X should be two diagonal lines (thick red stroke, ~4px) crossing through the player circle",
     "steps_to_verify": [
-      "Use Playwright to join game",
-      "Spawn stack on local player",
-      "Move player using keyboard input",
-      "Take screenshots before and after movement",
-      "Verify stack visual moved with player"
+      "Open src/client/renderer.ts",
+      "Find drawPlayerAt() function",
+      "Verify it accepts a 'dead' parameter",
+      "Verify it draws a red X when dead is true"
     ],
-    "passes": true
+    "passes": false
   },
   {
-    "id": "STACK-019",
-    "category": "e2e",
-    "description": "Stack getResult() correctly identifies players inside radius when mechanic expires",
+    "id": "WIPE-016",
+    "category": "client",
+    "description": "Update render() in renderer.ts to pass player.dead to drawPlayerAt() calls for both local and remote players",
     "steps_to_verify": [
-      "Use Playwright with 2+ players or test script",
-      "Spawn stack on player A with known radius",
-      "Position player B inside radius, player C outside",
-      "Wait for mechanic to expire",
-      "Verify getResult returns player A and B in playersInside, not C"
+      "Open src/client/renderer.ts",
+      "Find render() function",
+      "Verify drawPlayerAt() calls include player.dead parameter"
     ],
-    "passes": true
+    "passes": false
   },
   {
-    "id": "STACK-020",
-    "category": "e2e",
-    "description": "Stack can be spawned via encounter script using runner.spawn({ type: 'stack', targetPlayerId: '...' })",
+    "id": "WIPE-017",
+    "category": "client",
+    "description": "Create src/client/wipeOverlay.ts with functions: initWipeOverlay(), showWipeOverlay(players: PlayerState[]), hideWipeOverlay(), updateReadyState(readyPlayerIds: string[]). Module should create/manage DOM elements for wipe UI",
     "steps_to_verify": [
-      "Create test script that spawns stack mechanic",
-      "Run script via admin button or direct call",
-      "Verify stack appears on target player",
-      "Verify waitForResolve returns correct MechanicResult"
+      "File src/client/wipeOverlay.ts exists",
+      "All four functions are exported",
+      "initWipeOverlay() creates necessary DOM structure"
     ],
-    "passes": true
+    "passes": false
   },
   {
-    "id": "STACK-021",
+    "id": "WIPE-018",
+    "category": "client",
+    "description": "wipeOverlay creates DOM structure inside .game-container (not full page): #wipe-overlay container with .wipe-banner ('WIPE IT!' text), .ready-check container with .ready-message ('Press R to ready up.'), and .ready-list for player entries",
+    "steps_to_verify": [
+      "Open src/client/wipeOverlay.ts",
+      "Verify DOM elements are created/appended to .game-container",
+      "Verify structure includes wipe-banner, ready-check, ready-message, ready-list elements"
+    ],
+    "passes": false
+  },
+  {
+    "id": "WIPE-019",
+    "category": "client",
+    "description": "wipeOverlay.updateReadyState() updates the ready list to show all players, adding 'ready' class to entries for players whose IDs are in readyPlayerIds array",
+    "steps_to_verify": [
+      "Open src/client/wipeOverlay.ts",
+      "Find updateReadyState() function",
+      "Verify it updates player entries based on readyPlayerIds",
+      "Verify it adds 'ready' class to ready players"
+    ],
+    "passes": false
+  },
+  {
+    "id": "WIPE-020",
+    "category": "client",
+    "description": "In src/client/game.ts: import and call initWipeOverlay() during initialization. On 'state' events, if wipeInProgress is true, call showWipeOverlay() and updateReadyState(). Listen for 'wipe:reset' socket event and call hideWipeOverlay()",
+    "steps_to_verify": [
+      "Open src/client/game.ts",
+      "Verify wipeOverlay is imported",
+      "Verify initWipeOverlay() is called during setup",
+      "Verify state handler checks wipeInProgress and updates overlay",
+      "Verify 'wipe:reset' listener calls hideWipeOverlay()"
+    ],
+    "passes": false
+  },
+  {
+    "id": "WIPE-021",
+    "category": "client",
+    "description": "Add 'R' key listener in game.ts: when wipeInProgress is true and user presses 'R', emit 'player:ready' socket event to server",
+    "steps_to_verify": [
+      "Open src/client/game.ts",
+      "Verify keydown listener for 'r' key exists",
+      "Verify it checks wipeInProgress before emitting",
+      "Verify it emits 'player:ready' event"
+    ],
+    "passes": false
+  },
+  {
+    "id": "WIPE-022",
+    "category": "client",
+    "description": "Modify applyInput() in src/client/network.ts: check if local player is dead before applying prediction. If dead, skip prediction (don't move local player)",
+    "steps_to_verify": [
+      "Open src/client/network.ts",
+      "Find applyInput() function",
+      "Verify it checks if local player is dead",
+      "Verify it skips prediction when player is dead"
+    ],
+    "passes": false
+  },
+  {
+    "id": "WIPE-023",
+    "category": "client",
+    "description": "Add God Mode toggle button to admin panel in public/index.html: <button id=\"toggle-godmode-btn\">Toggle God Mode</button> in the Utility section",
+    "steps_to_verify": [
+      "Open public/index.html",
+      "Find Utility section in admin panel",
+      "Verify #toggle-godmode-btn button exists"
+    ],
+    "passes": false
+  },
+  {
+    "id": "WIPE-024",
+    "category": "client",
+    "description": "Add click handler for #toggle-godmode-btn in src/client/admin.ts that emits 'admin:toggleGodMode' socket event. Add emitToggleGodMode() to __adminTest object",
+    "steps_to_verify": [
+      "Open src/client/admin.ts",
+      "Verify click handler for toggle-godmode-btn exists",
+      "Verify it emits 'admin:toggleGodMode'",
+      "Verify __adminTest.emitToggleGodMode exists"
+    ],
+    "passes": false
+  },
+  {
+    "id": "WIPE-025",
+    "category": "styles",
+    "description": "Add Google Font import for 'Permanent Marker' handwritten font in public/css/style.css: @import url('https://fonts.googleapis.com/css2?family=Permanent+Marker&display=swap')",
+    "steps_to_verify": [
+      "Open public/css/style.css",
+      "Verify @import for Permanent Marker font exists at top of file"
+    ],
+    "passes": false
+  },
+  {
+    "id": "WIPE-026",
+    "category": "styles",
+    "description": "Add CSS for #wipe-overlay: position absolute, covers canvas area (1000x1000), centered within .game-container. Hidden by default with .hidden class",
+    "steps_to_verify": [
+      "Open public/css/style.css",
+      "Verify #wipe-overlay styles exist",
+      "Verify position: absolute and dimensions match canvas",
+      "Verify .hidden class hides the overlay"
+    ],
+    "passes": false
+  },
+  {
+    "id": "WIPE-027",
+    "category": "styles",
+    "description": "Add CSS for .wipe-banner: font-family 'Permanent Marker', large red text (#ff3333 or similar), positioned at top/center of overlay, slide-in animation from right side (@keyframes slideInFromRight)",
+    "steps_to_verify": [
+      "Open public/css/style.css",
+      "Verify .wipe-banner styles use Permanent Marker font",
+      "Verify red color for text",
+      "Verify @keyframes slideInFromRight animation exists",
+      "Verify animation is applied to banner"
+    ],
+    "passes": false
+  },
+  {
+    "id": "WIPE-028",
+    "category": "styles",
+    "description": "Add CSS for .ready-check: semi-transparent black background (rgba(0,0,0,0.7) or similar), centered below banner, contains ready-message and ready-list",
+    "steps_to_verify": [
+      "Open public/css/style.css",
+      "Verify .ready-check styles exist",
+      "Verify semi-transparent black background",
+      "Verify positioning below banner"
+    ],
+    "passes": false
+  },
+  {
+    "id": "WIPE-029",
+    "category": "styles",
+    "description": "Add CSS for .ready-list .player-entry: player names listed vertically. .player-entry.ready shows green checkmark (✓) before player name using ::before pseudo-element",
+    "steps_to_verify": [
+      "Open public/css/style.css",
+      "Verify .player-entry styles exist",
+      "Verify .player-entry.ready::before shows green checkmark"
+    ],
+    "passes": false
+  },
+  {
+    "id": "WIPE-030",
+    "category": "e2e",
+    "description": "God Mode toggle works: clicking button toggles godMode state, visible in GameState",
+    "steps_to_verify": [
+      "Use Playwright to navigate to localhost:3000?debug=1",
+      "Join game",
+      "Click #toggle-godmode-btn",
+      "Verify godMode changed in game state via page.evaluate(() => __gameTest.getGameState().godMode)"
+    ],
+    "passes": false
+  },
+  {
+    "id": "WIPE-031",
+    "category": "e2e",
+    "description": "Death detection works: with godMode off, when player HP reaches 0, player is marked dead and wipe triggers",
+    "steps_to_verify": [
+      "Use Playwright to navigate to localhost:3000?debug=1",
+      "Join game, disable god mode",
+      "Spawn chariot that will hit player",
+      "Wait for mechanic to resolve and damage player to 0 HP",
+      "Verify player.dead is true in game state",
+      "Verify wipeInProgress is true in game state"
+    ],
+    "passes": false
+  },
+  {
+    "id": "WIPE-032",
+    "category": "e2e",
+    "description": "Dead player visual: dead players render with red X overlay through their body",
+    "steps_to_verify": [
+      "Use Playwright to trigger a death (god mode off, damage to 0)",
+      "Take screenshot of canvas",
+      "Verify dead player has red X visible over their circle"
+    ],
+    "passes": false
+  },
+  {
+    "id": "WIPE-033",
+    "category": "e2e",
+    "description": "Dead player frozen: dead players cannot move with WASD and are not affected by knockbacks",
+    "steps_to_verify": [
+      "Use Playwright to kill a player (god mode off)",
+      "Record player position",
+      "Send WASD input via keyboard simulation",
+      "Verify player position unchanged",
+      "Spawn knockback mechanic",
+      "Verify player position still unchanged after knockback resolves"
+    ],
+    "passes": false
+  },
+  {
+    "id": "WIPE-034",
+    "category": "e2e",
+    "description": "Wipe banner appears: when wipe triggers, 'WIPE IT!' banner slides in from right side over the canvas",
+    "steps_to_verify": [
+      "Use Playwright to trigger a wipe",
+      "Wait for wipe:started event or wipeInProgress state",
+      "Verify #wipe-overlay is visible (not .hidden)",
+      "Verify .wipe-banner contains 'WIPE IT!' text",
+      "Take screenshot to verify visual appearance"
+    ],
+    "passes": false
+  },
+  {
+    "id": "WIPE-035",
+    "category": "e2e",
+    "description": "Ready check UI appears: below wipe banner, shows 'Press R to ready up.' message and lists all players",
+    "steps_to_verify": [
+      "Use Playwright to trigger a wipe",
+      "Verify .ready-message contains 'Press' and 'R' text",
+      "Verify .ready-list contains entries for all players in game"
+    ],
+    "passes": false
+  },
+  {
+    "id": "WIPE-036",
+    "category": "e2e",
+    "description": "Ready state sync: pressing R marks player as ready, green checkmark appears, synced to all clients",
+    "steps_to_verify": [
+      "Use Playwright with wipe in progress",
+      "Press 'r' key",
+      "Verify local player ID appears in readyPlayerIds state",
+      "Verify player's entry in .ready-list has 'ready' class",
+      "Verify green checkmark is visible"
+    ],
+    "passes": false
+  },
+  {
+    "id": "WIPE-037",
+    "category": "e2e",
+    "description": "Reset when all ready: when all players press R, wipe overlay hides, all players healed to full HP, dead flags cleared, encounter restarts",
+    "steps_to_verify": [
+      "Use Playwright to trigger wipe with single player",
+      "Press 'r' key to ready up",
+      "Wait for wipe:reset event",
+      "Verify #wipe-overlay has .hidden class",
+      "Verify player HP is MAX_HP (100)",
+      "Verify player.dead is false",
+      "Verify wipeInProgress is false"
+    ],
+    "passes": false
+  },
+  {
+    "id": "WIPE-038",
+    "category": "e2e",
+    "description": "Script blocking during wipe: after wipe triggers, no new mechanics spawn from active scripts (existing mechanics still resolve)",
+    "steps_to_verify": [
+      "Use Playwright to run a multi-phase encounter",
+      "Trigger death during early phase",
+      "Note mechanic count after wipe triggers",
+      "Wait for existing mechanics to resolve",
+      "Verify no new mechanics spawn (count should only decrease)"
+    ],
+    "passes": false
+  },
+  {
+    "id": "WIPE-039",
+    "category": "e2e",
+    "description": "Most recent script restarts: after reset, the last-started encounter script runs again from the beginning",
+    "steps_to_verify": [
+      "Use Playwright to run tutorial encounter",
+      "Trigger wipe and ready up",
+      "After reset, verify tutorial encounter mechanics start spawning again"
+    ],
+    "passes": false
+  },
+  {
+    "id": "WIPE-040",
     "category": "build",
-    "description": "Project builds without TypeScript errors after all stack mechanic changes",
+    "description": "Project builds without TypeScript errors after all wipe system changes",
     "steps_to_verify": [
       "Run npm run build",
       "Verify no TypeScript compilation errors",
       "Verify build completes successfully"
     ],
-    "passes": true
+    "passes": false
   }
 ]
