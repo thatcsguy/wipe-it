@@ -44,7 +44,7 @@
       "ID is generated in correct format",
       "startTime and endTime are calculated correctly from duration"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "id": "STACK-005",
@@ -57,7 +57,7 @@
       "targetPosition is {x,y} of target player, or null if target not found",
       "Distance calculation uses sqrt((dx)^2 + (dy)^2) <= radius"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "id": "STACK-006",
@@ -68,7 +68,7 @@
       "Returns object with type: 'stack'",
       "Includes id, startTime, endTime, targetPlayerId, radius"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "id": "STACK-007",

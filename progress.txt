@@ -4,3 +4,11 @@ STACK-001, STACK-002, STACK-003: Added stack mechanic types
 - Added StackMechanicState to MechanicState union
 - Files: src/shared/types.ts
 - Build verified passing
+
+STACK-004, STACK-005, STACK-006: Created StackMechanic class
+- Constructor: targetPlayerId, radius, duration; generates ID stack-{timestamp}-{random}
+- toState(): returns StackMechanicState with all fields
+- getResult(): returns {playersInside[], targetPosition} using sqrt distance formula
+- Pattern follows SpreadMechanic (both follow target player)
+- Files: src/server/mechanics/stack.ts
+- Build verified passing
