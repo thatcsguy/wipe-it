@@ -14,3 +14,13 @@ Files changed:
 - src/client/game.ts (init state defaults)
 
 Build passes. Playwright verified fields broadcast correctly.
+
+WIPE-004 COMPLETE
+
+Dead player freeze in processInput():
+- Early return after lastProcessedInput update, before knockback check
+- Dead players: no WASD, no knockback position updates
+- lastProcessedInput still updated for client reconciliation
+
+Files changed:
+- src/server/player.ts (line 53-56)

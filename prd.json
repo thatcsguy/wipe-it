@@ -43,7 +43,7 @@
       "Verify there is an early return at the start if this.dead is true",
       "This check should come before knockback processing"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "id": "WIPE-005",

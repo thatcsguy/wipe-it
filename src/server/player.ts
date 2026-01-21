@@ -50,6 +50,11 @@ export class Player {
     // ALWAYS update lastProcessedInput for reconciliation (even during knockback)
     this.lastProcessedInput = seq;
 
+    // Dead players are frozen - no movement, no knockback processing
+    if (this.dead) {
+      return;
+    }
+
     // During knockback: update position via knockback physics, ignore WASD
     if (this.knockback) {
       const result = getKnockbackPosition(this.knockback, now);
