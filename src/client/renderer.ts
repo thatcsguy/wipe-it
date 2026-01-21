@@ -132,19 +132,13 @@ function drawPlayer(player: PlayerState): void {
   ctx.fillText(name, x, y - PLAYER_RADIUS - 10);
 }
 
-// Draw red X over player (for dead players)
-function drawDeadX(x: number, y: number): void {
+// Draw skull emoji over player (for dead players)
+function drawDeadSkull(x: number, y: number): void {
   if (!ctx) return;
-  const size = PLAYER_RADIUS * 0.8;
-  ctx.strokeStyle = '#ff3333';
-  ctx.lineWidth = 4;
-  ctx.lineCap = 'round';
-  ctx.beginPath();
-  ctx.moveTo(x - size, y - size);
-  ctx.lineTo(x + size, y + size);
-  ctx.moveTo(x + size, y - size);
-  ctx.lineTo(x - size, y + size);
-  ctx.stroke();
+  ctx.font = '32px Arial';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillText('💀', x, y);
 }
 
 // Draw a player at specific position (for local player with predicted position)
@@ -167,11 +161,6 @@ export function drawPlayerAt(
   ctx.strokeStyle = '#ffffff';
   ctx.lineWidth = 2;
   ctx.stroke();
-
-  // Draw red X if dead
-  if (dead) {
-    drawDeadX(x, y);
-  }
 
   // Draw health bar above circle
   drawHealthBar(x, y, hp);
@@ -278,6 +267,25 @@ export function render(
         }
       }
       renderStatusEffects(ctx, px, py, player.statusEffects);
+    }
+  }
+
+  // Draw skulls for dead players AFTER status effects (so they appear on top)
+  for (const player of players) {
+    if (player.dead) {
+      let px = player.x;
+      let py = player.y;
+      if (localPlayerId && player.id === localPlayerId && localPosition) {
+        px = localPosition.x;
+        py = localPosition.y;
+      } else {
+        const interpolated = interpolatedPositions?.get(player.id);
+        if (interpolated) {
+          px = interpolated.x;
+          py = interpolated.y;
+        }
+      }
+      drawDeadSkull(px, py);
     }
   }
 

@@ -15,6 +15,7 @@ import { logCombat } from './combatLog';
 import { addTowerExplosion } from './mechanics/towerExplosion';
 import { setLocalPlayerId, updateLocalStatuses, updateLocalDead } from './localStatus';
 import { initWipeOverlay, showWipeOverlay, hideWipeOverlay, updateReadyState, updatePlayerList } from './wipeOverlay';
+import { updateGodModeButton } from './admin';
 
 // Game state
 let socket: Socket | null = null;
@@ -255,6 +256,9 @@ export function startGame(
     checkPlayerChanges(state);
 
     currentGameState = state;
+
+    // Update god mode button
+    updateGodModeButton(state.godMode);
 
     // Handle wipe overlay state
     if (state.wipeInProgress) {

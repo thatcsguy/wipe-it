@@ -96,6 +96,9 @@ export function initAdmin(socket: Socket): void {
     });
   }
 
+  // Initialize button state (god mode defaults to ON)
+  updateGodModeButton(true);
+
   const spawnRadialKbBtn = document.getElementById('spawn-radial-kb-btn');
   if (spawnRadialKbBtn) {
     spawnRadialKbBtn.addEventListener('click', () => {
@@ -189,6 +192,19 @@ export function initAdmin(socket: Socket): void {
 
 export function setChangeNameCallback(callback: () => void): void {
   onChangeName = callback;
+}
+
+export function updateGodModeButton(godMode: boolean): void {
+  const btn = document.getElementById('toggle-godmode-btn');
+  if (btn) {
+    if (godMode) {
+      btn.textContent = 'God Mode: ON';
+      btn.style.backgroundColor = '#2ecc71';
+    } else {
+      btn.textContent = 'God Mode: OFF';
+      btn.style.backgroundColor = '';
+    }
+  }
 }
 
 // Expose for testing

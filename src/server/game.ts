@@ -184,13 +184,17 @@ export class Game extends EventEmitter {
     this.doodadManager.tick(now);
 
     // Death detection: check if any player has hp <= 0 (only if god mode off and wipe not in progress)
+    // Mark ALL players who died this tick as dead, then trigger wipe once
     if (!this.godMode && !this.wipeInProgress) {
+      let anyDied = false;
       for (const player of this.players.values()) {
         if (player.hp <= 0 && !player.dead) {
           player.setDead(true);
-          this.triggerWipe();
-          break; // Only trigger once per tick
+          anyDied = true;
         }
+      }
+      if (anyDied) {
+        this.triggerWipe();
       }
     }
   }
