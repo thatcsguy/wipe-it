@@ -80,3 +80,15 @@ Files changed:
 - src/client/admin.ts (emitPlayerReady test method)
 
 Playwright verified: death -> wipe -> ready -> reset -> hp=100, dead=false, wipeInProgress=false
+
+WIPE-013 COMPLETE
+
+Script spawn blocking during wipe:
+- ScriptRunnerImpl.spawn() checks this.game.isWipeTriggered() at start
+- Returns '' immediately if wipe in progress, no mechanic spawned
+- Only affects script-driven spawns, admin buttons still work (direct Game methods)
+
+Files changed:
+- src/server/encounters/script-runner.ts (line 76-79)
+
+Playwright verified: trigger wipe -> run tutorial encounter -> mechanics count stays 0

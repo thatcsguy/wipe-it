@@ -73,6 +73,11 @@ export class ScriptRunnerImpl implements ScriptRunner {
   }
 
   spawn(mechanic: MechanicParams): string {
+    // Block spawning new mechanics during wipe
+    if (this.game.isWipeTriggered()) {
+      return '';
+    }
+
     switch (mechanic.type) {
       case 'chariot': {
         const radius = mechanic.radius ?? DEFAULTS.chariot.radius;
