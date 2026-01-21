@@ -145,3 +145,4 @@ public/js/main.js.map
 # Local automation scripts
 ralph.sh
 ralph_once.sh
+ralph_prompt.txt
