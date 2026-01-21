@@ -352,7 +352,7 @@
       "Click #toggle-godmode-btn",
       "Verify godMode changed in game state via page.evaluate(() => __gameTest.getGameState().godMode)"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "id": "WIPE-031",
@@ -478,6 +478,6 @@
       "Verify no TypeScript compilation errors",
       "Verify build completes successfully"
     ],
-    "passes": false
+    "passes": true
   }
 ]

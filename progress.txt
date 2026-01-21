@@ -164,3 +164,13 @@ Files changed:
 - src/client/admin.ts (click handler added lines 89-97)
 
 Playwright verified: click toggle -> godMode false->true->false
+
+WIPE-030, WIPE-040 COMPLETE
+
+E2E + build validation:
+- WIPE-030: God Mode toggle E2E test passes
+  - Navigate to localhost:3000?debug=1
+  - Initial godMode=true, click toggle -> godMode=false, click again -> godMode=true
+- WIPE-040: Build passes (npm run build)
+
+No files changed (validation only)
