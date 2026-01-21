@@ -63,7 +63,7 @@
         "Execution order should be: fn1 at T=0, fn3 at T=1000, fn2 at T=2000",
         "Verify by console.log timestamps or by checking side effects in order"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "id": "TIMELINE-006",

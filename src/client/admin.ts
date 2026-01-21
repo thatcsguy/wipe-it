@@ -272,5 +272,10 @@ export function setChangeNameCallback(callback: () => void): void {
     if (adminSocket) {
       adminSocket.emit('admin:runTriggerAtTest');
     }
+  },
+  emitRunDynamicSchedulingTest: () => {
+    if (adminSocket) {
+      adminSocket.emit('admin:runDynamicSchedulingTest');
+    }
   }
 };

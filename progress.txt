@@ -13,3 +13,18 @@ Files:
 - src/server/encounters/script-runner.ts: added timeline array, at(), runTimeline() methods
 
 Build passes. Sub-script isolation via run() already works - new ScriptRunnerImpl gets empty timeline by default.
+
+## TIMELINE-005: Dynamic scheduling test
+
+Verified via Playwright E2E test.
+
+Test script: schedules fn1@T=0, fn2@T=2000. fn1 dynamically schedules fn3@T=1000.
+Expected order: fn1 -> fn3 -> fn2. Confirmed via mechanic spawn positions:
+- T=24ms: chariot at (160,160) = fn1 (top-left)
+- T=1027ms: chariot at (400,400) = fn3 (center, dynamically scheduled)
+- T=2028ms: chariot at (640,640) = fn2 (bottom-right)
+
+Files:
+- src/server/encounters/scripts/tests/dynamic-scheduling-test.ts (new)
+- src/server/index.ts: added admin:runDynamicSchedulingTest handler
+- src/client/admin.ts: added emitRunDynamicSchedulingTest()

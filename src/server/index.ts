@@ -12,6 +12,7 @@ import { quadKnock } from './encounters/scripts/combos/quad-knock';
 import { tutorialEncounter } from './encounters/scripts/encounters/tutorial-encounter';
 import { scopedTimelineTest } from './encounters/scripts/tests/scoped-timeline-test';
 import { triggerAtTest } from './encounters/scripts/tests/trigger-at-test';
+import { dynamicSchedulingTest } from './encounters/scripts/tests/dynamic-scheduling-test';
 
 const app = express();
 const httpServer = createServer(app);
@@ -409,6 +410,12 @@ io.on('connection', (socket) => {
   socket.on('admin:runTriggerAtTest', () => {
     runEncounter(game, triggerAtTest);
     console.log('Admin started trigger-at-test');
+  });
+
+  // Test dynamic scheduling during runTimeline() (TIMELINE-005)
+  socket.on('admin:runDynamicSchedulingTest', () => {
+    runEncounter(game, dynamicSchedulingTest);
+    console.log('Admin started dynamic-scheduling-test');
   });
 });
 
