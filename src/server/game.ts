@@ -12,6 +12,7 @@ import { RadialKnockbackMechanic } from './mechanics/radialKnockback';
 import { LinearKnockbackMechanic } from './mechanics/linearKnockback';
 import { LineAoeMechanic } from './mechanics/lineAoe';
 import { ConalAoeMechanic } from './mechanics/conalAoe';
+import { StackMechanic } from './mechanics/stack';
 import { TetherEndpoint } from '../shared/types';
 import { StatusEffectManager } from './statusEffectManager';
 import { MechanicResult } from './encounters/types';
@@ -306,6 +307,12 @@ export class Game extends EventEmitter {
     duration: number
   ): string {
     const mechanic = new ConalAoeMechanic(centerX, centerY, endpointX, endpointY, angle, duration);
+    this.mechanicManager.add(mechanic);
+    return mechanic.id;
+  }
+
+  spawnStack(targetPlayerId: string, radius: number, duration: number): string {
+    const mechanic = new StackMechanic(targetPlayerId, radius, duration);
     this.mechanicManager.add(mechanic);
     return mechanic.id;
   }

@@ -80,7 +80,7 @@
       "Adds mechanic to this.mechanicManager",
       "Returns the mechanic ID string"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "id": "STACK-008",

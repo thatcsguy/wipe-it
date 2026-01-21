@@ -12,3 +12,10 @@ STACK-004, STACK-005, STACK-006: Created StackMechanic class
 - Pattern follows SpreadMechanic (both follow target player)
 - Files: src/server/mechanics/stack.ts
 - Build verified passing
+
+STACK-007: Added spawnStack to Game class
+- Method: spawnStack(targetPlayerId, radius, duration): string
+- Creates StackMechanic, adds to mechanicManager, returns mechanic.id
+- Follows pattern of spawnSpread
+- Files: src/server/game.ts (import + method)
+- Build verified passing
