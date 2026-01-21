@@ -92,3 +92,21 @@ Files changed:
 - src/server/encounters/script-runner.ts (line 76-79)
 
 Playwright verified: trigger wipe -> run tutorial encounter -> mechanics count stays 0
+
+WIPE-017, WIPE-018, WIPE-019, WIPE-020, WIPE-025, WIPE-026, WIPE-027, WIPE-028, WIPE-029 COMPLETE
+
+Wipe overlay UI:
+- Created src/client/wipeOverlay.ts with initWipeOverlay(), showWipeOverlay(), hideWipeOverlay(), updateReadyState(), updatePlayerList()
+- DOM structure: #wipe-overlay contains .wipe-banner ("WIPE IT!") + .ready-check with .ready-message + .ready-list
+- .player-entry elements have data-player-id attr, .ready class added for ready players
+- CSS: Permanent Marker font import, slideInFromRight animation for banner
+- Red banner with text-shadow, semi-transparent ready-check box
+- Green checkmark via ::before pseudo-element on .player-entry.ready
+- Integrated into game.ts: init on startGame, show/update on wipeInProgress state, hide on wipe:reset event
+
+Files changed:
+- src/client/wipeOverlay.ts (new)
+- src/client/game.ts (import + init + state handler + wipe:reset listener)
+- public/css/style.css (font import + wipe overlay styles)
+
+Playwright verified: trigger wipe -> overlay shows -> banner + ready message + player list visible

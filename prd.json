@@ -199,7 +199,7 @@
       "All four functions are exported",
       "initWipeOverlay() creates necessary DOM structure"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "id": "WIPE-018",
@@ -210,7 +210,7 @@
       "Verify DOM elements are created/appended to .game-container",
       "Verify structure includes wipe-banner, ready-check, ready-message, ready-list elements"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "id": "WIPE-019",
@@ -222,7 +222,7 @@
       "Verify it updates player entries based on readyPlayerIds",
       "Verify it adds 'ready' class to ready players"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "id": "WIPE-020",
@@ -235,7 +235,7 @@
       "Verify state handler checks wipeInProgress and updates overlay",
       "Verify 'wipe:reset' listener calls hideWipeOverlay()"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "id": "WIPE-021",
@@ -292,7 +292,7 @@
       "Open public/css/style.css",
       "Verify @import for Permanent Marker font exists at top of file"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "id": "WIPE-026",
@@ -304,7 +304,7 @@
       "Verify position: absolute and dimensions match canvas",
       "Verify .hidden class hides the overlay"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "id": "WIPE-027",
@@ -317,7 +317,7 @@
       "Verify @keyframes slideInFromRight animation exists",
       "Verify animation is applied to banner"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "id": "WIPE-028",
@@ -329,7 +329,7 @@
       "Verify semi-transparent black background",
       "Verify positioning below banner"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "id": "WIPE-029",
@@ -340,7 +340,7 @@
       "Verify .player-entry styles exist",
       "Verify .player-entry.ready::before shows green checkmark"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "id": "WIPE-030",

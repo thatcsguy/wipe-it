@@ -14,6 +14,7 @@ import { updateDebugPanel } from './debugPanel';
 import { logCombat } from './combatLog';
 import { addTowerExplosion } from './mechanics/towerExplosion';
 import { setLocalPlayerId, updateLocalStatuses } from './localStatus';
+import { initWipeOverlay, showWipeOverlay, hideWipeOverlay, updateReadyState, updatePlayerList } from './wipeOverlay';
 
 // Game state
 let socket: Socket | null = null;
@@ -200,6 +201,9 @@ export function startGame(
   // Initialize renderer
   initRenderer();
 
+  // Initialize wipe overlay
+  initWipeOverlay();
+
   // Set up tether resolution listener
   socket.on('tether:resolved', (event: TetherResolutionEvent) => {
     for (const callback of tetherResolutionCallbacks) {
@@ -227,6 +231,14 @@ export function startGame(
     }
   });
 
+  // Set up wipe reset listener
+  socket.on('wipe:reset', () => {
+    hideWipeOverlay();
+  });
+
+  // Track wipe overlay visibility state
+  let wipeOverlayShown = false;
+
   // Set up state listener
   socket.on('state', (state: GameState) => {
     // Check for new mechanics before updating state
@@ -236,6 +248,23 @@ export function startGame(
     checkPlayerChanges(state);
 
     currentGameState = state;
+
+    // Handle wipe overlay state
+    if (state.wipeInProgress) {
+      if (!wipeOverlayShown) {
+        showWipeOverlay(state.players);
+        wipeOverlayShown = true;
+      } else {
+        // Update player list in case players joined/left
+        updatePlayerList(state.players, state.readyPlayerIds);
+      }
+      updateReadyState(state.readyPlayerIds);
+    } else {
+      if (wipeOverlayShown) {
+        hideWipeOverlay();
+        wipeOverlayShown = false;
+      }
+    }
 
     // Notify state change callbacks
     notifyStateChange(state);
