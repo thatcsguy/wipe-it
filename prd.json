@@ -25,7 +25,7 @@
         "Verify helper method 'getElapsedTime()' returns 'Date.now() - this.scriptStartTime'",
         "Run 'npm run build' - should compile without errors"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "id": "TRIGGER-003",

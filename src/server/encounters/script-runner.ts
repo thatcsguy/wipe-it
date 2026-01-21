@@ -22,10 +22,19 @@ const DEFAULTS = {
 export class ScriptRunnerImpl implements ScriptRunner {
   private game: Game;
   private context: Context;
+  private scriptStartTime: number;
 
   constructor(game: Game) {
     this.game = game;
     this.context = createContext();
+    this.scriptStartTime = Date.now();
+  }
+
+  /**
+   * Returns milliseconds elapsed since this script started
+   */
+  getElapsedTime(): number {
+    return Date.now() - this.scriptStartTime;
   }
 
   spawn(mechanic: MechanicParams): string {

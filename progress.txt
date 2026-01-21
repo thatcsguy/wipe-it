@@ -2,3 +2,10 @@ TRIGGER-001: Added triggerAt?: number to all 8 MechanicParams union types
 - chariot, spread, tether, tower, lineAoe, conalAoe, radialKnockback, linearKnockback
 - Build passes
 - File: src/server/encounters/types.ts
+
+TRIGGER-002: ScriptRunnerImpl tracks script start time
+- Added private field scriptStartTime: number
+- Constructor sets this.scriptStartTime = Date.now()
+- Added getElapsedTime() helper returning Date.now() - scriptStartTime
+- Build passes
+- File: src/server/encounters/script-runner.ts
