@@ -12,7 +12,7 @@
         "Types to check: chariot, spread, tether, tower, lineAoe, conalAoe, radialKnockback, linearKnockback",
         "Run 'npm run build' - should compile without errors"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "id": "TRIGGER-002",

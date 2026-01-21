@@ -1,0 +1,4 @@
+TRIGGER-001: Added triggerAt?: number to all 8 MechanicParams union types
+- chariot, spread, tether, tower, lineAoe, conalAoe, radialKnockback, linearKnockback
+- Build passes
+- File: src/server/encounters/types.ts
