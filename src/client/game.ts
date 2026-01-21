@@ -12,7 +12,7 @@ import {
 import { render, initRenderer } from './renderer';
 import { updateDebugPanel } from './debugPanel';
 import { logCombat } from './combatLog';
-import { addTowerExplosion } from './mechanics/towerExplosion';
+import { addExplosion } from './animations/explosion';
 import { setLocalPlayerId, updateLocalStatuses, updateLocalDead } from './localStatus';
 import { initWipeOverlay, showWipeOverlay, hideWipeOverlay, updateReadyState, updatePlayerList } from './wipeOverlay';
 import { updateGodModeButton } from './admin';
@@ -219,7 +219,7 @@ export function startGame(
   // Set up tower resolution listener - trigger explosion on failure
   socket.on('tower:resolved', (event: TowerResolutionEvent) => {
     if (!event.success) {
-      addTowerExplosion(event.x, event.y, currentGameState.timestamp);
+      addExplosion(event.x, event.y, currentGameState.timestamp);
     }
   });
 

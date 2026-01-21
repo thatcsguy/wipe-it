@@ -1,7 +1,7 @@
 import { PlayerState, MechanicState, StatusEffectState, DoodadState, ARENA_WIDTH, ARENA_HEIGHT, PLAYER_RADIUS, MAX_HP, CANVAS_SIZE, ARENA_OFFSET } from '../shared/types';
 import { renderMechanics, PlayerPositionData } from './mechanics/index';
 import { renderStatusEffects } from './statusEffects';
-import { renderTowerExplosions } from './mechanics/towerExplosion';
+import { renderExplosions } from './animations/explosion';
 import { renderDoodads, DoodadPositionData } from './doodads/index';
 
 // Canvas and context (initialized on first render call)
@@ -294,9 +294,9 @@ export function render(
     renderDoodads(ctx, doodads, 'foreground', serverTime, posData);
   }
 
-  // Draw tower explosions on top of everything
+  // Draw explosions on top of everything
   if (serverTime !== undefined) {
-    renderTowerExplosions(ctx, serverTime);
+    renderExplosions(ctx, serverTime);
   }
 
   ctx.restore();
