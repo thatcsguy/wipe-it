@@ -19,6 +19,7 @@ export class Player {
   y: number;
   color: string;
   hp: number;
+  dead: boolean;
   lastProcessedInput: number;
   knockback: KnockbackState | undefined;
   private statusEffectManager: StatusEffectManager | null = null;
@@ -28,6 +29,7 @@ export class Player {
     this.name = name;
     this.color = color;
     this.hp = MAX_HP;
+    this.dead = false;
     // Start in center of arena
     this.x = ARENA_WIDTH / 2;
     this.y = ARENA_HEIGHT / 2;
@@ -36,6 +38,10 @@ export class Player {
 
   setStatusEffectManager(manager: StatusEffectManager): void {
     this.statusEffectManager = manager;
+  }
+
+  setDead(dead: boolean): void {
+    this.dead = dead;
   }
 
   processInput(input: PlayerInput, now: number): void {
@@ -170,6 +176,7 @@ export class Player {
       y: this.y,
       color: this.color,
       hp: this.hp,
+      dead: this.dead,
       lastProcessedInput: this.lastProcessedInput,
       statusEffects: [], // Populated by StatusEffectManager
       knockback: this.knockback,

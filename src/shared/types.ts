@@ -59,6 +59,7 @@ export interface PlayerState {
   y: number;
   color: string;
   hp: number;
+  dead: boolean;
   lastProcessedInput: number;
   statusEffects: StatusEffectState[];
   knockback?: KnockbackState;
@@ -244,4 +245,7 @@ export interface GameState {
   statusEffects: StatusEffectState[];
   doodads: DoodadState[];
   timestamp: number;
+  godMode: boolean;
+  wipeInProgress: boolean;
+  readyPlayerIds: string[];
 }

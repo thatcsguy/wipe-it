@@ -8,7 +8,7 @@
       "Find PlayerState interface (around line 55)",
       "Verify 'dead: boolean' field exists in the interface"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "id": "WIPE-002",
@@ -19,7 +19,7 @@
       "Find GameState interface (around line 241)",
       "Verify all three fields exist: godMode: boolean, wipeInProgress: boolean, readyPlayerIds: string[]"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "id": "WIPE-003",
@@ -31,7 +31,7 @@
       "Verify setDead(dead: boolean) method exists",
       "Verify toState() includes 'dead: this.dead' in returned object"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "id": "WIPE-004",
@@ -141,7 +141,7 @@
       "Find broadcast() method",
       "Verify the state object includes godMode, wipeInProgress, and readyPlayerIds fields"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "id": "WIPE-013",

@@ -1,0 +1,16 @@
+WIPE-001, WIPE-002, WIPE-003, WIPE-012 COMPLETE
+
+Added wipe system foundation types:
+- PlayerState.dead: boolean (types.ts:62)
+- GameState.godMode/wipeInProgress/readyPlayerIds (types.ts:249-251)
+- Player class: dead field, setDead(), toState() updated (player.ts)
+- Game class: godMode=true, wipeInProgress=false, readyPlayers Set (game.ts)
+- broadcast() and getState() include new fields
+
+Files changed:
+- src/shared/types.ts
+- src/server/player.ts
+- src/server/game.ts
+- src/client/game.ts (init state defaults)
+
+Build passes. Playwright verified fields broadcast correctly.

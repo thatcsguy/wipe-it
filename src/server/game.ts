@@ -32,6 +32,9 @@ export class Game extends EventEmitter {
   private statusEffectManager: StatusEffectManager = new StatusEffectManager();
   private doodadManager: DoodadManager = new DoodadManager();
   private playerCounter: number = 0;
+  godMode: boolean = true;
+  wipeInProgress: boolean = false;
+  readyPlayers: Set<string> = new Set();
 
   constructor(io: Server) {
     super();
@@ -193,6 +196,9 @@ export class Game extends EventEmitter {
       statusEffects: allStatusEffects,
       doodads: this.doodadManager.getStates(),
       timestamp: Date.now(),
+      godMode: this.godMode,
+      wipeInProgress: this.wipeInProgress,
+      readyPlayerIds: Array.from(this.readyPlayers),
     };
     this.io.emit('state', state);
   }
@@ -347,6 +353,9 @@ export class Game extends EventEmitter {
       statusEffects: allStatusEffects,
       doodads: this.doodadManager.getStates(),
       timestamp: Date.now(),
+      godMode: this.godMode,
+      wipeInProgress: this.wipeInProgress,
+      readyPlayerIds: Array.from(this.readyPlayers),
     };
   }
 
