@@ -9,7 +9,7 @@ const KNOCKBACK_DURATION = 1000;
 const HALF_W = ARENA_WIDTH / 2;  // 400
 const HALF_H = ARENA_HEIGHT / 2; // 300
 
-// Timeline:
+// Timeline (absolute times from script start):
 // T=0ms      First knockback pair spawns (NW/SE or NE/SW)
 // T=2000ms   Second knockback pair spawns
 // T=4000ms   Warning statuses applied
@@ -22,10 +22,10 @@ const HALF_H = ARENA_HEIGHT / 2; // 300
 
 const SECOND_PAIR_SPAWN = 2000;
 const WARNING_START = 4000;
-const WARNING_DURATION = 5000;      // 4000 → 9000
-const FIRST_KNOCK_DELAY = 9500;     // from T=0
-const SECOND_KNOCK_DELAY = 9000;    // from T=2000 (triggers at T=11000)
-const FINAL_STATUS_DURATION = 3500; // 9000 → 12500
+const WARNING_DURATION = 5000;          // 4000 → 9000
+const FIRST_KNOCK_TRIGGER = 9500;       // absolute time from script start
+const SECOND_KNOCK_TRIGGER = 11000;     // absolute time from script start
+const FINAL_STATUS_DURATION = 3500;     // 9000 → 12500
 
 /**
  * Quad-Knock: 4 linear knockbacks in two pairs (opposite corners).
@@ -80,8 +80,8 @@ export const quadKnock: Script = async (runner) => {
   const firstPair = nwSeFirst ? [nw, se] : [ne, sw];
   const secondPair = nwSeFirst ? [ne, sw] : [nw, se];
 
-  // Helper to spawn a knockback
-  const spawnKnockback = (q: typeof nw, delay: number) => {
+  // Helper to spawn a knockback using triggerAt (absolute time from script start)
+  const spawnKnockback = (q: typeof nw, triggerAt: number) => {
     runner.spawn({
       type: 'linearKnockback',
       lineStartX: q.startX,
@@ -89,21 +89,21 @@ export const quadKnock: Script = async (runner) => {
       lineEndX: q.endX,
       lineEndY: q.endY,
       width: q.width,
-      delay,
+      triggerAt,
       knockbackDistance: KNOCKBACK_DISTANCE,
       knockbackDuration: KNOCKBACK_DURATION,
     });
   };
 
-  // T=0: Spawn first pair
+  // T=0: Spawn first pair (triggers at T=9500)
   for (const q of firstPair) {
-    spawnKnockback(q, FIRST_KNOCK_DELAY);
+    spawnKnockback(q, FIRST_KNOCK_TRIGGER);
   }
 
-  // T=2000: Spawn second pair
+  // T=2000: Spawn second pair (triggers at T=11000)
   await runner.wait(SECOND_PAIR_SPAWN);
   for (const q of secondPair) {
-    spawnKnockback(q, SECOND_KNOCK_DELAY);
+    spawnKnockback(q, SECOND_KNOCK_TRIGGER);
   }
 
   // T=4000: Apply warning statuses (distributed equally)

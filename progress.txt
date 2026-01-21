@@ -45,3 +45,10 @@ TRIGGER-008: E2E test verifies triggerAt synchronizes mechanics to absolute time
 - Client method: __adminTest.emitRunTriggerAtTest()
 - Build passes
 - Files: src/server/encounters/scripts/tests/trigger-at-test.ts, src/server/index.ts, src/client/admin.ts
+
+TRIGGER-007: Migrated quad-knock.ts to use triggerAt
+- Renamed FIRST_KNOCK_DELAY → FIRST_KNOCK_TRIGGER (9500), SECOND_KNOCK_DELAY → SECOND_KNOCK_TRIGGER (11000)
+- spawnKnockback helper now takes triggerAt param instead of delay
+- Updated timeline comment to emphasize absolute times
+- Build passes
+- File: src/server/encounters/scripts/combos/quad-knock.ts
