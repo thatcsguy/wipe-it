@@ -229,6 +229,14 @@ export interface TowerResolutionEvent {
   y: number;
 }
 
+// Player damaged event - emitted when a player takes damage
+export interface PlayerDamagedEvent {
+  playerId: string;
+  playerName: string;
+  dealt: number;
+  overkill: number;
+}
+
 // Game state broadcast from server to clients
 export interface GameState {
   players: PlayerState[];

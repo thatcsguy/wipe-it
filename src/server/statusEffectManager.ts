@@ -6,6 +6,12 @@ export class StatusEffectManager {
   private statuses: Map<string, StatusEffect> = new Map();
 
   add(status: StatusEffect): void {
+    // Ignore if player already has the same status type
+    for (const existing of this.statuses.values()) {
+      if (existing.playerId === status.playerId && existing.type === status.type) {
+        return;
+      }
+    }
     this.statuses.set(status.id, status);
   }
 

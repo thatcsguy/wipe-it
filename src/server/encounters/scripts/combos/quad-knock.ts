@@ -12,12 +12,12 @@ const HALF_H = ARENA_HEIGHT / 2; // 400
 // Timeline (absolute times from script start):
 // T=0ms      First knockback pair spawns (NW/SE or NE/SW)
 // T=2000ms   Second knockback pair spawns
-// T=4000ms   Warning statuses applied
+// T=4000ms   Warning statuses applied + additional mechanics spawn (spreads or stacks)
 // T=9000ms   Warnings convert to rooted/bubbled
 // T=9500ms   First knockbacks trigger
 // T=10500ms  First knockback ends
 // T=11000ms  Second knockbacks trigger
-// T=12000ms  Second knockback ends
+// T=12000ms  Second knockback ends, additional mechanics resolve
 // T=12500ms  All statuses expire
 
 const SECOND_PAIR_SPAWN = 2000;
@@ -26,6 +26,14 @@ const WARNING_DURATION = 5000;          // 4000 → 9000
 const FIRST_KNOCK_TRIGGER = 9500;       // absolute time from script start
 const SECOND_KNOCK_TRIGGER = 11000;     // absolute time from script start
 const FINAL_STATUS_DURATION = 3500;     // 9000 → 12500
+
+// Additional mechanic constants
+const ADDITIONAL_MECHANIC_DURATION = 8000; // 4000 → 12000 (resolve at end of final knockback)
+const SPREAD_RADIUS = 400;
+const SPREAD_DAMAGE = 25;
+const STACK_RADIUS = 100;
+const STACK_TOTAL_DAMAGE = 100;
+const VULNERABILITY_DURATION = 1000;
 
 /**
  * Quad-Knock: 4 linear knockbacks in two pairs (opposite corners).
@@ -99,6 +107,10 @@ export const quadKnock: Script = async (runner) => {
   const rootedPlayerIds: string[] = [];
   const bubbledPlayerIds: string[] = [];
 
+  // Track additional mechanics
+  const additionalMechanicIds: string[] = [];
+  let isSpreadCase = false;
+
   // T=0: Spawn first pair (triggers at T=9500)
   runner.at(0, () => {
     for (const q of firstPair) {
@@ -113,7 +125,7 @@ export const quadKnock: Script = async (runner) => {
     }
   });
 
-  // T=4000: Apply warning statuses (distributed equally)
+  // T=4000: Apply warning statuses (distributed equally) + spawn additional mechanics
   runner.at(WARNING_START, () => {
     const players = runner.select(all());
     const shuffled = [...players].sort(() => Math.random() - 0.5);
@@ -133,6 +145,35 @@ export const quadKnock: Script = async (runner) => {
         bubbledPlayerIds.push(player.id);
       }
     }
+
+    // Spawn additional mechanics: 50% spread case, 50% stack case
+    isSpreadCase = Math.random() < 0.5;
+
+    if (isSpreadCase) {
+      // Case 1: All players get 400px spread
+      for (const player of players) {
+        const id = runner.spawn({
+          type: 'spread',
+          targetPlayerId: player.id,
+          radius: SPREAD_RADIUS,
+          duration: ADDITIONAL_MECHANIC_DURATION,
+        });
+        additionalMechanicIds.push(id);
+      }
+    } else {
+      // Case 2: Either rooted or bubbled players get 100px stack
+      const giveToRooted = Math.random() < 0.5;
+      const targetIds = giveToRooted ? rootedPlayerIds : bubbledPlayerIds;
+      for (const playerId of targetIds) {
+        const id = runner.spawn({
+          type: 'stack',
+          targetPlayerId: playerId,
+          radius: STACK_RADIUS,
+          duration: ADDITIONAL_MECHANIC_DURATION,
+        });
+        additionalMechanicIds.push(id);
+      }
+    }
   });
 
   // T=9000: Convert warnings to final statuses
@@ -147,6 +188,36 @@ export const quadKnock: Script = async (runner) => {
 
   // Execute the timeline
   await runner.runTimeline();
+
+  // Wait for additional mechanics to resolve (T=12000) and apply damage/effects
+  // Register ALL handlers upfront before any mechanics resolve (they resolve simultaneously)
+  if (isSpreadCase) {
+    const resolvePromises = additionalMechanicIds.map(id => runner.waitForResolve(id));
+    const results = await Promise.all(resolvePromises);
+
+    // Process results sequentially for proper vulnerability chaining
+    for (const result of results) {
+      const { playersHit } = result.data as { playersHit: string[] };
+      for (const playerId of playersHit) {
+        runner.damage(playerId, SPREAD_DAMAGE);
+        runner.applyStatus(playerId, 'vulnerability', VULNERABILITY_DURATION);
+      }
+    }
+  } else {
+    const resolvePromises = additionalMechanicIds.map(id => runner.waitForResolve(id));
+    const results = await Promise.all(resolvePromises);
+
+    for (const result of results) {
+      const { playersInside } = result.data as { playersInside: string[] };
+      if (playersInside.length > 0) {
+        const damagePerPlayer = STACK_TOTAL_DAMAGE / playersInside.length;
+        for (const playerId of playersInside) {
+          runner.damage(playerId, damagePerPlayer);
+          runner.applyStatus(playerId, 'vulnerability', VULNERABILITY_DURATION);
+        }
+      }
+    }
+  }
 
   // Wait for statuses to expire (T=12500)
   await runner.wait(FINAL_STATUS_DURATION);

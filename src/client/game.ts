@@ -1,5 +1,5 @@
 import { Socket } from 'socket.io-client';
-import { GameState, PlayerState, MechanicState, TetherResolutionEvent, TowerResolutionEvent, StatusEffectState } from '../shared/types';
+import { GameState, PlayerState, MechanicState, TetherResolutionEvent, TowerResolutionEvent, StatusEffectState, PlayerDamagedEvent } from '../shared/types';
 import { hasInput, createInput } from './input';
 import {
   applyInput,
@@ -148,11 +148,7 @@ function checkPlayerChanges(state: GameState): void {
     const prev = previousPlayerStates.get(player.id);
 
     if (prev) {
-      // Check for damage (HP decreased)
-      if (player.hp < prev.hp) {
-        const damage = prev.hp - player.hp;
-        logCombat(`${player.name} took ${damage} damage`);
-      }
+      // Note: Damage logging is handled by 'player:damaged' socket event
 
       // Check for gained status effects
       const prevEffectTypes = new Set(prev.statusEffects.map(e => e.type));
@@ -219,6 +215,15 @@ export function startGame(
   socket.on('tower:resolved', (event: TowerResolutionEvent) => {
     if (!event.success) {
       addTowerExplosion(event.x, event.y, currentGameState.timestamp);
+    }
+  });
+
+  // Set up player damaged listener
+  socket.on('player:damaged', (event: PlayerDamagedEvent) => {
+    if (event.overkill > 0) {
+      logCombat(`${event.playerName} took ${event.dealt} damage (${event.overkill} overkill)`);
+    } else {
+      logCombat(`${event.playerName} took ${event.dealt} damage`);
     }
   });
 

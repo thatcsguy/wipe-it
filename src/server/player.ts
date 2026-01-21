@@ -102,7 +102,7 @@ export class Player {
     this.y = Math.max(PLAYER_RADIUS, Math.min(ARENA_HEIGHT - PLAYER_RADIUS, this.y));
   }
 
-  takeDamage(amount: number): void {
+  takeDamage(amount: number): { dealt: number; overkill: number } {
     let finalAmount = amount;
 
     // Check for vulnerability status - multiplies damage by 10
@@ -114,7 +114,10 @@ export class Player {
       }
     }
 
+    const overkill = Math.max(0, finalAmount - this.hp);
     this.hp = Math.max(0, this.hp - finalAmount);
+
+    return { dealt: finalAmount, overkill };
   }
 
   /**

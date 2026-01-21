@@ -134,6 +134,10 @@ export class Game extends EventEmitter {
     return this.players.get(socketId);
   }
 
+  broadcastDamage(playerId: string, playerName: string, dealt: number, overkill: number): void {
+    this.io.emit('player:damaged', { playerId, playerName, dealt, overkill });
+  }
+
   private tick(): void {
     const now = Date.now();
 

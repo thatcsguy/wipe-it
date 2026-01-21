@@ -279,7 +279,8 @@ export class ScriptRunnerImpl implements ScriptRunner {
   damage(playerId: string, amount: number): void {
     const player = this.game.getPlayer(playerId);
     if (player) {
-      player.takeDamage(amount);
+      const { dealt, overkill } = player.takeDamage(amount);
+      this.game.broadcastDamage(playerId, player.name, dealt, overkill);
     }
   }
 
