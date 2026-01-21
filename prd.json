@@ -1,116 +1,254 @@
-{
-  "feature": "Absolute Timeline Scheduler (at() + runTimeline())",
-  "summary": "Add at(absoluteTime, callback) + runTimeline() API to ScriptRunner for declarative scheduling of any action at absolute times from script start. Eliminates manual delta calculations between sequential wait() calls. Supports dynamic scheduling (at() calls during runTimeline() execution).",
-  "items": [
-    {
-      "id": "TIMELINE-001",
-      "category": "types",
-      "description": "Add at() and runTimeline() methods to ScriptRunner interface in src/server/encounters/types.ts",
-      "stepsToVerify": [
-        "Open src/server/encounters/types.ts",
-        "Verify ScriptRunner interface has: at(time: number, fn: () => void | Promise<void>): void",
-        "Verify ScriptRunner interface has: runTimeline(): Promise<void>",
-        "Run 'npm run build' - should compile without errors"
-      ],
-      "passes": true
-    },
-    {
-      "id": "TIMELINE-002",
-      "category": "infrastructure",
-      "description": "Add private timeline array to ScriptRunnerImpl to store scheduled actions as {time, fn} entries",
-      "stepsToVerify": [
-        "Open src/server/encounters/script-runner.ts",
-        "Verify private field exists: timeline: Array<{ time: number; fn: () => void | Promise<void> }> = []",
-        "Run 'npm run build' - should compile without errors"
-      ],
-      "passes": true
-    },
-    {
-      "id": "TIMELINE-003",
-      "category": "infrastructure",
-      "description": "Implement at(time, fn) method that pushes scheduled action to timeline array",
-      "stepsToVerify": [
-        "Open src/server/encounters/script-runner.ts",
-        "Verify at() method pushes { time, fn } to this.timeline array",
-        "Method should not execute fn immediately - only queues it",
-        "Run 'npm run build' - should compile without errors"
-      ],
-      "passes": true
-    },
-    {
-      "id": "TIMELINE-004",
-      "category": "infrastructure",
-      "description": "Implement runTimeline() that executes queued actions in time order with appropriate waits",
-      "stepsToVerify": [
-        "Open src/server/encounters/script-runner.ts",
-        "Verify runTimeline() loops while this.timeline.length > 0",
-        "Verify it sorts timeline by time ascending each iteration (for dynamic scheduling support)",
-        "Verify it shifts first entry, calculates wait = entry.time - getElapsedTime()",
-        "Verify it calls await this.wait(waitTime) if waitTime > 0",
-        "Verify it awaits the entry's fn() to support async callbacks",
-        "Run 'npm run build' - should compile without errors"
-      ],
-      "passes": true
-    },
-    {
-      "id": "TIMELINE-005",
-      "category": "dynamic-scheduling",
-      "description": "runTimeline() supports dynamic at() calls during execution - new entries get inserted into remaining timeline",
-      "stepsToVerify": [
-        "Create test script that: calls at(0, fn1), at(2000, fn2)",
-        "fn1 should call at(1000, fn3) dynamically",
-        "Call runTimeline()",
-        "Execution order should be: fn1 at T=0, fn3 at T=1000, fn2 at T=2000",
-        "Verify by console.log timestamps or by checking side effects in order"
-      ],
-      "passes": true
-    },
-    {
-      "id": "TIMELINE-006",
-      "category": "scoped-isolation",
-      "description": "Sub-scripts via run() get isolated timeline arrays (new runner = fresh empty timeline)",
-      "stepsToVerify": [
-        "Open src/server/encounters/script-runner.ts",
-        "Verify run() creates new ScriptRunnerImpl (already implemented for triggerAt)",
-        "New instance will have empty timeline array by default",
-        "Test: parent queues items, calls run(subScript), parent's timeline unaffected by sub-script",
-        "Sub-script can use its own at() + runTimeline() independently"
-      ],
-      "passes": true
-    },
-    {
-      "id": "TIMELINE-007",
-      "category": "script-migration",
-      "description": "Migrate quad-knock.ts to use at() + runTimeline() instead of sequential await wait() calls",
-      "stepsToVerify": [
-        "Open src/server/encounters/scripts/combos/quad-knock.ts",
-        "Replace sequential wait/action pattern with at() calls:",
-        "  - at(0, () => spawn first pair with triggerAt)",
-        "  - at(SECOND_PAIR_SPAWN, () => spawn second pair with triggerAt)",
-        "  - at(WARNING_START, () => apply warning statuses)",
-        "  - at(WARNING_START + WARNING_DURATION, () => convert to final statuses)",
-        "End with: await runner.runTimeline()",
-        "Optionally add final at() or wait() for cleanup timing",
-        "Run 'npm run build' - should compile without errors"
-      ],
-      "passes": true
-    },
-    {
-      "id": "TIMELINE-008",
-      "category": "e2e-test",
-      "description": "Verify migrated quad-knock.ts works correctly via Playwright - same timing behavior as before",
-      "stepsToVerify": [
-        "Start dev server with 'npm run dev'",
-        "Use Playwright to navigate to localhost:3000?debug=1",
-        "Wait for player to join",
-        "Trigger quad-knock encounter via __adminTest.emitRunQuadKnock() or admin button",
-        "Verify first knockback pair triggers at T~9500ms",
-        "Verify second knockback pair triggers at T~11000ms",
-        "Verify warning statuses applied at T~4000ms",
-        "Verify final statuses (rooted/bubbled) applied at T~9000ms",
-        "Timing should match pre-migration behavior (TRIGGER-009 baseline)"
-      ],
-      "passes": true
-    }
-  ]
-}
+[
+  {
+    "id": "STACK-001",
+    "category": "types",
+    "description": "Add 'stack' to MechanicType union in src/shared/types.ts",
+    "steps_to_verify": [
+      "Open src/shared/types.ts",
+      "Find MechanicType union (around line 68)",
+      "Verify 'stack' is included in the union"
+    ],
+    "passes": false
+  },
+  {
+    "id": "STACK-002",
+    "category": "types",
+    "description": "Create StackMechanicState interface in src/shared/types.ts with fields: type: 'stack', id: string, startTime: number, endTime: number, targetPlayerId: string, radius: number",
+    "steps_to_verify": [
+      "Open src/shared/types.ts",
+      "Find StackMechanicState interface",
+      "Verify all required fields exist with correct types",
+      "Verify interface is exported"
+    ],
+    "passes": false
+  },
+  {
+    "id": "STACK-003",
+    "category": "types",
+    "description": "Add StackMechanicState to MechanicState union in src/shared/types.ts",
+    "steps_to_verify": [
+      "Open src/shared/types.ts",
+      "Find MechanicState union type",
+      "Verify StackMechanicState is included in the union"
+    ],
+    "passes": false
+  },
+  {
+    "id": "STACK-004",
+    "category": "server",
+    "description": "Create StackMechanic class in src/server/mechanics/stack.ts implementing BaseMechanic interface. Constructor takes (targetPlayerId: string, radius: number, duration: number). Must generate unique ID with format 'stack-{timestamp}-{random}'",
+    "steps_to_verify": [
+      "File src/server/mechanics/stack.ts exists",
+      "Class implements BaseMechanic interface",
+      "Constructor accepts targetPlayerId, radius, duration parameters",
+      "ID is generated in correct format",
+      "startTime and endTime are calculated correctly from duration"
+    ],
+    "passes": false
+  },
+  {
+    "id": "STACK-005",
+    "category": "server",
+    "description": "StackMechanic.getResult() returns { mechanicId, type: 'stack', data: { playersInside: string[], targetPosition: {x,y} | null } }. Must find target player position from players map, then check all players within radius using distance formula",
+    "steps_to_verify": [
+      "getResult method exists on StackMechanic",
+      "Returns MechanicResult with correct structure",
+      "playersInside contains IDs of all players within radius of target",
+      "targetPosition is {x,y} of target player, or null if target not found",
+      "Distance calculation uses sqrt((dx)^2 + (dy)^2) <= radius"
+    ],
+    "passes": false
+  },
+  {
+    "id": "STACK-006",
+    "category": "server",
+    "description": "StackMechanic.toState() returns StackMechanicState with all required fields for client rendering",
+    "steps_to_verify": [
+      "toState method exists",
+      "Returns object with type: 'stack'",
+      "Includes id, startTime, endTime, targetPlayerId, radius"
+    ],
+    "passes": false
+  },
+  {
+    "id": "STACK-007",
+    "category": "server",
+    "description": "Add spawnStack(targetPlayerId: string, radius: number, duration: number): string method to Game class in src/server/game.ts. Creates StackMechanic, adds to mechanicManager, returns mechanic ID",
+    "steps_to_verify": [
+      "spawnStack method exists on Game class",
+      "Creates new StackMechanic with provided parameters",
+      "Adds mechanic to this.mechanicManager",
+      "Returns the mechanic ID string"
+    ],
+    "passes": false
+  },
+  {
+    "id": "STACK-008",
+    "category": "server",
+    "description": "Add stack to MechanicParams union in src/server/encounters/types.ts: { type: 'stack'; targetPlayerId: string; radius?: number; duration?: number; triggerAt?: number }",
+    "steps_to_verify": [
+      "Open src/server/encounters/types.ts",
+      "Find MechanicParams union",
+      "Verify stack variant exists with correct optional fields"
+    ],
+    "passes": false
+  },
+  {
+    "id": "STACK-009",
+    "category": "server",
+    "description": "Add stack defaults to DEFAULTS object in src/server/encounters/script-runner.ts: { radius: 80, duration: 3000 }",
+    "steps_to_verify": [
+      "Open src/server/encounters/script-runner.ts",
+      "Find DEFAULTS object",
+      "Verify stack entry exists with radius: 80, duration: 3000"
+    ],
+    "passes": false
+  },
+  {
+    "id": "STACK-010",
+    "category": "server",
+    "description": "Add stack case to spawn() method in ScriptRunnerImpl. Must call game.spawnStack() with merged defaults",
+    "steps_to_verify": [
+      "Find spawn() method in script-runner.ts",
+      "Verify case for type === 'stack' exists",
+      "Calls this.game.spawnStack() with correct parameters",
+      "Returns mechanic ID"
+    ],
+    "passes": false
+  },
+  {
+    "id": "STACK-011",
+    "category": "client",
+    "description": "Create src/client/mechanics/stack.ts with renderStack(ctx, mechanic, serverTime, posData) function. Must get target player position using getPlayerPosition() helper",
+    "steps_to_verify": [
+      "File src/client/mechanics/stack.ts exists",
+      "renderStack function is exported",
+      "Function signature matches (ctx: CanvasRenderingContext2D, mechanic: StackMechanicState, serverTime: number, posData: PlayerPositionData)",
+      "Uses getPlayerPosition(mechanic.targetPlayerId, posData) to find target"
+    ],
+    "passes": false
+  },
+  {
+    "id": "STACK-012",
+    "category": "client",
+    "description": "renderStack draws thin static yellow radius circle: color #ffdd00, 2px stroke width, ~0.6 opacity, centered on target player position",
+    "steps_to_verify": [
+      "Use Playwright to navigate to localhost:3000?debug=1",
+      "Join game and spawn stack via __adminTest.emitSpawnStack({ duration: 10000 })",
+      "Take screenshot",
+      "Verify thin yellow circle is visible around target player",
+      "Circle should not animate/pulse (static)"
+    ],
+    "passes": false
+  },
+  {
+    "id": "STACK-013",
+    "category": "client",
+    "description": "renderStack draws 8 FFXIV-style arrows positioned slightly outside radius circle, pointing inward toward target center. Arrows are yellow (#ffdd00), elongated with tails",
+    "steps_to_verify": [
+      "Use Playwright to spawn stack with long duration",
+      "Take screenshot",
+      "Verify 8 arrows visible around the circle",
+      "Arrows point toward center",
+      "Arrows positioned just outside the radius circle",
+      "Arrow style is elongated with tails (not simple triangles)"
+    ],
+    "passes": false
+  },
+  {
+    "id": "STACK-014",
+    "category": "client",
+    "description": "Arrows have pulsing animation: scale and opacity pulse inward with 800ms cycle",
+    "steps_to_verify": [
+      "Use Playwright to spawn stack",
+      "Take multiple screenshots 400ms apart",
+      "Compare arrow size/opacity between screenshots",
+      "Verify arrows are animating (not static)"
+    ],
+    "passes": false
+  },
+  {
+    "id": "STACK-015",
+    "category": "client",
+    "description": "Add stack case to renderMechanics() in src/client/mechanics/index.ts. Import renderStack and call it when mechanic.type === 'stack'",
+    "steps_to_verify": [
+      "Open src/client/mechanics/index.ts",
+      "Verify import statement for renderStack exists",
+      "Verify case for 'stack' type in renderMechanics switch/if chain",
+      "Verify renderStack is called with correct arguments including posData"
+    ],
+    "passes": false
+  },
+  {
+    "id": "STACK-016",
+    "category": "integration",
+    "description": "Add admin button #spawn-stack-btn and __adminTest.emitSpawnStack(options?) method for testing. Options should support { duration?: number, radius?: number }",
+    "steps_to_verify": [
+      "Use Playwright to navigate to localhost:3000?debug=1",
+      "Verify #spawn-stack-btn button exists in admin panel",
+      "Run: await page.evaluate(() => __adminTest.emitSpawnStack({ duration: 5000 }))",
+      "Verify stack mechanic appears on target player"
+    ],
+    "passes": false
+  },
+  {
+    "id": "STACK-017",
+    "category": "integration",
+    "description": "Add socket handler for 'admin:spawnStack' in src/server/index.ts that calls game.spawnStack() on a random player",
+    "steps_to_verify": [
+      "Open src/server/index.ts",
+      "Find socket handler for admin:spawnStack",
+      "Verify it selects a player and calls game.spawnStack()"
+    ],
+    "passes": false
+  },
+  {
+    "id": "STACK-018",
+    "category": "e2e",
+    "description": "Stack mechanic follows target player position (renders at player's interpolated position, not fixed coordinates)",
+    "steps_to_verify": [
+      "Use Playwright to join game",
+      "Spawn stack on local player",
+      "Move player using keyboard input",
+      "Take screenshots before and after movement",
+      "Verify stack visual moved with player"
+    ],
+    "passes": false
+  },
+  {
+    "id": "STACK-019",
+    "category": "e2e",
+    "description": "Stack getResult() correctly identifies players inside radius when mechanic expires",
+    "steps_to_verify": [
+      "Use Playwright with 2+ players or test script",
+      "Spawn stack on player A with known radius",
+      "Position player B inside radius, player C outside",
+      "Wait for mechanic to expire",
+      "Verify getResult returns player A and B in playersInside, not C"
+    ],
+    "passes": false
+  },
+  {
+    "id": "STACK-020",
+    "category": "e2e",
+    "description": "Stack can be spawned via encounter script using runner.spawn({ type: 'stack', targetPlayerId: '...' })",
+    "steps_to_verify": [
+      "Create test script that spawns stack mechanic",
+      "Run script via admin button or direct call",
+      "Verify stack appears on target player",
+      "Verify waitForResolve returns correct MechanicResult"
+    ],
+    "passes": false
+  },
+  {
+    "id": "STACK-021",
+    "category": "build",
+    "description": "Project builds without TypeScript errors after all stack mechanic changes",
+    "steps_to_verify": [
+      "Run npm run build",
+      "Verify no TypeScript compilation errors",
+      "Verify build completes successfully"
+    ],
+    "passes": false
+  }
+]
