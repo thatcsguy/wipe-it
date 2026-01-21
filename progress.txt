@@ -24,3 +24,13 @@ Dead player freeze in processInput():
 
 Files changed:
 - src/server/player.ts (line 53-56)
+
+WIPE-005, WIPE-006 COMPLETE
+
+Game class wipe control methods:
+- activeScript: Script | null = null (completes WIPE-005)
+- toggleGodMode(): flips this.godMode
+- isWipeTriggered(): returns this.wipeInProgress
+
+Files changed:
+- src/server/game.ts (import Script, add field, add methods)

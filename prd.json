@@ -54,7 +54,7 @@
       "Verify all four fields exist on Game class with correct initial values",
       "godMode defaults to true (current behavior is god mode)"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "id": "WIPE-006",
@@ -65,7 +65,7 @@
       "Verify toggleGodMode() method exists and flips this.godMode",
       "Verify isWipeTriggered() method exists and returns this.wipeInProgress"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "id": "WIPE-007",

@@ -15,7 +15,7 @@ import { ConalAoeMechanic } from './mechanics/conalAoe';
 import { StackMechanic } from './mechanics/stack';
 import { TetherEndpoint } from '../shared/types';
 import { StatusEffectManager } from './statusEffectManager';
-import { MechanicResult } from './encounters/types';
+import { MechanicResult, Script } from './encounters/types';
 import { DoodadManager } from './doodads/manager';
 
 // Color pool for players
@@ -35,6 +35,7 @@ export class Game extends EventEmitter {
   godMode: boolean = true;
   wipeInProgress: boolean = false;
   readyPlayers: Set<string> = new Set();
+  activeScript: Script | null = null;
 
   constructor(io: Server) {
     super();
@@ -361,5 +362,13 @@ export class Game extends EventEmitter {
 
   getDoodadManager(): DoodadManager {
     return this.doodadManager;
+  }
+
+  toggleGodMode(): void {
+    this.godMode = !this.godMode;
+  }
+
+  isWipeTriggered(): boolean {
+    return this.wipeInProgress;
   }
 }
