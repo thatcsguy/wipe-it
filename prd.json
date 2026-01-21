@@ -110,7 +110,7 @@
         "Verify final statuses (rooted/bubbled) applied at T~9000ms",
         "Timing should match pre-migration behavior (TRIGGER-009 baseline)"
       ],
-      "passes": false
+      "passes": true
     }
   ]
 }

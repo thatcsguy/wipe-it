@@ -75,3 +75,18 @@ All timings within ~60ms tolerance. Script behavior unchanged.
 
 Files:
 - src/server/encounters/scripts/combos/quad-knock.ts: migrated to at() + runTimeline()
+
+## TIMELINE-008: E2E verification of quad-knock migration
+
+Full E2E test via Playwright confirms timing matches pre-migration behavior.
+
+Test results:
+- First pair spawn: T=20ms (expected T=0) ✓
+- Second pair spawn: T=2024ms (expected T=2000) ✓
+- Warning status: T=4031ms (expected T=4000) ✓
+- Final status: T=9039ms (expected T=9000) ✓
+- First knockbacks: T=9539ms (expected T=9500) ✓
+- Second knockbacks: T=11040ms (expected T=11000) ✓
+- Status expiry: T=12545ms (expected T=12500) ✓
+
+All timings within ~50ms tolerance. Matches TIMELINE-007 baseline.
