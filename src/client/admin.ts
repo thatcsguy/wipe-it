@@ -267,5 +267,10 @@ export function setChangeNameCallback(callback: () => void): void {
     if (adminSocket) {
       adminSocket.emit('admin:applyStatus', params);
     }
+  },
+  emitRunTriggerAtTest: () => {
+    if (adminSocket) {
+      adminSocket.emit('admin:runTriggerAtTest');
+    }
   }
 };

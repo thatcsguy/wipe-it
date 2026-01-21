@@ -120,7 +120,7 @@
         "Verify via debug panel: both mechanics should have similar endTime values",
         "Take screenshot showing both mechanics active simultaneously before resolve"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "id": "TRIGGER-009",

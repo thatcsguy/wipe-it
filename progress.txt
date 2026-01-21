@@ -35,3 +35,13 @@ TRIGGER-006a: runner.run() creates new ScriptRunnerImpl for sub-scripts
 - Admin handler: socket.on('admin:runScopedTimelineTest')
 - Build passes
 - File: src/server/encounters/script-runner.ts, src/server/index.ts
+
+TRIGGER-008: E2E test verifies triggerAt synchronizes mechanics to absolute time
+- Test: spawns chariot at T=0 with triggerAt:3000, spawns second at T=1500 with triggerAt:3000
+- Result: both resolve within 1ms of each other despite 1513ms spawn delta
+- Mechanic 1 duration: 3025ms, Mechanic 2 duration: 1513ms - both resolve at T~3000
+- Test script: src/server/encounters/scripts/tests/trigger-at-test.ts
+- Admin handler: socket.on('admin:runTriggerAtTest')
+- Client method: __adminTest.emitRunTriggerAtTest()
+- Build passes
+- Files: src/server/encounters/scripts/tests/trigger-at-test.ts, src/server/index.ts, src/client/admin.ts
