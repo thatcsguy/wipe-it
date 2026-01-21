@@ -52,3 +52,11 @@ TRIGGER-007: Migrated quad-knock.ts to use triggerAt
 - Updated timeline comment to emphasize absolute times
 - Build passes
 - File: src/server/encounters/scripts/combos/quad-knock.ts
+
+TRIGGER-009: E2E test verifies quad-knock knockbacks trigger at correct absolute times
+- Playwright test via browser_evaluate monitors mechanic lifecycle
+- First pair spawns T~0, resolves T~9540ms (expected 9500ms, delta <50ms)
+- Second pair spawns T~2000ms, resolves T~11040ms (expected 11000ms, delta <50ms)
+- triggerAt correctly calculates delay: 9500-0=9500 for first pair, 11000-2000=9000 for second
+- Verified player knockback state triggers at expected times
+- No code changes needed - test confirms existing implementation works

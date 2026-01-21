@@ -135,7 +135,7 @@
         "Second pair of knockbacks should trigger at T~11000ms from script start",
         "Verify timing by observing mechanic endTime values in debug panel or by player displacement timing"
       ],
-      "passes": false
+      "passes": true
     }
   ]
 }
