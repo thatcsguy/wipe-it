@@ -1,0 +1,15 @@
+## TIMELINE-001 to TIMELINE-004: at() + runTimeline() infrastructure
+
+Completed: types.ts interface + script-runner.ts implementation
+
+Key decisions:
+- at(time, fn) just pushes to timeline array, no validation
+- runTimeline() re-sorts each iteration for dynamic scheduling support
+- waitTime computed as entry.time - getElapsedTime(), skipped if <= 0
+- fn awaited to support async callbacks
+
+Files:
+- src/server/encounters/types.ts: added at(), runTimeline() to ScriptRunner interface
+- src/server/encounters/script-runner.ts: added timeline array, at(), runTimeline() methods
+
+Build passes. Sub-script isolation via run() already works - new ScriptRunnerImpl gets empty timeline by default.

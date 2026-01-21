@@ -12,7 +12,7 @@
         "Verify ScriptRunner interface has: runTimeline(): Promise<void>",
         "Run 'npm run build' - should compile without errors"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "id": "TIMELINE-002",
@@ -23,7 +23,7 @@
         "Verify private field exists: timeline: Array<{ time: number; fn: () => void | Promise<void> }> = []",
         "Run 'npm run build' - should compile without errors"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "id": "TIMELINE-003",
@@ -35,7 +35,7 @@
         "Method should not execute fn immediately - only queues it",
         "Run 'npm run build' - should compile without errors"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "id": "TIMELINE-004",
@@ -50,7 +50,7 @@
         "Verify it awaits the entry's fn() to support async callbacks",
         "Run 'npm run build' - should compile without errors"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "id": "TIMELINE-005",

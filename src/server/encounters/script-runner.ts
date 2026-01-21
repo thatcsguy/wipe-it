@@ -23,6 +23,7 @@ export class ScriptRunnerImpl implements ScriptRunner {
   private game: Game;
   private context: Context;
   private scriptStartTime: number;
+  private timeline: Array<{ time: number; fn: () => void | Promise<void> }> = [];
 
   constructor(game: Game) {
     this.game = game;
@@ -272,6 +273,26 @@ export class ScriptRunnerImpl implements ScriptRunner {
 
   removeDoodad(id: string): boolean {
     return this.game.getDoodadManager().remove(id);
+  }
+
+  at(time: number, fn: () => void | Promise<void>): void {
+    this.timeline.push({ time, fn });
+  }
+
+  async runTimeline(): Promise<void> {
+    while (this.timeline.length > 0) {
+      // Sort by time ascending each iteration to support dynamic scheduling
+      this.timeline.sort((a, b) => a.time - b.time);
+
+      const entry = this.timeline.shift()!;
+      const waitTime = entry.time - this.getElapsedTime();
+
+      if (waitTime > 0) {
+        await this.wait(waitTime);
+      }
+
+      await entry.fn();
+    }
   }
 
   async execute(script: Script): Promise<void> {

@@ -112,4 +112,16 @@ export interface ScriptRunner {
    * Remove a doodad by ID before its natural expiration
    */
   removeDoodad(id: string): boolean;
+
+  /**
+   * Schedule a callback to execute at an absolute time from script start.
+   * Does not execute immediately - queues for runTimeline().
+   */
+  at(time: number, fn: () => void | Promise<void>): void;
+
+  /**
+   * Execute all scheduled at() callbacks in time order.
+   * Supports dynamic scheduling (at() calls during execution).
+   */
+  runTimeline(): Promise<void>;
 }
