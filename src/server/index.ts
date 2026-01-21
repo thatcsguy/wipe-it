@@ -10,6 +10,7 @@ import { tetherLineCombo } from './encounters/scripts/combos/tether-line-combo';
 import { orbitalOmen } from './encounters/scripts/combos/orbital-omen';
 import { quadKnock } from './encounters/scripts/combos/quad-knock';
 import { tutorialEncounter } from './encounters/scripts/encounters/tutorial-encounter';
+import { scopedTimelineTest } from './encounters/scripts/tests/scoped-timeline-test';
 
 const app = express();
 const httpServer = createServer(app);
@@ -395,6 +396,12 @@ io.on('connection', (socket) => {
   socket.on('admin:runQuadKnock', () => {
     runEncounter(game, quadKnock);
     console.log('Admin started quad-knock');
+  });
+
+  // Test scoped timeline for sub-scripts (TRIGGER-006a)
+  socket.on('admin:runScopedTimelineTest', () => {
+    runEncounter(game, scopedTimelineTest);
+    console.log('Admin started scoped-timeline-test');
   });
 });
 

@@ -92,7 +92,7 @@
         "Test: parent script waits 5000ms then calls run(subScript), subScript spawns with triggerAt: 1000",
         "The mechanic should trigger at ~6000ms from parent start (5000 + 1000), not throw an error"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "id": "TRIGGER-007",

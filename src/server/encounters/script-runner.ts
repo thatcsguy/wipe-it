@@ -246,10 +246,12 @@ export class ScriptRunnerImpl implements ScriptRunner {
   }
 
   async run(script: Script): Promise<void> {
-    // Create fresh context for sub-script execution
+    // Create new ScriptRunnerImpl for sub-script with its own scoped timeline
+    // Sub-script's T=0 is when run() is called, not when parent started
+    const subRunner = new ScriptRunnerImpl(this.game);
     const ctx = createContext();
-    // Execute script, propagating any errors
-    await script(this, ctx);
+    // Execute script with new runner, propagating any errors
+    await script(subRunner, ctx);
   }
 
   applyStatus(playerId: string, statusType: StatusEffectType, duration: number): void {

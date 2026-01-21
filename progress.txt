@@ -26,3 +26,12 @@ TRIGGER-006: All 8 spawn() cases use computeTiming()
 - radialKnockback, linearKnockback use computeTiming for 'delay'
 - Build passes
 - File: src/server/encounters/script-runner.ts
+
+TRIGGER-006a: runner.run() creates new ScriptRunnerImpl for sub-scripts
+- Changed run() to create `new ScriptRunnerImpl(this.game)` instead of reusing `this`
+- Sub-script's T=0 is now when run() is called, not parent's start time
+- Verified via Playwright: parent waits 3000ms, sub-script spawns with triggerAt:1500 succeeds
+- Added test script: src/server/encounters/scripts/tests/scoped-timeline-test.ts
+- Admin handler: socket.on('admin:runScopedTimelineTest')
+- Build passes
+- File: src/server/encounters/script-runner.ts, src/server/index.ts
