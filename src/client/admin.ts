@@ -86,6 +86,16 @@ export function initAdmin(socket: Socket): void {
     });
   }
 
+  const toggleGodModeBtn = document.getElementById('toggle-godmode-btn');
+  if (toggleGodModeBtn) {
+    toggleGodModeBtn.addEventListener('click', () => {
+      if (adminSocket) {
+        adminSocket.emit('admin:toggleGodMode');
+        logCombat('Toggled god mode');
+      }
+    });
+  }
+
   const spawnRadialKbBtn = document.getElementById('spawn-radial-kb-btn');
   if (spawnRadialKbBtn) {
     spawnRadialKbBtn.addEventListener('click', () => {

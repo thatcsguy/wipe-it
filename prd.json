@@ -270,7 +270,7 @@
       "Find Utility section in admin panel",
       "Verify #toggle-godmode-btn button exists"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "id": "WIPE-024",
@@ -282,7 +282,7 @@
       "Verify it emits 'admin:toggleGodMode'",
       "Verify __adminTest.emitToggleGodMode exists"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "id": "WIPE-025",

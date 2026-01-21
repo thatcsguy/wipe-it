@@ -150,3 +150,17 @@ Files changed:
 - src/client/network.ts (import isLocalDead, early return in applyInput)
 
 Playwright verified: death -> applyInput with WASD -> position unchanged (400,400)
+
+WIPE-023, WIPE-024 COMPLETE
+
+God Mode toggle button in admin UI:
+- Added #toggle-godmode-btn to Utility section in index.html
+- Click handler emits 'admin:toggleGodMode' socket event
+- Logs "Toggled god mode" to combat log
+- __adminTest.emitToggleGodMode already existed from WIPE-008
+
+Files changed:
+- public/index.html (button added line 51)
+- src/client/admin.ts (click handler added lines 89-97)
+
+Playwright verified: click toggle -> godMode false->true->false
