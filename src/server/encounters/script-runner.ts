@@ -297,6 +297,10 @@ export class ScriptRunnerImpl implements ScriptRunner {
     return this.game.getDoodadManager().remove(id);
   }
 
+  moveDoodad(id: string, targetX: number, targetY: number, duration: number): boolean {
+    return this.game.getDoodadManager().moveDoodad(id, targetX, targetY, duration);
+  }
+
   at(time: number, fn: () => void | Promise<void>): void {
     this.timeline.push({ time, fn });
   }

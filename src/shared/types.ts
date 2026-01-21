@@ -184,7 +184,7 @@ export interface StackMechanicState {
 export type MechanicState = ChariotMechanicState | SpreadMechanicState | TetherMechanicState | TowerMechanicState | RadialKnockbackMechanicState | LinearKnockbackMechanicState | LineAoeMechanicState | ConalAoeMechanicState | StackMechanicState;
 
 // Doodad types - visual-only elements with no gameplay effect
-export type DoodadType = 'portal' | 'rect' | 'circle';
+export type DoodadType = 'portal' | 'rect' | 'circle' | 'crystal';
 export type DoodadLayer = 'background' | 'foreground';
 
 // Doodad anchor offset for player-anchored doodads
@@ -211,6 +211,13 @@ export interface DoodadState {
   y?: number;
   anchorPlayerId?: string;
   anchorOffset?: DoodadAnchorOffset;
+  // Movement animation (optional)
+  moveStartX?: number;
+  moveStartY?: number;
+  moveEndX?: number;
+  moveEndY?: number;
+  moveStartTime?: number;
+  moveEndTime?: number;
 }
 
 // Tether resolution event - emitted when a tether mechanic resolves

@@ -1,7 +1,9 @@
 import { DoodadState, DoodadLayer, PlayerState } from '../../shared/types';
+import { easeOutCubic } from '../../shared/knockback';
 import { renderPortal } from './portal';
 import { renderRect } from './rect';
 import { renderCircle } from './circle';
+import { renderCrystal } from './crystal';
 
 // Position lookup data for doodad rendering (same pattern as mechanics)
 export interface DoodadPositionData {
@@ -11,11 +13,25 @@ export interface DoodadPositionData {
   interpolatedPositions?: Map<string, { x: number; y: number }>;
 }
 
-// Resolve doodad position - either fixed or anchored to player
+// Resolve doodad position - either fixed, moving, or anchored to player
 export function resolvePosition(
   doodad: DoodadState,
-  posData: DoodadPositionData
+  posData: DoodadPositionData,
+  serverTime: number
 ): { x: number; y: number } | null {
+  // Movement animation takes priority
+  if (doodad.moveStartTime !== undefined && doodad.moveEndTime !== undefined) {
+    if (serverTime >= doodad.moveEndTime) {
+      return { x: doodad.moveEndX!, y: doodad.moveEndY! };
+    }
+    const t = (serverTime - doodad.moveStartTime) / (doodad.moveEndTime - doodad.moveStartTime);
+    const easedT = easeOutCubic(Math.max(0, Math.min(1, t)));
+    return {
+      x: doodad.moveStartX! + (doodad.moveEndX! - doodad.moveStartX!) * easedT,
+      y: doodad.moveStartY! + (doodad.moveEndY! - doodad.moveStartY!) * easedT,
+    };
+  }
+
   // Fixed position
   if (doodad.x !== undefined && doodad.y !== undefined) {
     return { x: doodad.x, y: doodad.y };
@@ -70,7 +86,7 @@ export function renderDoodads(
 
   for (const doodad of layerDoodads) {
     // Resolve position
-    const pos = resolvePosition(doodad, posData);
+    const pos = resolvePosition(doodad, posData, serverTime);
     if (!pos) continue;
 
     // Dispatch to type-specific renderer
@@ -83,6 +99,9 @@ export function renderDoodads(
         break;
       case 'circle':
         renderCircle(ctx, doodad, pos, serverTime);
+        break;
+      case 'crystal':
+        renderCrystal(ctx, doodad, pos, serverTime);
         break;
     }
   }

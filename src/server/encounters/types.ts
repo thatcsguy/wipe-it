@@ -115,6 +115,17 @@ export interface ScriptRunner {
   removeDoodad(id: string): boolean;
 
   /**
+   * Move a doodad to a target position over a duration.
+   * Uses ease-out cubic easing to match player knockback movement.
+   * @param id The doodad ID
+   * @param targetX Target X position
+   * @param targetY Target Y position
+   * @param duration Duration in milliseconds
+   * @returns true if move started, false if doodad not found or is player-anchored
+   */
+  moveDoodad(id: string, targetX: number, targetY: number, duration: number): boolean;
+
+  /**
    * Schedule a callback to execute at an absolute time from script start.
    * Does not execute immediately - queues for runTimeline().
    */

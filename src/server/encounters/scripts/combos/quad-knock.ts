@@ -1,6 +1,10 @@
 import { Script } from '../../types';
 import { ARENA_WIDTH, ARENA_HEIGHT } from '../../../../shared/types';
-import { all } from '../../targeting';
+import {
+  isInsideLinearKnockbackRect,
+  getLinearKnockbackDirection,
+  calculateKnockbackEndpoint,
+} from '../../../../shared/knockback';
 
 const KNOCKBACK_DISTANCE = 400;
 const KNOCKBACK_DURATION = 1000;
@@ -17,23 +21,29 @@ const HALF_H = ARENA_HEIGHT / 2; // 400
 // T=9500ms   First knockbacks trigger
 // T=10500ms  First knockback ends
 // T=11000ms  Second knockbacks trigger
-// T=12000ms  Second knockback ends, additional mechanics resolve
-// T=12500ms  All statuses expire
+// T=12000ms  Second knockback ends, line AOEs spawn through crystals
+// T=13000ms  All resolve together: line AOEs, spreads/stacks, rooted/bubbled expire
 
 const SECOND_PAIR_SPAWN = 2000;
 const WARNING_START = 4000;
 const WARNING_DURATION = 5000;          // 4000 → 9000
 const FIRST_KNOCK_TRIGGER = 9500;       // absolute time from script start
 const SECOND_KNOCK_TRIGGER = 11000;     // absolute time from script start
-const FINAL_STATUS_DURATION = 3500;     // 9000 → 12500
+const FINAL_STATUS_DURATION = 4000;     // 9000 → 13000 (synced with line AOEs)
 
 // Additional mechanic constants
-const ADDITIONAL_MECHANIC_DURATION = 8000; // 4000 → 12000 (resolve at end of final knockback)
-const SPREAD_RADIUS = 400;
+const ADDITIONAL_MECHANIC_DURATION = 9000; // 4000 → 13000 (synced with line AOEs)
+const SPREAD_RADIUS = 300;
 const SPREAD_DAMAGE = 25;
 const STACK_RADIUS = 100;
 const STACK_TOTAL_DAMAGE = 100;
 const VULNERABILITY_DURATION = 1000;
+
+// Crystal line AOE constants
+const CRYSTAL_AOE_SPAWN = SECOND_KNOCK_TRIGGER + KNOCKBACK_DURATION; // T=12000
+const CRYSTAL_AOE_DURATION = 1000;
+const CRYSTAL_AOE_WIDTH = 200;
+const CRYSTAL_AOE_DAMAGE = 100;
 
 /**
  * Quad-Knock: 4 linear knockbacks in two pairs (opposite corners).
@@ -88,6 +98,64 @@ export const quadKnock: Script = async (runner) => {
   const firstPair = nwSeFirst ? [nw, se] : [ne, sw];
   const secondPair = nwSeFirst ? [ne, sw] : [nw, se];
 
+  // Crystal positions
+  const crystalPositions = [
+    { x: 100, y: 100 },
+    { x: 500, y: 300 },
+    { x: 700, y: 500 },
+    { x: 300, y: 700 },
+  ];
+
+  // Randomly select 2 crystals to rotate 90 degrees
+  const rotatedIndices = new Set<number>();
+  while (rotatedIndices.size < 2) {
+    rotatedIndices.add(Math.floor(Math.random() * 4));
+  }
+
+  // Spawn 4 crystal doodads and track their positions and rotation
+  const crystals = crystalPositions.map((pos, i) => {
+    const isRotated = rotatedIndices.has(i);
+    const rotation = isRotated ? Math.PI / 2 : 0;
+    const id = runner.spawnDoodad({
+      type: 'crystal',
+      x: pos.x,
+      y: pos.y,
+      width: 30,
+      height: 60,
+      rotation,
+      duration: 15000,
+      layer: 'background',
+    });
+    return { id, x: pos.x, y: pos.y, isRotated };
+  });
+
+  // Helper to check if a crystal is in a knockback zone and move it
+  const checkAndKnockCrystal = (crystal: { id: string; x: number; y: number }, q: typeof nw) => {
+    if (isInsideLinearKnockbackRect(
+      q.startX, q.startY,
+      q.endX, q.endY,
+      q.width,
+      crystal.x, crystal.y
+    )) {
+      const dir = getLinearKnockbackDirection(q.startX, q.startY, q.endX, q.endY);
+      const endpoint = calculateKnockbackEndpoint(
+        crystal.x, crystal.y,
+        dir.x, dir.y,
+        KNOCKBACK_DISTANCE
+      );
+      runner.moveDoodad(crystal.id, endpoint.x, endpoint.y, KNOCKBACK_DURATION);
+      crystal.x = endpoint.x;
+      crystal.y = endpoint.y;
+    }
+  };
+
+  // Helper to check all crystals against a knockback zone
+  const checkAndKnockAllCrystals = (q: typeof nw) => {
+    for (const crystal of crystals) {
+      checkAndKnockCrystal(crystal, q);
+    }
+  };
+
   // Helper to spawn a knockback using triggerAt (absolute time from script start)
   const spawnKnockback = (q: typeof nw, triggerAt: number) => {
     runner.spawn({
@@ -111,6 +179,9 @@ export const quadKnock: Script = async (runner) => {
   const additionalMechanicIds: string[] = [];
   let isSpreadCase = false;
 
+  // Track crystal line AOE IDs
+  const crystalLineAoeIds: string[] = [];
+
   // T=0: Spawn first pair (triggers at T=9500)
   runner.at(0, () => {
     for (const q of firstPair) {
@@ -125,9 +196,54 @@ export const quadKnock: Script = async (runner) => {
     }
   });
 
+  // T=9500: First knockbacks trigger - check crystals
+  runner.at(FIRST_KNOCK_TRIGGER, () => {
+    for (const q of firstPair) {
+      checkAndKnockAllCrystals(q);
+    }
+  });
+
+  // T=11000: Second knockbacks trigger - check crystals
+  runner.at(SECOND_KNOCK_TRIGGER, () => {
+    for (const q of secondPair) {
+      checkAndKnockAllCrystals(q);
+    }
+  });
+
+  // T=12000: Second knockbacks resolve - spawn line AOEs through crystals
+  runner.at(CRYSTAL_AOE_SPAWN, () => {
+    for (const crystal of crystals) {
+      let id: string;
+      if (crystal.isRotated) {
+        // Rotated crystals (horizontal 2x1) → vertical line AOE through column, from north
+        id = runner.spawn({
+          type: 'lineAoe',
+          startX: crystal.x,
+          startY: 0,
+          endX: crystal.x,
+          endY: ARENA_HEIGHT,
+          width: CRYSTAL_AOE_WIDTH,
+          duration: CRYSTAL_AOE_DURATION,
+        });
+      } else {
+        // Non-rotated crystals (vertical 1x2) → horizontal line AOE through row, from east
+        id = runner.spawn({
+          type: 'lineAoe',
+          startX: ARENA_WIDTH,
+          startY: crystal.y,
+          endX: 0,
+          endY: crystal.y,
+          width: CRYSTAL_AOE_WIDTH,
+          duration: CRYSTAL_AOE_DURATION,
+        });
+      }
+      crystalLineAoeIds.push(id);
+    }
+  });
+
   // T=4000: Apply warning statuses (distributed equally) + spawn additional mechanics
   runner.at(WARNING_START, () => {
-    const players = runner.select(all());
+    const players = runner.getState().players; // Include dead players
     const shuffled = [...players].sort(() => Math.random() - 0.5);
     const halfCount = Math.floor(shuffled.length / 2);
 
@@ -219,6 +335,17 @@ export const quadKnock: Script = async (runner) => {
     }
   }
 
-  // Wait for statuses to expire (T=12500)
+  // Wait for crystal line AOEs to resolve and apply damage
+  const lineAoePromises = crystalLineAoeIds.map(id => runner.waitForResolve(id));
+  const lineAoeResults = await Promise.all(lineAoePromises);
+
+  for (const result of lineAoeResults) {
+    const { playersHit } = result.data as { playersHit: string[] };
+    for (const playerId of playersHit) {
+      runner.damage(playerId, CRYSTAL_AOE_DAMAGE);
+    }
+  }
+
+  // Wait for statuses to expire
   await runner.wait(FINAL_STATUS_DURATION);
 };
