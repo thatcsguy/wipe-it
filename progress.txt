@@ -44,3 +44,13 @@ STACK-016, STACK-017: Admin testing infrastructure for stack
 - Spawns stack on random player with configurable duration/radius
 - Files: src/client/admin.ts, src/server/index.ts
 - Build verified passing
+
+STACK-019, STACK-020, STACK-021: E2E testing and build verification
+- Created stackTest script in scripts/tests/stack-test.ts
+- Script spawns stack via runner.spawn(), waits for resolve, logs result
+- Added admin:runStackTest handler + emitRunStackTest() client method
+- Playwright verified: stack spawns via script, mechanic resolves correctly
+- getResult() uses sqrt distance formula, returns {playersInside[], targetPosition}
+- Single-player test: target player included in playersInside (distance=0)
+- Build passes with all stack mechanic changes
+- Files: src/server/encounters/scripts/tests/stack-test.ts, src/server/index.ts, src/client/admin.ts

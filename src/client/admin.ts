@@ -287,5 +287,10 @@ export function setChangeNameCallback(callback: () => void): void {
     if (adminSocket) {
       adminSocket.emit('admin:runSubscriptTimelineIsolationTest');
     }
+  },
+  emitRunStackTest: () => {
+    if (adminSocket) {
+      adminSocket.emit('admin:runStackTest');
+    }
   }
 };

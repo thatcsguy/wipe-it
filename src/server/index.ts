@@ -14,6 +14,7 @@ import { scopedTimelineTest } from './encounters/scripts/tests/scoped-timeline-t
 import { triggerAtTest } from './encounters/scripts/tests/trigger-at-test';
 import { dynamicSchedulingTest } from './encounters/scripts/tests/dynamic-scheduling-test';
 import { subscriptTimelineIsolationTest } from './encounters/scripts/tests/subscript-timeline-isolation-test';
+import { stackTest } from './encounters/scripts/tests/stack-test';
 
 const app = express();
 const httpServer = createServer(app);
@@ -437,6 +438,12 @@ io.on('connection', (socket) => {
   socket.on('admin:runSubscriptTimelineIsolationTest', () => {
     runEncounter(game, subscriptTimelineIsolationTest);
     console.log('Admin started subscript-timeline-isolation-test');
+  });
+
+  // Run stack test via encounter script (STACK-020)
+  socket.on('admin:runStackTest', () => {
+    runEncounter(game, stackTest);
+    console.log('Admin started stack test');
   });
 });
 

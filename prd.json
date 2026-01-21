@@ -226,7 +226,7 @@
       "Wait for mechanic to expire",
       "Verify getResult returns player A and B in playersInside, not C"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "id": "STACK-020",
@@ -238,7 +238,7 @@
       "Verify stack appears on target player",
       "Verify waitForResolve returns correct MechanicResult"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "id": "STACK-021",
@@ -249,6 +249,6 @@
       "Verify no TypeScript compilation errors",
       "Verify build completes successfully"
     ],
-    "passes": false
+    "passes": true
   }
 ]
