@@ -134,6 +134,7 @@ export interface ScriptRunner {
   /**
    * Execute all scheduled at() callbacks in time order.
    * Supports dynamic scheduling (at() calls during execution).
+   * @param options.duration - Total script duration from T=0. Script will wait until this time after processing all events.
    */
-  runTimeline(): Promise<void>;
+  runTimeline(options?: { duration?: number }): Promise<void>;
 }

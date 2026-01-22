@@ -305,7 +305,7 @@ export class ScriptRunnerImpl implements ScriptRunner {
     this.timeline.push({ time, fn });
   }
 
-  async runTimeline(): Promise<void> {
+  async runTimeline(options?: { duration?: number }): Promise<void> {
     while (this.timeline.length > 0) {
       // Sort by time ascending each iteration to support dynamic scheduling
       this.timeline.sort((a, b) => a.time - b.time);
@@ -318,6 +318,14 @@ export class ScriptRunnerImpl implements ScriptRunner {
       }
 
       await entry.fn();
+    }
+
+    // If duration specified, wait until that time from script start
+    if (options?.duration !== undefined) {
+      const remainingTime = options.duration - this.getElapsedTime();
+      if (remainingTime > 0) {
+        await this.wait(remainingTime);
+      }
     }
   }
 
