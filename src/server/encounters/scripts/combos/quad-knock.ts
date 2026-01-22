@@ -26,7 +26,7 @@ const CRYSTAL_AOE_DURATION = 1000;
 const SCRIPT_DURATION = 13000;
 
 // Mechanic constants
-const SPREAD_RADIUS = 300;
+const SPREAD_RADIUS = 250;
 const SPREAD_DAMAGE = 25;
 const STACK_RADIUS = 100;
 const STACK_TOTAL_DAMAGE = 100;
@@ -55,7 +55,7 @@ export const quadKnock: Script = async (runner) => {
   const clockwise = Math.random() < 0.5;
   const nwSeFirst = Math.random() < 0.5;
   const { firstPair, secondPair } = buildKnockbackPairs(clockwise, nwSeFirst);
-  const crystals = spawnCrystals();
+  const crystals = spawnCrystals(clockwise, nwSeFirst);
   const rootedPlayerIds: string[] = [];
   const bubbledPlayerIds: string[] = [];
 
@@ -200,19 +200,129 @@ export const quadKnock: Script = async (runner) => {
 
   // === Helpers ===
 
-  function spawnCrystals() {
-    const positions = [
-      { x: 100, y: 100 },
-      { x: 500, y: 300 },
-      { x: 700, y: 500 },
-      { x: 300, y: 700 },
-    ];
-    const rotatedIndices = new Set<number>();
-    while (rotatedIndices.size < 2) {
-      rotatedIndices.add(Math.floor(Math.random() * 4));
+  function spawnCrystals(isClockwise: boolean, isNwSeFirst: boolean) {
+    // Valid grid positions per quadrant (100, 300, 500, 700 rule)
+    const quadrantPositions: Record<string, Array<{ x: number; y: number }>> = {
+      NW: [{ x: 100, y: 100 }, { x: 100, y: 300 }, { x: 300, y: 100 }, { x: 300, y: 300 }],
+      NE: [{ x: 500, y: 100 }, { x: 500, y: 300 }, { x: 700, y: 100 }, { x: 700, y: 300 }],
+      SW: [{ x: 100, y: 500 }, { x: 100, y: 700 }, { x: 300, y: 500 }, { x: 300, y: 700 }],
+      SE: [{ x: 500, y: 500 }, { x: 500, y: 700 }, { x: 700, y: 500 }, { x: 700, y: 700 }],
+    };
+
+    // Knockback directions per quadrant (as position offsets)
+    const knockOffset: Record<string, { dx: number; dy: number }> = isClockwise
+      ? { NW: { dx: 400, dy: 0 }, NE: { dx: 0, dy: 400 }, SE: { dx: -400, dy: 0 }, SW: { dx: 0, dy: -400 } }
+      : { NW: { dx: 0, dy: 400 }, NE: { dx: -400, dy: 0 }, SE: { dx: 0, dy: -400 }, SW: { dx: 400, dy: 0 } };
+
+    // Which quadrants get knocked first/second
+    const firstKnockedQuads = isNwSeFirst ? ['NW', 'SE'] : ['NE', 'SW'];
+    const secondKnockedQuads = isNwSeFirst ? ['NE', 'SW'] : ['NW', 'SE'];
+
+    // Map first-knocked quadrant to adjacent second-knocked quadrant in its knockback path
+    const adjacentInPath: Record<string, string> = isClockwise
+      ? { NW: 'NE', NE: 'SE', SE: 'SW', SW: 'NW' }
+      : { NW: 'SW', NE: 'NW', SE: 'NE', SW: 'SE' };
+
+    // Check if stationary crystal is in knocked crystal's path (collision or passthrough)
+    function isInPath(
+      knocked: { x: number; y: number },
+      stationary: { x: number; y: number },
+      offset: { dx: number; dy: number }
+    ): boolean {
+      if (offset.dx !== 0) {
+        // Horizontal knock - check same row
+        if (knocked.y !== stationary.y) return false;
+        const minX = Math.min(knocked.x, knocked.x + offset.dx);
+        const maxX = Math.max(knocked.x, knocked.x + offset.dx);
+        return stationary.x >= minX && stationary.x <= maxX;
+      } else {
+        // Vertical knock - check same column
+        if (knocked.x !== stationary.x) return false;
+        const minY = Math.min(knocked.y, knocked.y + offset.dy);
+        const maxY = Math.max(knocked.y, knocked.y + offset.dy);
+        return stationary.y >= minY && stationary.y <= maxY;
+      }
     }
-    return positions.map((pos, i) => {
-      const isRotated = rotatedIndices.has(i);
+
+    // Pick constrained orientation: true = rotated (vertical AOE), false = un-rotated (horizontal AOE)
+    const constrainedIsRotated = Math.random() < 0.5;
+
+    // Pick diagonal pair for constrained crystals
+    const useNwSeDiagonal = Math.random() < 0.5;
+    const constrainedQuadrants = useNwSeDiagonal ? ['NW', 'SE'] : ['NE', 'SW'];
+    const unconstrainedQuadrants = useNwSeDiagonal ? ['NE', 'SW'] : ['NW', 'SE'];
+
+    const [cq1, cq2] = constrainedQuadrants;
+    const [uq1, uq2] = unconstrainedQuadrants;
+
+    // Build all valid 4-crystal configurations
+    type Pos = { x: number; y: number };
+    const validConfigs: Array<{
+      constrained: [Pos, Pos];
+      unconstrained: [Pos, Pos];
+    }> = [];
+
+    for (const cp1 of quadrantPositions[cq1]) {
+      for (const cp2 of quadrantPositions[cq2]) {
+        // Check constrained spacing rule (2 rows/columns apart = 400px)
+        if (constrainedIsRotated) {
+          if (Math.abs(cp1.x - cp2.x) !== 400) continue;
+        } else {
+          if (Math.abs(cp1.y - cp2.y) !== 400) continue;
+        }
+
+        for (const up1 of quadrantPositions[uq1]) {
+          for (const up2 of quadrantPositions[uq2]) {
+            // Build crystal map: quadrant -> position
+            const crystalMap: Record<string, Pos> = {
+              [cq1]: cp1,
+              [cq2]: cp2,
+              [uq1]: up1,
+              [uq2]: up2,
+            };
+
+            // Validate: first-knocked crystals must not collide/passthrough second-knocked crystals
+            let valid = true;
+            for (const fkQuad of firstKnockedQuads) {
+              const adjQuad = adjacentInPath[fkQuad];
+              if (secondKnockedQuads.includes(adjQuad)) {
+                const knockedPos = crystalMap[fkQuad];
+                const stationaryPos = crystalMap[adjQuad];
+                if (isInPath(knockedPos, stationaryPos, knockOffset[fkQuad])) {
+                  valid = false;
+                  break;
+                }
+              }
+            }
+
+            if (valid) {
+              validConfigs.push({
+                constrained: [cp1, cp2],
+                unconstrained: [up1, up2],
+              });
+            }
+          }
+        }
+      }
+    }
+
+    if (validConfigs.length === 0) {
+      console.error('[quad-knock] No valid crystal configuration found!');
+    }
+
+    const config = validConfigs[Math.floor(Math.random() * validConfigs.length)];
+    const [constrainedPos1, constrainedPos2] = config.constrained;
+    const [unconstrainedPos1, unconstrainedPos2] = config.unconstrained;
+
+    // Create crystal data
+    const crystalData = [
+      { pos: constrainedPos1, isRotated: constrainedIsRotated },
+      { pos: constrainedPos2, isRotated: constrainedIsRotated },
+      { pos: unconstrainedPos1, isRotated: !constrainedIsRotated },
+      { pos: unconstrainedPos2, isRotated: !constrainedIsRotated },
+    ];
+
+    return crystalData.map(({ pos, isRotated }) => {
       const id = runner.spawnDoodad({
         type: 'crystal',
         x: pos.x,
