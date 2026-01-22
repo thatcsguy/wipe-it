@@ -10,13 +10,21 @@ Scripts follow this structure:
 import { Script } from '../../types';
 // other imports...
 
-// === Constants ===
-// Timing constants (group together)
-const PHASE_ONE_START = 2000;
-const PHASE_TWO_START = 5000;
-const SCRIPT_DURATION = 10000;
+// === Timing Gaps (adjust these to tune pacing) ===
+const PHASE_ONE_DELAY = 2000;      // after start
+const PHASE_TWO_DELAY = 3000;      // after phase one
+const PHASE_THREE_DURATION = 2000; // how long phase three lasts
 
-// Mechanic constants (group together)
+// === Computed Absolute Times (don't edit directly) ===
+const PHASE_ONE_START = PHASE_ONE_DELAY;
+const PHASE_TWO_START = PHASE_ONE_START + PHASE_TWO_DELAY;
+const PHASE_THREE_END = PHASE_TWO_START + PHASE_THREE_DURATION;
+const SCRIPT_DURATION = PHASE_THREE_END;
+
+// === Derived Durations (auto-align with timeline) ===
+const BUFF_DURATION = SCRIPT_DURATION - PHASE_ONE_START; // lasts until script ends
+
+// === Mechanic Constants (fixed values, not timeline-dependent) ===
 const DAMAGE_AMOUNT = 50;
 const AOE_RADIUS = 100;
 
@@ -93,14 +101,52 @@ function spawnSpreads() {
 
 Do NOT collect promises and await them later. The `runTimeline({ duration })` keeps the script alive.
 
-### Script Duration
+### Timing Architecture
 
-Declare total script duration explicitly. This eliminates promise tracking:
+Use **relative gaps** between events, then compute absolute times. This makes pacing easy to adjust:
 
 ```typescript
-const SCRIPT_DURATION = 13000;  // when everything should be resolved
+// === Timing Gaps (adjust these to tune pacing) ===
+const WARNING_DELAY = 2000;        // after start → warnings appear
+const WARNING_DURATION = 5000;     // warnings visible before resolve
+const RESOLVE_DELAY = 500;         // after warnings → mechanic fires
+const AOE_DURATION = 1000;         // line AOE telegraph time
 
-await runner.runTimeline({ duration: SCRIPT_DURATION });
+// === Computed Absolute Times (don't edit directly) ===
+const WARNING_START = WARNING_DELAY;
+const WARNING_END = WARNING_START + WARNING_DURATION;
+const RESOLVE_TIME = WARNING_END + RESOLVE_DELAY;
+const AOE_END = RESOLVE_TIME + AOE_DURATION;
+const SCRIPT_DURATION = AOE_END;
+
+// === Derived Durations (auto-align with timeline) ===
+const STATUS_DURATION = SCRIPT_DURATION - WARNING_END;  // lasts until script ends
+```
+
+**Why this matters:** To give players more reaction time, just increase `WARNING_DURATION`. Everything downstream shifts automatically.
+
+**Antipattern:** Don't use `SCRIPT_DURATION + 1000` for entity durations. If something needs to persist until the script ends, use `SCRIPT_DURATION` directly. If you need buffer time, add it to `SCRIPT_DURATION` computation itself.
+
+### Script Duration
+
+Compute `SCRIPT_DURATION` from the final event, don't hardcode it:
+
+```typescript
+// Good: computed from last event
+const AOE_END = RESOLVE_TIME + AOE_DURATION;
+const SCRIPT_DURATION = AOE_END;
+
+// Bad: hardcoded, goes stale when timing changes
+const SCRIPT_DURATION = 13000;
+```
+
+Persistent entities (doodads, etc.) should use `SCRIPT_DURATION` for their duration:
+
+```typescript
+runner.spawnDoodad({
+  type: 'crystal',
+  duration: SCRIPT_DURATION,  // not SCRIPT_DURATION + 1000
+});
 ```
 
 ### Comments
@@ -175,14 +221,21 @@ Reference `src/server/encounters/targeting.ts`:
 import { Script } from '../../types';
 import { random } from '../../targeting';
 
-const SPREAD_SPAWN = 2000;
-const SPREAD_DURATION = 3000;
+// === Timing Gaps ===
+const SPREAD_DELAY = 2000;         // after start → spreads appear
+const SPREAD_DURATION = 3000;      // spread telegraph time
+
+// === Computed Absolute Times ===
+const SPREAD_START = SPREAD_DELAY;
+const SPREAD_END = SPREAD_START + SPREAD_DURATION;
+const SCRIPT_DURATION = SPREAD_END;
+
+// === Mechanic Constants ===
 const SPREAD_DAMAGE = 25;
-const SCRIPT_DURATION = 5000;
 
 export const simpleSpreads: Script = async (runner) => {
   // === Timeline ===
-  runner.at(0,            spawnSpreads);
+  runner.at(SPREAD_START, spawnSpreads);
 
   await runner.runTimeline({ duration: SCRIPT_DURATION });
 

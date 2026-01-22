@@ -13,17 +13,27 @@ const KNOCKBACK_DURATION = 1000;
 const HALF_W = ARENA_WIDTH / 2;
 const HALF_H = ARENA_HEIGHT / 2;
 
-// Timing constants
-const SECOND_PAIR_SPAWN = 2000;
-const WARNING_START = 4000;
-const WARNING_DURATION = 5000;
-const FIRST_KNOCK_TRIGGER = 9500;
-const SECOND_KNOCK_TRIGGER = 11000;
-const FINAL_STATUS_DURATION = 4000;
-const ADDITIONAL_MECHANIC_DURATION = 9000;  // should resolve at same time as line AOEs
+// === Timing Gaps (adjust these to tune pacing) ===
+const SECOND_PAIR_DELAY = 2000;           // after start → second knockback pair spawns
+const WARNING_DELAY = 2000;               // after second pair → warnings appear
+const WARNING_DURATION = 10000;            // warnings visible before converting to final status
+const FIRST_KNOCK_DELAY = 500;            // after final status → first knockback fires
+const SECOND_KNOCK_DELAY = 1500;          // after first knock → second knockback fires
+const CRYSTAL_AOE_DURATION = 1000;        // line AOE telegraph duration
+
+// === Computed Absolute Times (don't edit these directly) ===
+const SECOND_PAIR_SPAWN = SECOND_PAIR_DELAY;
+const WARNING_START = SECOND_PAIR_SPAWN + WARNING_DELAY;
+const WARNING_END = WARNING_START + WARNING_DURATION;
+const FIRST_KNOCK_TRIGGER = WARNING_END + FIRST_KNOCK_DELAY;
+const SECOND_KNOCK_TRIGGER = FIRST_KNOCK_TRIGGER + SECOND_KNOCK_DELAY;
 const CRYSTAL_AOE_SPAWN = SECOND_KNOCK_TRIGGER + KNOCKBACK_DURATION;
-const CRYSTAL_AOE_DURATION = 1000;
-const SCRIPT_DURATION = 13000;
+const CRYSTAL_AOE_END = CRYSTAL_AOE_SPAWN + CRYSTAL_AOE_DURATION;
+const SCRIPT_DURATION = CRYSTAL_AOE_END;
+
+// === Derived Durations (auto-align with script end) ===
+const FINAL_STATUS_DURATION = SCRIPT_DURATION - WARNING_END;
+const ADDITIONAL_MECHANIC_DURATION = SCRIPT_DURATION - WARNING_START;
 
 // Mechanic constants
 const SPREAD_RADIUS = 150;
@@ -64,7 +74,7 @@ export const quadKnock: Script = async (runner) => {
   runner.at(0,                            spawnFirstKnockbackPair);
   runner.at(SECOND_PAIR_SPAWN,            spawnSecondKnockbackPair);
   runner.at(WARNING_START,                applyWarningsAndSpawnMechanics);
-  runner.at(WARNING_START + WARNING_DURATION, convertToFinalStatuses);
+  runner.at(WARNING_END,                     convertToFinalStatuses);
   runner.at(FIRST_KNOCK_TRIGGER,          knockCrystalsFirstPair);
   runner.at(SECOND_KNOCK_TRIGGER,         knockCrystalsSecondPair);
   runner.at(CRYSTAL_AOE_SPAWN,            spawnCrystalLineAoes);
@@ -331,7 +341,7 @@ export const quadKnock: Script = async (runner) => {
         width: 30,
         height: 60,
         rotation: isRotated ? Math.PI / 2 : 0,
-        duration: 15000,
+        duration: SCRIPT_DURATION,
         layer: 'background',
       });
       return { id, x: pos.x, y: pos.y, isRotated };
