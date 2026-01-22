@@ -1,3 +1,8 @@
+---
+name: create-script
+description: Create new encounter scripts following timeline architecture patterns
+---
+
 # Create Encounter Script
 
 Use this skill when asked to create a new encounter script or combo script.

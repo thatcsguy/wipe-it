@@ -187,7 +187,7 @@ export interface StackMechanicState {
 export type MechanicState = ChariotMechanicState | SpreadMechanicState | TetherMechanicState | TowerMechanicState | RadialKnockbackMechanicState | LinearKnockbackMechanicState | LineAoeMechanicState | ConalAoeMechanicState | StackMechanicState;
 
 // Doodad types - visual-only elements with no gameplay effect
-export type DoodadType = 'portal' | 'rect' | 'circle' | 'crystal';
+export type DoodadType = 'portal' | 'rect' | 'circle' | 'crystal' | 'limit-cut-marker';
 export type DoodadLayer = 'background' | 'foreground';
 
 // Doodad anchor offset for player-anchored doodads

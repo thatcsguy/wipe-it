@@ -43,6 +43,7 @@ const STACK_TOTAL_DAMAGE = 100;
 const VULNERABILITY_DURATION = 1000;
 const CRYSTAL_AOE_WIDTH = 200;
 const CRYSTAL_AOE_DAMAGE = 100;
+const LIMIT_CUT_MARKER_SIZE = 60;
 
 /**
  * Quad-Knock: 4 linear knockbacks in two pairs (opposite corners).
@@ -69,6 +70,7 @@ export const quadKnock: Script = async (runner) => {
   const crystals = spawnCrystals(clockwise, nwSeFirst);
   const rootedPlayerIds: string[] = [];
   const bubbledPlayerIds: string[] = [];
+  const limitCutMarkerIds: string[] = [];
 
   // === Timeline ===
   runner.at(0,                            spawnFirstKnockbackPair);
@@ -86,12 +88,14 @@ export const quadKnock: Script = async (runner) => {
   function spawnFirstKnockbackPair() {
     for (const q of firstPair) {
       spawnKnockback(q, FIRST_KNOCK_TRIGGER);
+      spawnLimitCutMarker(q, 1);
     }
   }
 
   function spawnSecondKnockbackPair() {
     for (const q of secondPair) {
       spawnKnockback(q, SECOND_KNOCK_TRIGGER);
+      spawnLimitCutMarker(q, 2);
     }
   }
 
@@ -167,6 +171,12 @@ export const quadKnock: Script = async (runner) => {
   }
 
   function knockCrystalsFirstPair() {
+    // Remove all limit-cut markers
+    for (const markerId of limitCutMarkerIds) {
+      runner.removeDoodad(markerId);
+    }
+    limitCutMarkerIds.length = 0;
+
     for (const q of firstPair) {
       knockCrystals(q);
     }
@@ -378,11 +388,35 @@ export const quadKnock: Script = async (runner) => {
       }
     }
   }
+
+  function spawnLimitCutMarker(zone: KnockbackZone, count: number) {
+    const center = getKnockbackCenter(zone);
+    const id = runner.spawnDoodad({
+      type: 'limit-cut-marker',
+      x: center.x,
+      y: center.y,
+      width: LIMIT_CUT_MARKER_SIZE,
+      height: LIMIT_CUT_MARKER_SIZE,
+      rotation: 0,
+      duration: FIRST_KNOCK_TRIGGER,
+      layer: 'foreground',
+      data: { count },
+    });
+    limitCutMarkerIds.push(id);
+  }
 };
 
 // === Types ===
 
 type KnockbackZone = { startX: number; startY: number; endX: number; endY: number; width: number };
+
+// Get the center point of a knockback zone's origin line (where players stand initially)
+function getKnockbackCenter(zone: KnockbackZone): { x: number; y: number } {
+  return {
+    x: (zone.startX + zone.endX) / 2,
+    y: (zone.startY + zone.endY) / 2,
+  };
+}
 
 // === Pure functions ===
 
