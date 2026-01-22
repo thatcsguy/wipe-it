@@ -1,5 +1,7 @@
 import { DoodadState } from '../../shared/types';
 
+const BUBBLE_RADIUS = 48; // Same as player bubbles
+
 // Render a crystal doodad - a gemstone brick with faceted shiny appearance
 export function renderCrystal(
   ctx: CanvasRenderingContext2D,
@@ -11,8 +13,36 @@ export function renderCrystal(
 
   ctx.save();
   ctx.translate(pos.x, pos.y);
-  ctx.rotate(rotation);
+
+  // Draw bubble before rotation so it stays circular
   ctx.globalAlpha = opacity ?? 1;
+
+  // Main bubble fill - semi-transparent cyan
+  ctx.beginPath();
+  ctx.arc(0, 0, BUBBLE_RADIUS, 0, Math.PI * 2);
+  ctx.fillStyle = 'rgba(100, 200, 255, 0.25)';
+  ctx.fill();
+
+  // Soft white/light border
+  ctx.strokeStyle = 'rgba(200, 230, 255, 0.6)';
+  ctx.lineWidth = 2;
+  ctx.stroke();
+
+  // Highlight arc on upper-left for 3D bubble effect
+  ctx.beginPath();
+  ctx.arc(0, 0, BUBBLE_RADIUS - 5, Math.PI * 1.1, Math.PI * 1.6);
+  ctx.strokeStyle = 'rgba(255, 255, 255, 0.5)';
+  ctx.lineWidth = 3;
+  ctx.stroke();
+
+  // Smaller inner highlight for extra shine
+  ctx.beginPath();
+  ctx.arc(-BUBBLE_RADIUS * 0.3, -BUBBLE_RADIUS * 0.3, BUBBLE_RADIUS * 0.15, 0, Math.PI * 2);
+  ctx.fillStyle = 'rgba(255, 255, 255, 0.4)';
+  ctx.fill();
+
+  // Now draw the crystal rotated
+  ctx.rotate(rotation);
 
   const hw = width / 2;
   const hh = height / 2;

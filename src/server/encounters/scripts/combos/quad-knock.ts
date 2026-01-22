@@ -26,7 +26,7 @@ const CRYSTAL_AOE_DURATION = 1000;
 const SCRIPT_DURATION = 13000;
 
 // Mechanic constants
-const SPREAD_RADIUS = 250;
+const SPREAD_RADIUS = 150;
 const SPREAD_DAMAGE = 25;
 const STACK_RADIUS = 100;
 const STACK_TOTAL_DAMAGE = 100;
