@@ -1,0 +1,29 @@
+## Arena Skins Feature (SKIN-001 through SKIN-012) - COMPLETE
+
+### Tasks completed:
+- SKIN-001: Added ArenaSkinId type ('default' | '4x4-grid') and arenaSkin field to GameState
+- SKIN-002: Added arenaSkin property (default: 'default') and setArenaSkin() method to Game class
+- SKIN-003: Included arenaSkin in broadcast() and getState() methods
+- SKIN-004: Added setArenaSkin(skin: ArenaSkinId) to ScriptRunner interface
+- SKIN-005: Implemented setArenaSkin() in ScriptRunnerImpl calling game.setArenaSkin()
+- SKIN-006/007: Created src/client/arenaSkins.ts with renderArenaSkin() and render4x4GridSkin()
+- SKIN-008: Updated renderer.ts to accept arenaSkin param and call renderArenaSkin after clear()
+- SKIN-009: Updated client game.ts initial state with arenaSkin:'default' and passed to render()
+- SKIN-010: Added runner.setArenaSkin('4x4-grid') at start of quad-knock script
+- SKIN-011: Build passes with no TypeScript errors
+- SKIN-012: E2E validated - default skin has no gridlines, quad-knock sets 4x4-grid, gridlines persist
+
+### Key decisions:
+- Grid rendered with ARENA_OFFSET translation in arenaSkins.ts (consistent positioning)
+- Grid uses rgba(100, 150, 200, 0.3) for faint bluish appearance
+- Skin overlay rendered after clear() but before ctx.translate() in renderer
+
+### Files changed:
+- src/shared/types.ts (ArenaSkinId type, arenaSkin in GameState)
+- src/server/game.ts (arenaSkin property, setArenaSkin method, broadcast/getState)
+- src/server/encounters/types.ts (setArenaSkin in ScriptRunner interface)
+- src/server/encounters/script-runner.ts (setArenaSkin implementation)
+- src/client/arenaSkins.ts (NEW - renderArenaSkin, render4x4GridSkin)
+- src/client/renderer.ts (import arenaSkins, arenaSkin param, call renderArenaSkin)
+- src/client/game.ts (initial state arenaSkin, pass to render)
+- src/server/encounters/scripts/combos/quad-knock.ts (setArenaSkin call)

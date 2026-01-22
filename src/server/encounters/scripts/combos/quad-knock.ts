@@ -52,6 +52,7 @@ const CRYSTAL_AOE_DAMAGE = 100;
  */
 export const quadKnock: Script = async (runner) => {
   // === Setup ===
+  runner.setArenaSkin('4x4-grid');
   const clockwise = Math.random() < 0.5;
   const nwSeFirst = Math.random() < 0.5;
   const { firstPair, secondPair } = buildKnockbackPairs(clockwise, nwSeFirst);

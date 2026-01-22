@@ -1,7 +1,7 @@
 import { EventEmitter } from 'events';
 import { Server } from 'socket.io';
 import { Player } from './player';
-import { GameState, PlayerInput, TICK_RATE, BROADCAST_RATE, MAX_PLAYERS, MAX_HP, TetherResolutionEvent, TowerResolutionEvent, PLAYER_RADIUS, ARENA_WIDTH, ARENA_HEIGHT } from '../shared/types';
+import { GameState, PlayerInput, TICK_RATE, BROADCAST_RATE, MAX_PLAYERS, MAX_HP, TetherResolutionEvent, TowerResolutionEvent, PLAYER_RADIUS, ARENA_WIDTH, ARENA_HEIGHT, ArenaSkinId } from '../shared/types';
 import { getKnockbackPosition } from '../shared/knockback';
 import { MechanicManager } from './mechanics/manager';
 import { ChariotMechanic } from './mechanics/chariot';
@@ -36,6 +36,7 @@ export class Game extends EventEmitter {
   wipeInProgress: boolean = false;
   readyPlayers: Set<string> = new Set();
   activeScript: Script | null = null;
+  arenaSkin: ArenaSkinId = 'default';
 
   constructor(io: Server) {
     super();
@@ -215,6 +216,7 @@ export class Game extends EventEmitter {
       godMode: this.godMode,
       wipeInProgress: this.wipeInProgress,
       readyPlayerIds: Array.from(this.readyPlayers),
+      arenaSkin: this.arenaSkin,
     };
     this.io.emit('state', state);
   }
@@ -372,7 +374,12 @@ export class Game extends EventEmitter {
       godMode: this.godMode,
       wipeInProgress: this.wipeInProgress,
       readyPlayerIds: Array.from(this.readyPlayers),
+      arenaSkin: this.arenaSkin,
     };
+  }
+
+  setArenaSkin(skin: ArenaSkinId): void {
+    this.arenaSkin = skin;
   }
 
   getDoodadManager(): DoodadManager {

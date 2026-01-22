@@ -1,4 +1,4 @@
-import { GameState, PlayerState, StatusEffectType, DoodadType, DoodadLayer, DoodadAnchorOffset } from '../../shared/types';
+import { GameState, PlayerState, StatusEffectType, DoodadType, DoodadLayer, DoodadAnchorOffset, ArenaSkinId } from '../../shared/types';
 
 /**
  * Context passed to scripts for storing arbitrary data between phases
@@ -137,4 +137,9 @@ export interface ScriptRunner {
    * @param options.duration - Total script duration from T=0. Script will wait until this time after processing all events.
    */
   runTimeline(options?: { duration?: number }): Promise<void>;
+
+  /**
+   * Set the arena skin for visual overlays
+   */
+  setArenaSkin(skin: ArenaSkinId): void;
 }

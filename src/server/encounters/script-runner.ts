@@ -1,5 +1,5 @@
 import { Game } from '../game';
-import { GameState, PlayerState, StatusEffectType, ARENA_WIDTH, ARENA_HEIGHT } from '../../shared/types';
+import { GameState, PlayerState, StatusEffectType, ARENA_WIDTH, ARENA_HEIGHT, ArenaSkinId } from '../../shared/types';
 import { Context, DoodadParams, MechanicParams, MechanicResult, Script, ScriptRunner, Selector } from './types';
 import { createContext } from './context';
 import { StatusEffect } from '../statusEffect';
@@ -299,6 +299,10 @@ export class ScriptRunnerImpl implements ScriptRunner {
 
   moveDoodad(id: string, targetX: number, targetY: number, duration: number): boolean {
     return this.game.getDoodadManager().moveDoodad(id, targetX, targetY, duration);
+  }
+
+  setArenaSkin(skin: ArenaSkinId): void {
+    this.game.setArenaSkin(skin);
   }
 
   at(time: number, fn: () => void | Promise<void>): void {

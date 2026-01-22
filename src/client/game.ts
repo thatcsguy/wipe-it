@@ -25,7 +25,7 @@ let localPlayerColor: string = '';
 let gameRunning = false;
 
 // Current game state from server
-let currentGameState: GameState = { players: [], mechanics: [], statusEffects: [], doodads: [], timestamp: 0, godMode: true, wipeInProgress: false, readyPlayerIds: [] };
+let currentGameState: GameState = { players: [], mechanics: [], statusEffects: [], doodads: [], timestamp: 0, godMode: true, wipeInProgress: false, readyPlayerIds: [], arenaSkin: 'default' };
 
 // Track previous mechanic IDs for spawn detection
 let previousMechanicIds = new Set<string>();
@@ -341,7 +341,7 @@ function gameLoop(currentTime: number): void {
   }
 
   // Render with local player at predicted position, others at interpolated positions
-  // Pass mechanics, doodads and server timestamp for rendering
+  // Pass mechanics, doodads, server timestamp, and arena skin for rendering
   render(
     currentGameState.players,
     localPlayerId,
@@ -349,7 +349,8 @@ function gameLoop(currentTime: number): void {
     interpolatedPositions,
     currentGameState.mechanics,
     currentGameState.timestamp,
-    currentGameState.doodads
+    currentGameState.doodads,
+    currentGameState.arenaSkin
   );
 
   // Update debug panel

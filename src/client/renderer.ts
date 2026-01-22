@@ -1,8 +1,9 @@
-import { PlayerState, MechanicState, StatusEffectState, DoodadState, ARENA_WIDTH, ARENA_HEIGHT, PLAYER_RADIUS, MAX_HP, CANVAS_SIZE, ARENA_OFFSET } from '../shared/types';
+import { PlayerState, MechanicState, StatusEffectState, DoodadState, ARENA_WIDTH, ARENA_HEIGHT, PLAYER_RADIUS, MAX_HP, CANVAS_SIZE, ARENA_OFFSET, ArenaSkinId } from '../shared/types';
 import { renderMechanics, PlayerPositionData } from './mechanics/index';
 import { renderStatusEffects } from './statusEffects';
 import { renderExplosions } from './animations/explosion';
 import { renderDoodads, DoodadPositionData } from './doodads/index';
+import { renderArenaSkin } from './arenaSkins';
 
 // Canvas and context (initialized on first render call)
 let canvas: HTMLCanvasElement | null = null;
@@ -181,7 +182,8 @@ export function render(
   interpolatedPositions?: Map<string, { x: number; y: number }>,
   mechanics?: MechanicState[],
   serverTime?: number,
-  doodads?: DoodadState[]
+  doodads?: DoodadState[],
+  arenaSkin?: ArenaSkinId
 ): void {
   // Initialize if not already done
   if (!ctx) {
@@ -191,6 +193,11 @@ export function render(
 
   // Clear canvas
   clear();
+
+  // Render arena skin overlay (before translating for arena content)
+  if (arenaSkin) {
+    renderArenaSkin(ctx, arenaSkin);
+  }
 
   // Translate context to arena offset for all arena content
   ctx.save();

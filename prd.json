@@ -9,7 +9,7 @@
       "Find GameState interface",
       "Verify arenaSkin: ArenaSkinId field exists in interface"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "id": "SKIN-002",
@@ -20,7 +20,7 @@
       "Verify arenaSkin: ArenaSkinId = 'default' property exists on Game class",
       "Verify setArenaSkin(skin: ArenaSkinId): void method exists"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "id": "SKIN-003",
@@ -31,7 +31,7 @@
       "Find broadcast() method, verify state object includes arenaSkin: this.arenaSkin",
       "Find getState() method, verify returned object includes arenaSkin: this.arenaSkin"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "id": "SKIN-004",
@@ -43,7 +43,7 @@
       "Find ScriptRunner interface",
       "Verify setArenaSkin(skin: ArenaSkinId): void method exists in interface"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "id": "SKIN-005",
@@ -55,7 +55,7 @@
       "Find ScriptRunnerImpl class",
       "Verify setArenaSkin() method exists and calls this.game.setArenaSkin(skin)"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "id": "SKIN-006",
@@ -67,7 +67,7 @@
       "Verify render4x4GridSkin(ctx: CanvasRenderingContext2D) function exists",
       "Verify renderArenaSkin switches on skinId and calls render4x4GridSkin for '4x4-grid'"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "id": "SKIN-007",
@@ -81,7 +81,7 @@
       "Verify horizontal lines at y = 200, 400, 600",
       "Verify ctx.save()/translate(ARENA_OFFSET)/restore() pattern for proper positioning"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "id": "SKIN-008",
@@ -93,7 +93,7 @@
       "Verify render() function has arenaSkin?: ArenaSkinId parameter",
       "Verify renderArenaSkin(ctx, arenaSkin) is called after clear() but before ctx.translate()"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "id": "SKIN-009",
@@ -105,7 +105,7 @@
       "Find render() call in gameLoop or similar",
       "Verify currentGameState.arenaSkin is passed to render()"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "id": "SKIN-010",
@@ -115,7 +115,7 @@
       "Open src/server/encounters/scripts/combos/quad-knock.ts",
       "Verify runner.setArenaSkin('4x4-grid') call exists near start of script"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "id": "SKIN-011",
@@ -126,7 +126,7 @@
       "Verify no TypeScript compilation errors",
       "Verify build completes successfully"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "id": "SKIN-012",
@@ -143,6 +143,6 @@
       "Wait for quad-knock to complete, verify arenaSkin persists as '4x4-grid'",
       "Take final screenshot confirming gridlines still visible after script ends"
     ],
-    "passes": false
+    "passes": true
   }
 ]

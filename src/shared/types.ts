@@ -1,3 +1,6 @@
+// Arena skin types
+export type ArenaSkinId = 'default' | '4x4-grid';
+
 // Game constants
 export const TICK_RATE = 60;
 export const BROADCAST_RATE = 20;
@@ -255,4 +258,5 @@ export interface GameState {
   godMode: boolean;
   wipeInProgress: boolean;
   readyPlayerIds: string[];
+  arenaSkin: ArenaSkinId;
 }
