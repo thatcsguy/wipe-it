@@ -1,483 +1,148 @@
 [
   {
-    "id": "WIPE-001",
+    "id": "SKIN-001",
     "category": "types",
-    "description": "Add 'dead: boolean' field to PlayerState interface in src/shared/types.ts",
+    "description": "Add ArenaSkinId type and arenaSkin field to GameState in src/shared/types.ts",
     "steps_to_verify": [
       "Open src/shared/types.ts",
-      "Find PlayerState interface (around line 55)",
-      "Verify 'dead: boolean' field exists in the interface"
+      "Verify ArenaSkinId type exists: 'default' | '4x4-grid'",
+      "Find GameState interface",
+      "Verify arenaSkin: ArenaSkinId field exists in interface"
     ],
-    "passes": true
+    "passes": false
   },
   {
-    "id": "WIPE-002",
-    "category": "types",
-    "description": "Add 'godMode: boolean', 'wipeInProgress: boolean', and 'readyPlayerIds: string[]' fields to GameState interface in src/shared/types.ts",
-    "steps_to_verify": [
-      "Open src/shared/types.ts",
-      "Find GameState interface (around line 241)",
-      "Verify all three fields exist: godMode: boolean, wipeInProgress: boolean, readyPlayerIds: string[]"
-    ],
-    "passes": true
-  },
-  {
-    "id": "WIPE-003",
+    "id": "SKIN-002",
     "category": "server",
-    "description": "Add 'dead: boolean = false' field to Player class in src/server/player.ts. Add setDead(dead: boolean) method. Include 'dead' in toState() return value",
-    "steps_to_verify": [
-      "Open src/server/player.ts",
-      "Verify 'dead' field exists on Player class, initialized to false",
-      "Verify setDead(dead: boolean) method exists",
-      "Verify toState() includes 'dead: this.dead' in returned object"
-    ],
-    "passes": true
-  },
-  {
-    "id": "WIPE-004",
-    "category": "server",
-    "description": "Modify Player.processInput() to early return (skip all movement) if this.dead is true. Dead players should be completely frozen - no WASD, no knockback processing",
-    "steps_to_verify": [
-      "Open src/server/player.ts",
-      "Find processInput() method",
-      "Verify there is an early return at the start if this.dead is true",
-      "This check should come before knockback processing"
-    ],
-    "passes": true
-  },
-  {
-    "id": "WIPE-005",
-    "category": "server",
-    "description": "Add game state fields to Game class in src/server/game.ts: godMode: boolean = true, wipeInProgress: boolean = false, readyPlayers: Set<string> = new Set(), activeScript: Script | null = null",
+    "description": "Add arenaSkin property and setArenaSkin() method to Game class in src/server/game.ts",
     "steps_to_verify": [
       "Open src/server/game.ts",
-      "Verify all four fields exist on Game class with correct initial values",
-      "godMode defaults to true (current behavior is god mode)"
+      "Verify arenaSkin: ArenaSkinId = 'default' property exists on Game class",
+      "Verify setArenaSkin(skin: ArenaSkinId): void method exists"
     ],
-    "passes": true
+    "passes": false
   },
   {
-    "id": "WIPE-006",
+    "id": "SKIN-003",
     "category": "server",
-    "description": "Add toggleGodMode() method to Game class that flips godMode boolean. Add isWipeTriggered() method that returns wipeInProgress boolean",
+    "description": "Include arenaSkin in Game broadcast() and getState() methods",
     "steps_to_verify": [
       "Open src/server/game.ts",
-      "Verify toggleGodMode() method exists and flips this.godMode",
-      "Verify isWipeTriggered() method exists and returns this.wipeInProgress"
+      "Find broadcast() method, verify state object includes arenaSkin: this.arenaSkin",
+      "Find getState() method, verify returned object includes arenaSkin: this.arenaSkin"
     ],
-    "passes": true
+    "passes": false
   },
   {
-    "id": "WIPE-007",
+    "id": "SKIN-004",
     "category": "server",
-    "description": "Add triggerWipe() method to Game class: sets wipeInProgress = true, emits 'wipe:started' event to all connected clients via io.emit()",
+    "description": "Add setArenaSkin() to ScriptRunner interface in src/server/encounters/types.ts",
     "steps_to_verify": [
-      "Open src/server/game.ts",
-      "Verify triggerWipe() method exists",
-      "Verify it sets wipeInProgress = true",
-      "Verify it emits 'wipe:started' to all clients"
+      "Open src/server/encounters/types.ts",
+      "Verify import of ArenaSkinId from shared types",
+      "Find ScriptRunner interface",
+      "Verify setArenaSkin(skin: ArenaSkinId): void method exists in interface"
     ],
-    "passes": true
+    "passes": false
   },
   {
-    "id": "WIPE-008",
+    "id": "SKIN-005",
     "category": "server",
-    "description": "Add death detection in Game.tick(): after processing inputs, check if any player has hp <= 0 AND !godMode AND !wipeInProgress. If so, mark that player as dead (player.setDead(true)) and call triggerWipe()",
-    "steps_to_verify": [
-      "Open src/server/game.ts",
-      "Find tick() method",
-      "Verify death check logic exists after input processing",
-      "Verify it only triggers when godMode is false",
-      "Verify it marks the player dead and calls triggerWipe()"
-    ],
-    "passes": true
-  },
-  {
-    "id": "WIPE-009",
-    "category": "server",
-    "description": "Add setPlayerReady(socketId: string) method to Game class: adds socketId to readyPlayers Set. If all connected players are ready (readyPlayers.size === players.size), call resetEncounter()",
-    "steps_to_verify": [
-      "Open src/server/game.ts",
-      "Verify setPlayerReady(socketId) method exists",
-      "Verify it adds socketId to readyPlayers Set",
-      "Verify it checks if all players are ready and calls resetEncounter()"
-    ],
-    "passes": true
-  },
-  {
-    "id": "WIPE-010",
-    "category": "server",
-    "description": "Add resetEncounter() method to Game class: heals all players to full HP, clears dead flags on all players, clears readyPlayers Set, sets wipeInProgress = false, emits 'wipe:reset' to all clients, runs activeScript if not null via runEncounter()",
-    "steps_to_verify": [
-      "Open src/server/game.ts",
-      "Verify resetEncounter() method exists",
-      "Verify it heals all players (set hp to MAX_HP)",
-      "Verify it clears dead flags (player.setDead(false))",
-      "Verify it clears readyPlayers Set",
-      "Verify it sets wipeInProgress = false",
-      "Verify it emits 'wipe:reset'",
-      "Verify it runs activeScript if set"
-    ],
-    "passes": true
-  },
-  {
-    "id": "WIPE-011",
-    "category": "server",
-    "description": "Add setActiveScript(script: Script | null) method to Game class. Modify runEncounter() in script-runner.ts to call game.setActiveScript(script) before running",
-    "steps_to_verify": [
-      "Open src/server/game.ts",
-      "Verify setActiveScript() method exists",
-      "Open src/server/encounters/script-runner.ts",
-      "Verify runEncounter() calls game.setActiveScript(script)"
-    ],
-    "passes": true
-  },
-  {
-    "id": "WIPE-012",
-    "category": "server",
-    "description": "Update Game.broadcast() to include godMode, wipeInProgress, and readyPlayerIds (Array.from(readyPlayers)) in the GameState sent to clients",
-    "steps_to_verify": [
-      "Open src/server/game.ts",
-      "Find broadcast() method",
-      "Verify the state object includes godMode, wipeInProgress, and readyPlayerIds fields"
-    ],
-    "passes": true
-  },
-  {
-    "id": "WIPE-013",
-    "category": "server",
-    "description": "Modify ScriptRunnerImpl.spawn() in script-runner.ts: at the start of spawn(), check if this.game.isWipeTriggered() returns true. If so, return empty string immediately without spawning any mechanic",
+    "description": "Implement setArenaSkin() in ScriptRunnerImpl in src/server/encounters/script-runner.ts",
     "steps_to_verify": [
       "Open src/server/encounters/script-runner.ts",
-      "Find spawn() method",
-      "Verify there is a check for this.game.isWipeTriggered() at the start",
-      "Verify it returns '' (empty string) if wipe is triggered"
+      "Verify import of ArenaSkinId from shared types",
+      "Find ScriptRunnerImpl class",
+      "Verify setArenaSkin() method exists and calls this.game.setArenaSkin(skin)"
     ],
-    "passes": true
+    "passes": false
   },
   {
-    "id": "WIPE-014",
-    "category": "server",
-    "description": "Add socket handlers in src/server/index.ts: 'admin:toggleGodMode' calls game.toggleGodMode(), 'player:ready' calls game.setPlayerReady(socket.id)",
-    "steps_to_verify": [
-      "Open src/server/index.ts",
-      "Verify socket.on('admin:toggleGodMode', ...) handler exists",
-      "Verify socket.on('player:ready', ...) handler exists",
-      "Verify handlers call correct Game methods"
-    ],
-    "passes": true
-  },
-  {
-    "id": "WIPE-015",
+    "id": "SKIN-006",
     "category": "client",
-    "description": "Modify drawPlayerAt() in src/client/renderer.ts: add optional 'dead' parameter. If dead is true, draw a red X over the player circle after drawing the player. X should be two diagonal lines (thick red stroke, ~4px) crossing through the player circle",
+    "description": "Create src/client/arenaSkins.ts with renderArenaSkin() and render4x4GridSkin() functions",
+    "steps_to_verify": [
+      "File src/client/arenaSkins.ts exists",
+      "Verify renderArenaSkin(ctx: CanvasRenderingContext2D, skinId: ArenaSkinId) function is exported",
+      "Verify render4x4GridSkin(ctx: CanvasRenderingContext2D) function exists",
+      "Verify renderArenaSkin switches on skinId and calls render4x4GridSkin for '4x4-grid'"
+    ],
+    "passes": false
+  },
+  {
+    "id": "SKIN-007",
+    "category": "client",
+    "description": "render4x4GridSkin draws faint gridlines at 200px intervals creating 4x4 grid",
+    "steps_to_verify": [
+      "Open src/client/arenaSkins.ts",
+      "Verify GRID_INTERVAL = 200 constant or equivalent",
+      "Verify strokeStyle is faint (alpha ~0.3, bluish color)",
+      "Verify vertical lines at x = 200, 400, 600",
+      "Verify horizontal lines at y = 200, 400, 600",
+      "Verify ctx.save()/translate(ARENA_OFFSET)/restore() pattern for proper positioning"
+    ],
+    "passes": false
+  },
+  {
+    "id": "SKIN-008",
+    "category": "client",
+    "description": "Update render() in src/client/renderer.ts to accept arenaSkin parameter and call renderArenaSkin()",
     "steps_to_verify": [
       "Open src/client/renderer.ts",
-      "Find drawPlayerAt() function",
-      "Verify it accepts a 'dead' parameter",
-      "Verify it draws a red X when dead is true"
+      "Verify import of renderArenaSkin from arenaSkins.ts",
+      "Verify render() function has arenaSkin?: ArenaSkinId parameter",
+      "Verify renderArenaSkin(ctx, arenaSkin) is called after clear() but before ctx.translate()"
     ],
-    "passes": true
+    "passes": false
   },
   {
-    "id": "WIPE-016",
+    "id": "SKIN-009",
     "category": "client",
-    "description": "Update render() in renderer.ts to pass player.dead to drawPlayerAt() calls for both local and remote players",
-    "steps_to_verify": [
-      "Open src/client/renderer.ts",
-      "Find render() function",
-      "Verify drawPlayerAt() calls include player.dead parameter"
-    ],
-    "passes": true
-  },
-  {
-    "id": "WIPE-017",
-    "category": "client",
-    "description": "Create src/client/wipeOverlay.ts with functions: initWipeOverlay(), showWipeOverlay(players: PlayerState[]), hideWipeOverlay(), updateReadyState(readyPlayerIds: string[]). Module should create/manage DOM elements for wipe UI",
-    "steps_to_verify": [
-      "File src/client/wipeOverlay.ts exists",
-      "All four functions are exported",
-      "initWipeOverlay() creates necessary DOM structure"
-    ],
-    "passes": true
-  },
-  {
-    "id": "WIPE-018",
-    "category": "client",
-    "description": "wipeOverlay creates DOM structure inside .game-container (not full page): #wipe-overlay container with .wipe-banner ('WIPE IT!' text), .ready-check container with .ready-message ('Press R to ready up.'), and .ready-list for player entries",
-    "steps_to_verify": [
-      "Open src/client/wipeOverlay.ts",
-      "Verify DOM elements are created/appended to .game-container",
-      "Verify structure includes wipe-banner, ready-check, ready-message, ready-list elements"
-    ],
-    "passes": true
-  },
-  {
-    "id": "WIPE-019",
-    "category": "client",
-    "description": "wipeOverlay.updateReadyState() updates the ready list to show all players, adding 'ready' class to entries for players whose IDs are in readyPlayerIds array",
-    "steps_to_verify": [
-      "Open src/client/wipeOverlay.ts",
-      "Find updateReadyState() function",
-      "Verify it updates player entries based on readyPlayerIds",
-      "Verify it adds 'ready' class to ready players"
-    ],
-    "passes": true
-  },
-  {
-    "id": "WIPE-020",
-    "category": "client",
-    "description": "In src/client/game.ts: import and call initWipeOverlay() during initialization. On 'state' events, if wipeInProgress is true, call showWipeOverlay() and updateReadyState(). Listen for 'wipe:reset' socket event and call hideWipeOverlay()",
+    "description": "Update src/client/game.ts to include arenaSkin in initial state and pass to render()",
     "steps_to_verify": [
       "Open src/client/game.ts",
-      "Verify wipeOverlay is imported",
-      "Verify initWipeOverlay() is called during setup",
-      "Verify state handler checks wipeInProgress and updates overlay",
-      "Verify 'wipe:reset' listener calls hideWipeOverlay()"
-    ],
-    "passes": true
-  },
-  {
-    "id": "WIPE-021",
-    "category": "client",
-    "description": "Add 'R' key listener in game.ts: when wipeInProgress is true and user presses 'R', emit 'player:ready' socket event to server",
-    "steps_to_verify": [
-      "Open src/client/game.ts",
-      "Verify keydown listener for 'r' key exists",
-      "Verify it checks wipeInProgress before emitting",
-      "Verify it emits 'player:ready' event"
-    ],
-    "passes": true
-  },
-  {
-    "id": "WIPE-022",
-    "category": "client",
-    "description": "Modify applyInput() in src/client/network.ts: check if local player is dead before applying prediction. If dead, skip prediction (don't move local player)",
-    "steps_to_verify": [
-      "Open src/client/network.ts",
-      "Find applyInput() function",
-      "Verify it checks if local player is dead",
-      "Verify it skips prediction when player is dead"
-    ],
-    "passes": true
-  },
-  {
-    "id": "WIPE-023",
-    "category": "client",
-    "description": "Add God Mode toggle button to admin panel in public/index.html: <button id=\"toggle-godmode-btn\">Toggle God Mode</button> in the Utility section",
-    "steps_to_verify": [
-      "Open public/index.html",
-      "Find Utility section in admin panel",
-      "Verify #toggle-godmode-btn button exists"
-    ],
-    "passes": true
-  },
-  {
-    "id": "WIPE-024",
-    "category": "client",
-    "description": "Add click handler for #toggle-godmode-btn in src/client/admin.ts that emits 'admin:toggleGodMode' socket event. Add emitToggleGodMode() to __adminTest object",
-    "steps_to_verify": [
-      "Open src/client/admin.ts",
-      "Verify click handler for toggle-godmode-btn exists",
-      "Verify it emits 'admin:toggleGodMode'",
-      "Verify __adminTest.emitToggleGodMode exists"
-    ],
-    "passes": true
-  },
-  {
-    "id": "WIPE-025",
-    "category": "styles",
-    "description": "Add Google Font import for 'Permanent Marker' handwritten font in public/css/style.css: @import url('https://fonts.googleapis.com/css2?family=Permanent+Marker&display=swap')",
-    "steps_to_verify": [
-      "Open public/css/style.css",
-      "Verify @import for Permanent Marker font exists at top of file"
-    ],
-    "passes": true
-  },
-  {
-    "id": "WIPE-026",
-    "category": "styles",
-    "description": "Add CSS for #wipe-overlay: position absolute, covers canvas area (1000x1000), centered within .game-container. Hidden by default with .hidden class",
-    "steps_to_verify": [
-      "Open public/css/style.css",
-      "Verify #wipe-overlay styles exist",
-      "Verify position: absolute and dimensions match canvas",
-      "Verify .hidden class hides the overlay"
-    ],
-    "passes": true
-  },
-  {
-    "id": "WIPE-027",
-    "category": "styles",
-    "description": "Add CSS for .wipe-banner: font-family 'Permanent Marker', large red text (#ff3333 or similar), positioned at top/center of overlay, slide-in animation from right side (@keyframes slideInFromRight)",
-    "steps_to_verify": [
-      "Open public/css/style.css",
-      "Verify .wipe-banner styles use Permanent Marker font",
-      "Verify red color for text",
-      "Verify @keyframes slideInFromRight animation exists",
-      "Verify animation is applied to banner"
-    ],
-    "passes": true
-  },
-  {
-    "id": "WIPE-028",
-    "category": "styles",
-    "description": "Add CSS for .ready-check: semi-transparent black background (rgba(0,0,0,0.7) or similar), centered below banner, contains ready-message and ready-list",
-    "steps_to_verify": [
-      "Open public/css/style.css",
-      "Verify .ready-check styles exist",
-      "Verify semi-transparent black background",
-      "Verify positioning below banner"
-    ],
-    "passes": true
-  },
-  {
-    "id": "WIPE-029",
-    "category": "styles",
-    "description": "Add CSS for .ready-list .player-entry: player names listed vertically. .player-entry.ready shows green checkmark (✓) before player name using ::before pseudo-element",
-    "steps_to_verify": [
-      "Open public/css/style.css",
-      "Verify .player-entry styles exist",
-      "Verify .player-entry.ready::before shows green checkmark"
-    ],
-    "passes": true
-  },
-  {
-    "id": "WIPE-030",
-    "category": "e2e",
-    "description": "God Mode toggle works: clicking button toggles godMode state, visible in GameState",
-    "steps_to_verify": [
-      "Use Playwright to navigate to localhost:3000?debug=1",
-      "Join game",
-      "Click #toggle-godmode-btn",
-      "Verify godMode changed in game state via page.evaluate(() => __gameTest.getGameState().godMode)"
-    ],
-    "passes": true
-  },
-  {
-    "id": "WIPE-031",
-    "category": "e2e",
-    "description": "Death detection works: with godMode off, when player HP reaches 0, player is marked dead and wipe triggers",
-    "steps_to_verify": [
-      "Use Playwright to navigate to localhost:3000?debug=1",
-      "Join game, disable god mode",
-      "Spawn chariot that will hit player",
-      "Wait for mechanic to resolve and damage player to 0 HP",
-      "Verify player.dead is true in game state",
-      "Verify wipeInProgress is true in game state"
+      "Verify initial currentGameState includes arenaSkin: 'default'",
+      "Find render() call in gameLoop or similar",
+      "Verify currentGameState.arenaSkin is passed to render()"
     ],
     "passes": false
   },
   {
-    "id": "WIPE-032",
-    "category": "e2e",
-    "description": "Dead player visual: dead players render with red X overlay through their body",
+    "id": "SKIN-010",
+    "category": "script",
+    "description": "Update quad-knock script to set arena skin to '4x4-grid' at start",
     "steps_to_verify": [
-      "Use Playwright to trigger a death (god mode off, damage to 0)",
-      "Take screenshot of canvas",
-      "Verify dead player has red X visible over their circle"
+      "Open src/server/encounters/scripts/combos/quad-knock.ts",
+      "Verify runner.setArenaSkin('4x4-grid') call exists near start of script"
     ],
     "passes": false
   },
   {
-    "id": "WIPE-033",
-    "category": "e2e",
-    "description": "Dead player frozen: dead players cannot move with WASD and are not affected by knockbacks",
-    "steps_to_verify": [
-      "Use Playwright to kill a player (god mode off)",
-      "Record player position",
-      "Send WASD input via keyboard simulation",
-      "Verify player position unchanged",
-      "Spawn knockback mechanic",
-      "Verify player position still unchanged after knockback resolves"
-    ],
-    "passes": false
-  },
-  {
-    "id": "WIPE-034",
-    "category": "e2e",
-    "description": "Wipe banner appears: when wipe triggers, 'WIPE IT!' banner slides in from right side over the canvas",
-    "steps_to_verify": [
-      "Use Playwright to trigger a wipe",
-      "Wait for wipe:started event or wipeInProgress state",
-      "Verify #wipe-overlay is visible (not .hidden)",
-      "Verify .wipe-banner contains 'WIPE IT!' text",
-      "Take screenshot to verify visual appearance"
-    ],
-    "passes": false
-  },
-  {
-    "id": "WIPE-035",
-    "category": "e2e",
-    "description": "Ready check UI appears: below wipe banner, shows 'Press R to ready up.' message and lists all players",
-    "steps_to_verify": [
-      "Use Playwright to trigger a wipe",
-      "Verify .ready-message contains 'Press' and 'R' text",
-      "Verify .ready-list contains entries for all players in game"
-    ],
-    "passes": false
-  },
-  {
-    "id": "WIPE-036",
-    "category": "e2e",
-    "description": "Ready state sync: pressing R marks player as ready, green checkmark appears, synced to all clients",
-    "steps_to_verify": [
-      "Use Playwright with wipe in progress",
-      "Press 'r' key",
-      "Verify local player ID appears in readyPlayerIds state",
-      "Verify player's entry in .ready-list has 'ready' class",
-      "Verify green checkmark is visible"
-    ],
-    "passes": false
-  },
-  {
-    "id": "WIPE-037",
-    "category": "e2e",
-    "description": "Reset when all ready: when all players press R, wipe overlay hides, all players healed to full HP, dead flags cleared, encounter restarts",
-    "steps_to_verify": [
-      "Use Playwright to trigger wipe with single player",
-      "Press 'r' key to ready up",
-      "Wait for wipe:reset event",
-      "Verify #wipe-overlay has .hidden class",
-      "Verify player HP is MAX_HP (100)",
-      "Verify player.dead is false",
-      "Verify wipeInProgress is false"
-    ],
-    "passes": false
-  },
-  {
-    "id": "WIPE-038",
-    "category": "e2e",
-    "description": "Script blocking during wipe: after wipe triggers, no new mechanics spawn from active scripts (existing mechanics still resolve)",
-    "steps_to_verify": [
-      "Use Playwright to run a multi-phase encounter",
-      "Trigger death during early phase",
-      "Note mechanic count after wipe triggers",
-      "Wait for existing mechanics to resolve",
-      "Verify no new mechanics spawn (count should only decrease)"
-    ],
-    "passes": false
-  },
-  {
-    "id": "WIPE-039",
-    "category": "e2e",
-    "description": "Most recent script restarts: after reset, the last-started encounter script runs again from the beginning",
-    "steps_to_verify": [
-      "Use Playwright to run tutorial encounter",
-      "Trigger wipe and ready up",
-      "After reset, verify tutorial encounter mechanics start spawning again"
-    ],
-    "passes": false
-  },
-  {
-    "id": "WIPE-040",
+    "id": "SKIN-011",
     "category": "build",
-    "description": "Project builds without TypeScript errors after all wipe system changes",
+    "description": "Project builds without TypeScript errors after all arena skin changes",
     "steps_to_verify": [
       "Run npm run build",
       "Verify no TypeScript compilation errors",
       "Verify build completes successfully"
     ],
-    "passes": true
+    "passes": false
+  },
+  {
+    "id": "SKIN-012",
+    "category": "e2e",
+    "description": "Full arena skin E2E validation: default state, quad-knock activation, draw order, and persistence",
+    "steps_to_verify": [
+      "Use Playwright to navigate to localhost:3000?debug=1 and join game",
+      "Verify initial arenaSkin is 'default' via page.evaluate(() => __gameTest.getGameState().arenaSkin)",
+      "Take screenshot - arena should have plain blue floor with no gridlines",
+      "Run quad-knock via page.evaluate(() => __adminTest.emitRunQuadKnock())",
+      "Wait for skin change, verify arenaSkin is '4x4-grid'",
+      "Take screenshot - verify faint 4x4 gridlines at 200px intervals (3 vertical + 3 horizontal)",
+      "Spawn chariot via admin button to verify draw order - player and mechanic render on top of gridlines",
+      "Wait for quad-knock to complete, verify arenaSkin persists as '4x4-grid'",
+      "Take final screenshot confirming gridlines still visible after script ends"
+    ],
+    "passes": false
   }
 ]
