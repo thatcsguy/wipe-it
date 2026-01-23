@@ -8,7 +8,7 @@
       "Find DoodadType union",
       "Verify 'magic-orb' is included in the union"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "id": "FP-002",
@@ -19,7 +19,7 @@
       "Find ArenaSkinId type",
       "Verify '8x8-grid' is included in the union"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "id": "FP-003",

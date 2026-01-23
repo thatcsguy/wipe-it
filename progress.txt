@@ -1,0 +1,7 @@
+## FP-001: Added 'magic-orb' to DoodadType
+- Added to union in src/shared/types.ts line 202
+- Files: src/shared/types.ts
+
+## FP-002: Added '8x8-grid' to ArenaSkinId
+- Added to union in src/shared/types.ts line 2
+- Files: src/shared/types.ts

@@ -1,5 +1,5 @@
 // Arena skin types
-export type ArenaSkinId = 'default' | '4x4-grid';
+export type ArenaSkinId = 'default' | '4x4-grid' | '8x8-grid';
 
 // Game constants
 export const TICK_RATE = 60;
@@ -199,7 +199,7 @@ export interface DynamoMechanicState {
 export type MechanicState = ChariotMechanicState | SpreadMechanicState | TetherMechanicState | TowerMechanicState | RadialKnockbackMechanicState | LinearKnockbackMechanicState | LineAoeMechanicState | ConalAoeMechanicState | StackMechanicState | DynamoMechanicState;
 
 // Doodad types - visual-only elements with no gameplay effect
-export type DoodadType = 'portal' | 'rect' | 'circle' | 'crystal' | 'limit-cut-marker';
+export type DoodadType = 'portal' | 'rect' | 'circle' | 'crystal' | 'limit-cut-marker' | 'magic-orb';
 export type DoodadLayer = 'background' | 'foreground';
 
 // Doodad anchor offset for player-anchored doodads
