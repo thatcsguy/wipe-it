@@ -92,7 +92,7 @@
       "duration is 5000ms",
       "With 4 players: 1:1 assignment; with fewer: random distribution"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "id": "FP-009",

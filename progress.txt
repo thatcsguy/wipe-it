@@ -41,3 +41,12 @@
 - Added socket.on('admin:runFreshPuff') in src/server/index.ts
 - Validated via Playwright
 - Files: public/index.html, src/client/admin.ts, src/server/index.ts
+
+## FP-008: Fresh-puff tether phase
+- At T=3000ms, spawns 4 point-to-player tethers from outer orb positions
+- Uses at() + runTimeline() pattern for timeline scheduling
+- Tether params: endpointA=point (orb pos), endpointB=player, requiredDistance=0, duration=5000ms
+- Player assignment: shuffled, 1:1 if 4 players, else cycles through available
+- Stores tetherAssignments in ctx for FP-009 (orb movement)
+- Validated via Playwright: 4 tethers spawn correctly
+- Files: src/server/encounters/scripts/combos/fresh-puff.ts

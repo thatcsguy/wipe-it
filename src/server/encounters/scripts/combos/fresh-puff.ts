@@ -1,7 +1,10 @@
 import { Script } from '../../types';
+import { all } from '../../targeting';
 
-// === Timing Gaps ===
+// === Timing Constants ===
 const ORB_DURATION = 15000;
+const TETHER_SPAWN_TIME = 3000;
+const TETHER_DURATION = 5000;
 
 // === Position Constants ===
 // Cardinal positions: N, E, S, W
@@ -91,6 +94,44 @@ export const freshPuff: Script = async (runner, ctx) => {
   ctx.orbIds = orbIds;
   ctx.middleOrbId = middleOrbId;
 
-  // Wait for orbs to expire (placeholder - later phases will add more logic)
-  await runner.wait(ORB_DURATION);
+  // === T=3000ms: Tether phase ===
+  runner.at(TETHER_SPAWN_TIME, () => {
+    const players = runner.select(all());
+    if (players.length === 0) return;
+
+    // Shuffle players for random assignment
+    const shuffledPlayers = [...players].sort(() => Math.random() - 0.5);
+
+    // Store tether assignments: orbIndex -> playerId
+    const tetherAssignments: { orbIndex: number; playerId: string; orbPos: { x: number; y: number } }[] = [];
+
+    // Assign each outer orb (indices 0-3) to a player
+    for (let i = 0; i < 4; i++) {
+      // With 4+ players: 1:1 assignment; with fewer: cycle through
+      const playerIndex = i % shuffledPlayers.length;
+      const player = shuffledPlayers[playerIndex];
+      const orbPos = outerPositions[i];
+
+      tetherAssignments.push({
+        orbIndex: i,
+        playerId: player.id,
+        orbPos,
+      });
+
+      // Spawn point-to-player tether
+      runner.spawn({
+        type: 'tether',
+        endpointA: { type: 'point', x: orbPos.x, y: orbPos.y },
+        endpointB: { type: 'player', playerId: player.id },
+        requiredDistance: 0, // Always stretched visual
+        duration: TETHER_DURATION,
+      });
+    }
+
+    // Store for later phases (orb movement, etc.)
+    ctx.tetherAssignments = tetherAssignments;
+  });
+
+  // Run the timeline
+  await runner.runTimeline({ duration: ORB_DURATION });
 };
