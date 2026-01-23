@@ -3,7 +3,7 @@ import { createServer } from 'http';
 import { Server } from 'socket.io';
 import path from 'path';
 import { Game } from './game';
-import { PlayerInput, ARENA_WIDTH, ARENA_HEIGHT } from '../shared/types';
+import { PlayerInput, ARENA_WIDTH, ARENA_HEIGHT, ArenaSkinId } from '../shared/types';
 import { StatusEffect } from './statusEffect';
 import { runEncounter } from './encounters/script-runner';
 import { tetherLineCombo } from './encounters/scripts/combos/tether-line-combo';
@@ -467,6 +467,11 @@ io.on('connection', (socket) => {
   socket.on('admin:toggleGodMode', () => {
     game.toggleGodMode();
     console.log(`Admin toggled god mode: now ${game.godMode}`);
+  });
+
+  socket.on('admin:setArenaSkin', (skinId: ArenaSkinId) => {
+    game.setArenaSkin(skinId);
+    console.log(`Admin set arena skin: ${skinId}`);
   });
 
   // Player ready during wipe (WIPE-014)

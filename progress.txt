@@ -14,3 +14,11 @@
 - Registered in src/client/doodads/index.ts switch
 - Build passes
 - Files: src/client/doodads/magic-orb.ts, src/client/doodads/index.ts
+
+## FP-005: 8x8-grid arena skin
+- render8x8GridSkin() draws 7 vert + 7 horiz lines at 100px intervals
+- Same rgba(100,150,200,0.3) styling as 4x4-grid
+- Added case '8x8-grid' to renderArenaSkin switch
+- Added admin:setArenaSkin socket handler for testing
+- Validated visually via Playwright
+- Files: src/client/arenaSkins.ts, src/server/index.ts

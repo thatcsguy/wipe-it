@@ -55,7 +55,7 @@
       "Verify 7 vertical and 7 horizontal lines at 100px intervals",
       "Verify case '8x8-grid' calls render8x8GridSkin"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "id": "FP-006",
