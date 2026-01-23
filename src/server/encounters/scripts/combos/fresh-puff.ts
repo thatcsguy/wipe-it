@@ -11,6 +11,12 @@ const CHARIOT_DELAY_INTO_MOVE = 250; // Spawn 250ms into orb movement
 const CHARIOT_RADIUS = 50;
 const CHARIOT_DURATION = 500;
 const CHARIOT_DAMAGE = 100;
+const AOE_SPAWN_TIME = 13750; // 5s after orbs land at T=8750ms
+const AOE_DURATION = 500;
+const AOE_DAMAGE = 100;
+const LINE_AOE_WIDTH = 200;
+const CONE_AOE_ANGLE = Math.PI / 6; // 30 degrees
+const LINE_AOE_LENGTH = 800; // Long enough to span arena
 
 // === Position Constants ===
 // Cardinal positions: N, E, S, W
@@ -204,6 +210,76 @@ export const freshPuff: Script = async (runner, ctx) => {
           });
         }, CHARIOT_DELAY_INTO_MOVE);
       });
+    }
+  });
+
+  // === T=13750ms: Outer orb AOE phase ===
+  runner.at(AOE_SPAWN_TIME, () => {
+    const movementAngles = ctx.orbMovementAngles as Record<number, number> | undefined;
+    const destinations = ctx.orbDestinations as Record<number, { x: number; y: number }> | undefined;
+    const elements = ctx.outerElements as OrbElement[];
+
+    if (!movementAngles || !destinations) return;
+
+    // Fire AOEs from each outer orb (indices 0-3)
+    for (let i = 0; i < 4; i++) {
+      const angle = movementAngles[i];
+      const dest = destinations[i];
+      const element = elements[i];
+
+      if (angle === undefined || !dest) continue;
+
+      if (element === 'ice') {
+        // Ice orbs: 4 lineAoe at cardinal directions (0°, 90°, 180°, 270°) relative to movement
+        const cardinalOffsets = [0, Math.PI / 2, Math.PI, (3 * Math.PI) / 2];
+        for (const offset of cardinalOffsets) {
+          const lineAngle = angle + offset;
+          const endX = dest.x + Math.cos(lineAngle) * LINE_AOE_LENGTH;
+          const endY = dest.y + Math.sin(lineAngle) * LINE_AOE_LENGTH;
+
+          const lineId = runner.spawn({
+            type: 'lineAoe',
+            startX: dest.x,
+            startY: dest.y,
+            endX,
+            endY,
+            width: LINE_AOE_WIDTH,
+            duration: AOE_DURATION,
+          });
+
+          runner.waitForResolve(lineId).then(result => {
+            const data = result.data as { playersHit: string[] };
+            for (const playerId of data.playersHit) {
+              runner.damage(playerId, AOE_DAMAGE);
+            }
+          });
+        }
+      } else if (element === 'lightning') {
+        // Lightning orbs: 4 conalAoe at intercardinal directions (45°, 135°, 225°, 315°) relative to movement
+        const intercardinalOffsets = [Math.PI / 4, (3 * Math.PI) / 4, (5 * Math.PI) / 4, (7 * Math.PI) / 4];
+        for (const offset of intercardinalOffsets) {
+          const coneAngle = angle + offset;
+          const endpointX = dest.x + Math.cos(coneAngle) * LINE_AOE_LENGTH;
+          const endpointY = dest.y + Math.sin(coneAngle) * LINE_AOE_LENGTH;
+
+          const coneId = runner.spawn({
+            type: 'conalAoe',
+            centerX: dest.x,
+            centerY: dest.y,
+            endpointX,
+            endpointY,
+            angle: CONE_AOE_ANGLE,
+            duration: AOE_DURATION,
+          });
+
+          runner.waitForResolve(coneId).then(result => {
+            const data = result.data as { playersHit: string[] };
+            for (const playerId of data.playersHit) {
+              runner.damage(playerId, AOE_DAMAGE);
+            }
+          });
+        }
+      }
     }
   });
 

@@ -67,3 +67,14 @@
 - waitForResolve(chariotId) then damages each player hit via runner.damage(playerId, 100)
 - Validated: 4 chariots spawn at correct positions, deal 100 damage on hit
 - Files: src/server/encounters/scripts/combos/fresh-puff.ts
+
+## FP-011: Fresh-puff outer orb AOEs
+- At T=13750ms, each outer orb fires 4 AOEs based on element
+- Ice orbs: 4 lineAoe at 0°, 90°, 180°, 270° relative to movement angle
+- Lightning orbs: 4 conalAoe at 45°, 135°, 225°, 315° relative to movement angle
+- Line params: width=200, duration=500, length=800 (spans arena)
+- Cone params: angle=π/6 (30°), duration=500
+- All AOEs deal 100 damage via waitForResolve + runner.damage()
+- Uses ctx.orbMovementAngles and ctx.orbDestinations from FP-009
+- Validated: 16 AOEs fire (4 orbs × 4 each), damage applied correctly
+- Files: src/server/encounters/scripts/combos/fresh-puff.ts

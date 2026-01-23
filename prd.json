@@ -129,7 +129,7 @@
       "Cones have angle=Math.PI/6",
       "All AOEs duration=500, resolve with 100 damage"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "id": "FP-012",
