@@ -43,6 +43,9 @@ export class Game extends EventEmitter {
     super();
     this.io = io;
 
+    // Scripts can have many concurrent mechanics awaiting resolution
+    this.setMaxListeners(50);
+
     // Register callback for mechanic resolution events (legacy socket.io events)
     this.mechanicManager.onResolution((result) => {
       if (result && 'mechanicId' in result) {

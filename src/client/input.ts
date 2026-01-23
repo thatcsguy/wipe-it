@@ -28,6 +28,14 @@ function setupInputListeners(): void {
     else if (key === 's') keyState.s = false;
     else if (key === 'd') keyState.d = false;
   });
+
+  // Clear all keys when tab loses focus (prevents stuck keys on tab switch)
+  window.addEventListener('blur', () => {
+    keyState.w = false;
+    keyState.a = false;
+    keyState.s = false;
+    keyState.d = false;
+  });
 }
 
 // Get current input state (returns copy to avoid mutation)
