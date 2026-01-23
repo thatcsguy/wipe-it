@@ -3,12 +3,12 @@ import { all } from '../../targeting';
 
 // === Timing Gaps (adjust these to tune pacing) ===
 const TETHER_DELAY = 3000; // after orb spawn → tethers appear
-const TETHER_DURATION = 15000; // how long tethers last before resolving
+const TETHER_DURATION = 5000; // how long tethers last before resolving
 const ORB_MOVE_DURATION = 750; // orb travel time
 const CHARIOT_DELAY_INTO_MOVE = 250; // after orb starts moving → chariot spawns
 const CHARIOT_DURATION = 500; // chariot telegraph time
 const AOE_DELAY_AFTER_LANDING = 5000; // after orbs land → AOEs fire
-const AOE_DURATION = 2000; // AOE telegraph time
+const AOE_DURATION = 700; // AOE telegraph time
 
 // === Computed Absolute Times (don't edit directly) ===
 const ORB_SPAWN = 0;
