@@ -9,6 +9,7 @@ import { runEncounter } from './encounters/script-runner';
 import { tetherLineCombo } from './encounters/scripts/combos/tether-line-combo';
 import { orbitalOmen } from './encounters/scripts/combos/orbital-omen';
 import { quadKnock } from './encounters/scripts/combos/quad-knock';
+import { freshPuff } from './encounters/scripts/combos/fresh-puff';
 import { tutorialEncounter } from './encounters/scripts/encounters/tutorial-encounter';
 import { scopedTimelineTest } from './encounters/scripts/tests/scoped-timeline-test';
 import { triggerAtTest } from './encounters/scripts/tests/trigger-at-test';
@@ -425,6 +426,12 @@ io.on('connection', (socket) => {
   socket.on('admin:runQuadKnock', () => {
     runEncounter(game, quadKnock);
     console.log('Admin started quad-knock');
+  });
+
+  // Run fresh-puff script
+  socket.on('admin:runFreshPuff', () => {
+    runEncounter(game, freshPuff);
+    console.log('Admin started fresh-puff');
   });
 
   // Test scoped timeline for sub-scripts (TRIGGER-006a)

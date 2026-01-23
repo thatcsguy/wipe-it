@@ -67,7 +67,7 @@
       "runner.setArenaSkin('8x8-grid') called at start",
       "5 magic-orb doodads spawned via runner.spawnDoodad"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "id": "FP-007",
@@ -79,7 +79,7 @@
       "Middle orb randomly assigned 'ice' or 'wind'",
       "All doodads have data: { element: 'ice'|'lightning'|'wind' }"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "id": "FP-008",
@@ -154,7 +154,7 @@
       "Clicking button or __adminTest.emitRunFreshPuff() starts encounter",
       "Server handles 'runFreshPuff' socket event"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "id": "FP-014",

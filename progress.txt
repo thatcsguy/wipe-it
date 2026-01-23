@@ -22,3 +22,22 @@
 - Added admin:setArenaSkin socket handler for testing
 - Validated visually via Playwright
 - Files: src/client/arenaSkins.ts, src/server/index.ts
+
+## FP-006 & FP-007: Fresh-puff script with orb spawning
+- Created src/server/encounters/scripts/combos/fresh-puff.ts
+- Exports freshPuff: Script
+- Sets 8x8-grid arena skin at start
+- Spawns 5 magic-orb doodads with 15000ms duration
+- Random pattern: cardinals OR intercardinals, random each run
+- Outer orbs: alternating ice/lightning, opposite orbs same element
+- Middle orb: 50/50 ice or wind
+- All orbs have data.element field
+- Files: src/server/encounters/scripts/combos/fresh-puff.ts
+
+## FP-013: Run Fresh Puff admin button
+- Added button #run-fresh-puff-btn to public/index.html
+- Added click handler in src/client/admin.ts
+- Added emitRunFreshPuff() to __adminTest
+- Added socket.on('admin:runFreshPuff') in src/server/index.ts
+- Validated via Playwright
+- Files: public/index.html, src/client/admin.ts, src/server/index.ts

@@ -189,6 +189,16 @@ export function initAdmin(socket: Socket): void {
     });
   }
 
+  const runFreshPuffBtn = document.getElementById('run-fresh-puff-btn');
+  if (runFreshPuffBtn) {
+    runFreshPuffBtn.addEventListener('click', () => {
+      if (adminSocket) {
+        adminSocket.emit('admin:runFreshPuff');
+        logCombat('Started fresh puff');
+      }
+    });
+  }
+
   const spawnPortalBtn = document.getElementById('spawn-portal-btn');
   if (spawnPortalBtn) {
     spawnPortalBtn.addEventListener('click', () => {
@@ -298,6 +308,11 @@ export function updateGodModeButton(godMode: boolean): void {
   emitRunQuadKnock: () => {
     if (adminSocket) {
       adminSocket.emit('admin:runQuadKnock');
+    }
+  },
+  emitRunFreshPuff: () => {
+    if (adminSocket) {
+      adminSocket.emit('admin:runFreshPuff');
     }
   },
   emitSpawnPortal: (params?: { duration?: number; x?: number; y?: number }) => {
