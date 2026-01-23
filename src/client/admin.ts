@@ -139,6 +139,16 @@ export function initAdmin(socket: Socket): void {
     });
   }
 
+  const spawnDynamoBtn = document.getElementById('spawn-dynamo-btn');
+  if (spawnDynamoBtn) {
+    spawnDynamoBtn.addEventListener('click', () => {
+      if (adminSocket) {
+        adminSocket.emit('admin:spawnDynamo');
+        logCombat('Spawned dynamo');
+      }
+    });
+  }
+
   const runTetherLineBtn = document.getElementById('run-tether-line-btn');
   if (runTetherLineBtn) {
     runTetherLineBtn.addEventListener('click', () => {
@@ -263,6 +273,11 @@ export function updateGodModeButton(godMode: boolean): void {
   emitSpawnConalAoe: (params?: { duration?: number }) => {
     if (adminSocket) {
       adminSocket.emit('admin:spawnConalAoe', params);
+    }
+  },
+  emitSpawnDynamo: (params?: { duration?: number; innerRadius?: number; outerRadius?: number }) => {
+    if (adminSocket) {
+      adminSocket.emit('admin:spawnDynamo', params);
     }
   },
   emitRunTetherLineCombo: () => {

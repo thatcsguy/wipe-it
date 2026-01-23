@@ -8,6 +8,7 @@ import { renderRadialKnockback } from './radialKnockback';
 import { renderLinearKnockback } from './linearKnockback';
 import { renderLineAoe, cleanupLineAoeTracking } from './lineAoe';
 import { renderConalAoe, cleanupConalAoeTracking } from './conalAoe';
+import { renderDynamo, cleanupDynamoTracking } from './dynamo';
 export { PlayerPositionData } from './shared';
 import type { PlayerPositionData } from './shared';
 
@@ -22,6 +23,7 @@ export function renderMechanics(
   const activeChariotIds = new Set<string>();
   const activeLineAoeIds = new Set<string>();
   const activeConalAoeIds = new Set<string>();
+  const activeDynamoIds = new Set<string>();
 
   for (const mechanic of mechanics) {
     if (mechanic.type === 'chariot') {
@@ -45,6 +47,9 @@ export function renderMechanics(
     } else if (mechanic.type === 'conalAoe') {
       activeConalAoeIds.add(mechanic.id);
       renderConalAoe(ctx, mechanic);
+    } else if (mechanic.type === 'dynamo') {
+      activeDynamoIds.add(mechanic.id);
+      renderDynamo(ctx, mechanic, serverTime);
     }
   }
 
@@ -52,6 +57,7 @@ export function renderMechanics(
   cleanupChariotTracking(activeChariotIds);
   cleanupLineAoeTracking(activeLineAoeIds);
   cleanupConalAoeTracking(activeConalAoeIds);
+  cleanupDynamoTracking(activeDynamoIds);
 }
 
 // Export for testing

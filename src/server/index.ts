@@ -269,6 +269,17 @@ io.on('connection', (socket) => {
     console.log(`Admin spawned conal AOE at (${centerX}, ${centerY}) endpoint=(${endpointX}, ${endpointY}) angle=${angle} duration=${duration}ms`);
   });
 
+  // Handle admin dynamo spawn
+  socket.on('admin:spawnDynamo', (params?: { duration?: number; innerRadius?: number; outerRadius?: number }) => {
+    const x = ARENA_WIDTH / 2;
+    const y = ARENA_HEIGHT / 2;
+    const innerRadius = params?.innerRadius ?? 80;
+    const outerRadius = params?.outerRadius ?? 200;
+    const duration = params?.duration ?? 3000;
+    game.spawnDynamo(x, y, innerRadius, outerRadius, duration);
+    console.log(`Admin spawned dynamo at (${x}, ${y}) innerRadius=${innerRadius} outerRadius=${outerRadius} duration=${duration}ms`);
+  });
+
   // Handle admin tower spawn (no effects - use scripts for damage)
   socket.on('admin:spawnTower', (params?: { duration?: number }) => {
     // Test values: center of arena, radius 80, duration 5000ms, requires 2 players

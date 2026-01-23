@@ -13,6 +13,7 @@ import { LinearKnockbackMechanic } from './mechanics/linearKnockback';
 import { LineAoeMechanic } from './mechanics/lineAoe';
 import { ConalAoeMechanic } from './mechanics/conalAoe';
 import { StackMechanic } from './mechanics/stack';
+import { DynamoMechanic } from './mechanics/dynamo';
 import { TetherEndpoint } from '../shared/types';
 import { StatusEffectManager } from './statusEffectManager';
 import { MechanicResult, Script } from './encounters/types';
@@ -341,6 +342,18 @@ export class Game extends EventEmitter {
 
   spawnStack(targetPlayerId: string, radius: number, duration: number): string {
     const mechanic = new StackMechanic(targetPlayerId, radius, duration);
+    this.mechanicManager.add(mechanic);
+    return mechanic.id;
+  }
+
+  spawnDynamo(
+    x: number,
+    y: number,
+    innerRadius: number,
+    outerRadius: number,
+    duration: number
+  ): string {
+    const mechanic = new DynamoMechanic(x, y, innerRadius, outerRadius, duration);
     this.mechanicManager.add(mechanic);
     return mechanic.id;
   }

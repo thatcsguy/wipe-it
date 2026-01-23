@@ -15,6 +15,7 @@ const DEFAULTS = {
   lineAoe: { width: 100, duration: 3000 },
   conalAoe: { angle: Math.PI / 2, duration: 3000 },
   stack: { radius: 80, duration: 3000 },
+  dynamo: { innerRadius: 80, outerRadius: 200, duration: 3000 },
 };
 
 /**
@@ -231,6 +232,24 @@ export class ScriptRunnerImpl implements ScriptRunner {
         return this.game.spawnStack(
           mechanic.targetPlayerId,
           radius,
+          duration
+        );
+      }
+
+      case 'dynamo': {
+        const innerRadius = mechanic.innerRadius ?? DEFAULTS.dynamo.innerRadius;
+        const outerRadius = mechanic.outerRadius ?? DEFAULTS.dynamo.outerRadius;
+        const duration = this.computeTiming(
+          mechanic.triggerAt,
+          mechanic.duration,
+          DEFAULTS.dynamo.duration,
+          'duration'
+        );
+        return this.game.spawnDynamo(
+          mechanic.x,
+          mechanic.y,
+          innerRadius,
+          outerRadius,
           duration
         );
       }

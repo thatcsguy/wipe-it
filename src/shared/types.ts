@@ -69,7 +69,7 @@ export interface PlayerState {
 }
 
 // Mechanic types
-export type MechanicType = 'chariot' | 'spread' | 'tether' | 'tower' | 'radialKnockback' | 'linearKnockback' | 'lineAoe' | 'conalAoe' | 'stack';
+export type MechanicType = 'chariot' | 'spread' | 'tether' | 'tower' | 'radialKnockback' | 'linearKnockback' | 'lineAoe' | 'conalAoe' | 'stack' | 'dynamo';
 
 // Tether endpoint - either a player or a fixed point
 export type TetherEndpoint =
@@ -183,8 +183,20 @@ export interface StackMechanicState {
   radius: number;
 }
 
+// Dynamo mechanic - donut AOE (safe inside inner radius, danger between radii)
+export interface DynamoMechanicState {
+  type: 'dynamo';
+  id: string;
+  startTime: number;
+  endTime: number;
+  x: number;
+  y: number;
+  innerRadius: number;
+  outerRadius: number;
+}
+
 // Union of all mechanic states
-export type MechanicState = ChariotMechanicState | SpreadMechanicState | TetherMechanicState | TowerMechanicState | RadialKnockbackMechanicState | LinearKnockbackMechanicState | LineAoeMechanicState | ConalAoeMechanicState | StackMechanicState;
+export type MechanicState = ChariotMechanicState | SpreadMechanicState | TetherMechanicState | TowerMechanicState | RadialKnockbackMechanicState | LinearKnockbackMechanicState | LineAoeMechanicState | ConalAoeMechanicState | StackMechanicState | DynamoMechanicState;
 
 // Doodad types - visual-only elements with no gameplay effect
 export type DoodadType = 'portal' | 'rect' | 'circle' | 'crystal' | 'limit-cut-marker';

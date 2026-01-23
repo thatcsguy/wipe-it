@@ -89,6 +89,7 @@ page.locator('.combat-entry', { hasText: 'Spawned chariot' }) // Specific entry
 - `#spawn-spreads-btn` - Spawns spread mechanics
 - `#spawn-line-aoe-btn` - Spawns line AOE mechanic
 - `#spawn-conal-aoe-btn` - Spawns conal AOE mechanic
+- `#spawn-dynamo-btn` - Spawns dynamo (donut) mechanic
 - `#heal-all-btn` - Heals all players
 
 ### Test APIs (window globals)
@@ -123,6 +124,7 @@ __adminTest.emitSpawnPointTethers({ duration: 10000 })
 __adminTest.emitSpawnPlayerTethers({ duration: 10000 })
 __adminTest.emitSpawnLineAoe({ duration: 10000 })
 __adminTest.emitSpawnConalAoe({ duration: 10000 })
+__adminTest.emitSpawnDynamo({ duration: 10000 })
 
 // Knockback delay overrides (default 2000ms delay, 500ms knockbackDuration)
 __adminTest.emitSpawnRadialKnockback({ delay: 8000 })
@@ -224,6 +226,7 @@ Available to scripts via `runner` parameter:
 { type: 'tower'; x: number; y: number; radius?; duration?; requiredPlayers? }
 { type: 'lineAoe'; startX; startY; endX; endY; width?; duration? }
 { type: 'conalAoe'; centerX; centerY; endpointX; endpointY; angle?; duration? }
+{ type: 'dynamo'; x: number; y: number; innerRadius?; outerRadius?; duration? }
 { type: 'radialKnockback'; originX; originY; delay?; knockbackDistance?; knockbackDuration? }
 { type: 'linearKnockback'; lineStartX; lineStartY; lineEndX; lineEndY; width?; delay?; knockbackDistance?; knockbackDuration? }
 ```
@@ -243,6 +246,7 @@ Mechanics do **not** apply damage/effects directly. Instead:
 | spread | `{ playersHit: string[], position: {x,y} \| null }` |
 | lineAoe | `{ playersHit: string[] }` |
 | conalAoe | `{ playersHit: string[] }` |
+| dynamo | `{ playersHit: string[] }` |
 | tower | `{ success: boolean, playersInside: string[] }` |
 | tether | `{ player1: {position}, player2: {position}, stretched: boolean }` |
 

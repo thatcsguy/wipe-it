@@ -38,7 +38,8 @@ export type MechanicParams =
   | { type: 'linearKnockback'; lineStartX: number; lineStartY: number; lineEndX: number; lineEndY: number; width?: number; delay?: number; knockbackDistance?: number; knockbackDuration?: number; triggerAt?: number }
   | { type: 'lineAoe'; startX: number; startY: number; endX: number; endY: number; width?: number; duration?: number; triggerAt?: number }
   | { type: 'conalAoe'; centerX: number; centerY: number; endpointX: number; endpointY: number; angle?: number; duration?: number; triggerAt?: number }
-  | { type: 'stack'; targetPlayerId: string; radius?: number; duration?: number; triggerAt?: number };
+  | { type: 'stack'; targetPlayerId: string; radius?: number; duration?: number; triggerAt?: number }
+  | { type: 'dynamo'; x: number; y: number; innerRadius?: number; outerRadius?: number; duration?: number; triggerAt?: number };
 
 /**
  * Parameters for spawning doodads via scripts
