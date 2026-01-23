@@ -1,148 +1,187 @@
 [
   {
-    "id": "SKIN-001",
+    "id": "FP-001",
     "category": "types",
-    "description": "Add ArenaSkinId type and arenaSkin field to GameState in src/shared/types.ts",
+    "description": "Add 'magic-orb' to DoodadType union in src/shared/types.ts",
     "steps_to_verify": [
       "Open src/shared/types.ts",
-      "Verify ArenaSkinId type exists: 'default' | '4x4-grid'",
-      "Find GameState interface",
-      "Verify arenaSkin: ArenaSkinId field exists in interface"
+      "Find DoodadType union",
+      "Verify 'magic-orb' is included in the union"
     ],
-    "passes": true
+    "passes": false
   },
   {
-    "id": "SKIN-002",
-    "category": "server",
-    "description": "Add arenaSkin property and setArenaSkin() method to Game class in src/server/game.ts",
+    "id": "FP-002",
+    "category": "types",
+    "description": "Add '8x8-grid' to ArenaSkinId union in src/shared/types.ts",
     "steps_to_verify": [
-      "Open src/server/game.ts",
-      "Verify arenaSkin: ArenaSkinId = 'default' property exists on Game class",
-      "Verify setArenaSkin(skin: ArenaSkinId): void method exists"
+      "Open src/shared/types.ts",
+      "Find ArenaSkinId type",
+      "Verify '8x8-grid' is included in the union"
     ],
-    "passes": true
+    "passes": false
   },
   {
-    "id": "SKIN-003",
-    "category": "server",
-    "description": "Include arenaSkin in Game broadcast() and getState() methods",
-    "steps_to_verify": [
-      "Open src/server/game.ts",
-      "Find broadcast() method, verify state object includes arenaSkin: this.arenaSkin",
-      "Find getState() method, verify returned object includes arenaSkin: this.arenaSkin"
-    ],
-    "passes": true
-  },
-  {
-    "id": "SKIN-004",
-    "category": "server",
-    "description": "Add setArenaSkin() to ScriptRunner interface in src/server/encounters/types.ts",
-    "steps_to_verify": [
-      "Open src/server/encounters/types.ts",
-      "Verify import of ArenaSkinId from shared types",
-      "Find ScriptRunner interface",
-      "Verify setArenaSkin(skin: ArenaSkinId): void method exists in interface"
-    ],
-    "passes": true
-  },
-  {
-    "id": "SKIN-005",
-    "category": "server",
-    "description": "Implement setArenaSkin() in ScriptRunnerImpl in src/server/encounters/script-runner.ts",
-    "steps_to_verify": [
-      "Open src/server/encounters/script-runner.ts",
-      "Verify import of ArenaSkinId from shared types",
-      "Find ScriptRunnerImpl class",
-      "Verify setArenaSkin() method exists and calls this.game.setArenaSkin(skin)"
-    ],
-    "passes": true
-  },
-  {
-    "id": "SKIN-006",
+    "id": "FP-003",
     "category": "client",
-    "description": "Create src/client/arenaSkins.ts with renderArenaSkin() and render4x4GridSkin() functions",
+    "description": "Create magic-orb doodad renderer at src/client/doodads/magic-orb.ts. Export renderMagicOrb(ctx, doodad, pos, serverTime). Render circle (~40px radius) with element-colored glow. Read element from doodad.data.element: 'wind'=#00ff88 (green), 'lightning'=#ffff00 (yellow), 'ice'=#00ccff (blue). Include soft pulsing glow effect using serverTime.",
     "steps_to_verify": [
-      "File src/client/arenaSkins.ts exists",
-      "Verify renderArenaSkin(ctx: CanvasRenderingContext2D, skinId: ArenaSkinId) function is exported",
-      "Verify render4x4GridSkin(ctx: CanvasRenderingContext2D) function exists",
-      "Verify renderArenaSkin switches on skinId and calls render4x4GridSkin for '4x4-grid'"
+      "File src/client/doodads/magic-orb.ts exists",
+      "renderMagicOrb function is exported",
+      "Function reads doodad.data.element for color",
+      "Renders circular orb with glow",
+      "Glow pulses using serverTime"
     ],
-    "passes": true
+    "passes": false
   },
   {
-    "id": "SKIN-007",
+    "id": "FP-004",
     "category": "client",
-    "description": "render4x4GridSkin draws faint gridlines at 200px intervals creating 4x4 grid",
+    "description": "Register magic-orb in src/client/doodads/index.ts switch statement. Import renderMagicOrb and add case 'magic-orb' calling renderMagicOrb(ctx, doodad, pos, serverTime).",
+    "steps_to_verify": [
+      "Open src/client/doodads/index.ts",
+      "Verify import { renderMagicOrb } from './magic-orb'",
+      "Verify case 'magic-orb': renderMagicOrb(ctx, doodad, pos, serverTime) in switch"
+    ],
+    "passes": false
+  },
+  {
+    "id": "FP-005",
+    "category": "client",
+    "description": "Add render8x8GridSkin function in src/client/arenaSkins.ts. Use 100px intervals. Draw 7 vertical lines at x=100,200,300,400,500,600,700 and 7 horizontal lines at same y positions. Use same rgba(100,150,200,0.3) styling as 4x4-grid. Add case '8x8-grid' in renderArenaSkin switch.",
     "steps_to_verify": [
       "Open src/client/arenaSkins.ts",
-      "Verify GRID_INTERVAL = 200 constant or equivalent",
-      "Verify strokeStyle is faint (alpha ~0.3, bluish color)",
-      "Verify vertical lines at x = 200, 400, 600",
-      "Verify horizontal lines at y = 200, 400, 600",
-      "Verify ctx.save()/translate(ARENA_OFFSET)/restore() pattern for proper positioning"
+      "Verify render8x8GridSkin function exists",
+      "Verify 7 vertical and 7 horizontal lines at 100px intervals",
+      "Verify case '8x8-grid' calls render8x8GridSkin"
     ],
-    "passes": true
+    "passes": false
   },
   {
-    "id": "SKIN-008",
-    "category": "client",
-    "description": "Update render() in src/client/renderer.ts to accept arenaSkin parameter and call renderArenaSkin()",
-    "steps_to_verify": [
-      "Open src/client/renderer.ts",
-      "Verify import of renderArenaSkin from arenaSkins.ts",
-      "Verify render() function has arenaSkin?: ArenaSkinId parameter",
-      "Verify renderArenaSkin(ctx, arenaSkin) is called after clear() but before ctx.translate()"
-    ],
-    "passes": true
-  },
-  {
-    "id": "SKIN-009",
-    "category": "client",
-    "description": "Update src/client/game.ts to include arenaSkin in initial state and pass to render()",
-    "steps_to_verify": [
-      "Open src/client/game.ts",
-      "Verify initial currentGameState includes arenaSkin: 'default'",
-      "Find render() call in gameLoop or similar",
-      "Verify currentGameState.arenaSkin is passed to render()"
-    ],
-    "passes": true
-  },
-  {
-    "id": "SKIN-010",
+    "id": "FP-006",
     "category": "script",
-    "description": "Update quad-knock script to set arena skin to '4x4-grid' at start",
+    "description": "Create src/server/encounters/scripts/combos/fresh-puff.ts. Export freshPuff: Script. At start: call runner.setArenaSkin('8x8-grid'). Spawn 5 magic-orb doodads with long duration (15000ms+). Random pattern: cardinals [(400,200),(600,400),(400,600),(200,400)] OR intercardinals [(200,200),(600,200),(600,600),(200,600)] plus middle at (400,400).",
     "steps_to_verify": [
-      "Open src/server/encounters/scripts/combos/quad-knock.ts",
-      "Verify runner.setArenaSkin('4x4-grid') call exists near start of script"
+      "File src/server/encounters/scripts/combos/fresh-puff.ts exists",
+      "freshPuff is exported as Script type",
+      "runner.setArenaSkin('8x8-grid') called at start",
+      "5 magic-orb doodads spawned via runner.spawnDoodad"
     ],
-    "passes": true
+    "passes": false
   },
   {
-    "id": "SKIN-011",
+    "id": "FP-007",
+    "category": "script",
+    "description": "fresh-puff orb element assignment: Outer 4 orbs are 2 lightning + 2 ice, alternating around circle (opposite orbs same element). Random which element starts. Middle orb is 50/50 random ice or wind. Elements set via doodad data.element field.",
+    "steps_to_verify": [
+      "Outer orbs alternate elements (ice-lightning-ice-lightning or vice versa)",
+      "Opposite orbs (indices 0+2, 1+3) have same element",
+      "Middle orb randomly assigned 'ice' or 'wind'",
+      "All doodads have data: { element: 'ice'|'lightning'|'wind' }"
+    ],
+    "passes": false
+  },
+  {
+    "id": "FP-008",
+    "category": "script",
+    "description": "fresh-puff tether phase: At T=3000ms, spawn tether from each outer orb to a player. Use point-to-player tether: endpointA={type:'point', x, y} at orb position, endpointB={type:'player', playerId}. requiredDistance=0 (always stretched visual). duration=5000ms. Each orb tethers to different player if 4 players, otherwise random assignment.",
+    "steps_to_verify": [
+      "4 tethers spawn at T=3s",
+      "Tethers connect orb positions (points) to players",
+      "requiredDistance is 0",
+      "duration is 5000ms",
+      "With 4 players: 1:1 assignment; with fewer: random distribution"
+    ],
+    "passes": false
+  },
+  {
+    "id": "FP-009",
+    "category": "script",
+    "description": "fresh-puff orb movement: At T=8000ms when tethers resolve, move each outer orb 200px toward its tethered player. Use waitForResolve(tetherId) to get player position at resolve time. Calculate direction: atan2(playerY-orbY, playerX-orbX). Destination: orb + 200px in that direction. Use moveDoodad(orbId, destX, destY, 750). Store movement angle for AOE phase.",
+    "steps_to_verify": [
+      "After tether resolve, orbs move via moveDoodad()",
+      "Movement is exactly 200px toward tethered player",
+      "Movement duration is 750ms",
+      "Movement angle stored per orb for later use"
+    ],
+    "passes": false
+  },
+  {
+    "id": "FP-010",
+    "category": "script",
+    "description": "fresh-puff chariot spawn: At T=8250ms (250ms into orb movement), spawn chariot at each outer orb's destination position. Chariot params: x=destX, y=destY, radius=50, duration=500. On resolve via waitForResolve, deal 100 damage to each player in playersHit.",
+    "steps_to_verify": [
+      "4 chariots spawn at T=8.25s at orb destination positions",
+      "Chariots have radius=50, duration=500",
+      "Chariots resolve at T=8.75s (same time orbs stop)",
+      "Players hit by chariot receive runner.damage(playerId, 100)"
+    ],
+    "passes": false
+  },
+  {
+    "id": "FP-011",
+    "category": "script",
+    "description": "fresh-puff outer orb AOEs: At T=13750ms (5s after T=8750ms landing), ice orbs fire 4 lineAoe (width=200) at 0°,90°,180°,270° relative to movement angle. Lightning orbs fire 4 conalAoe (angle=Math.PI/6=30deg) at 45°,135°,225°,315° relative to movement angle. All AOEs: duration=500, deal 100 damage on resolve.",
+    "steps_to_verify": [
+      "Ice orbs: 4 lineAoe at cardinal directions from movement angle",
+      "Lightning orbs: 4 conalAoe at intercardinal directions from movement angle",
+      "Lines have width=200",
+      "Cones have angle=Math.PI/6",
+      "All AOEs duration=500, resolve with 100 damage"
+    ],
+    "passes": false
+  },
+  {
+    "id": "FP-012",
+    "category": "script",
+    "description": "fresh-puff middle orb AOE: At T=13750ms, middle orb fires AOE based on element. If 'ice': 4 lineAoe at true N/S/E/W (vertical at x=400 spanning arena, horizontal at y=400 spanning arena), width=200, duration=500. If 'wind': dynamo at (400,400), innerRadius=100, outerRadius=600, duration=500. All deal 100 damage on resolve.",
+    "steps_to_verify": [
+      "Ice middle: 2 line AOEs (N-S vertical, E-W horizontal) from center",
+      "Wind middle: dynamo at (400,400) with inner=100, outer=600",
+      "AOE duration=500",
+      "Players hit receive 100 damage"
+    ],
+    "passes": false
+  },
+  {
+    "id": "FP-013",
+    "category": "admin",
+    "description": "Add 'Run Fresh Puff' button to debug panel. Button ID: #run-fresh-puff-btn. Add emitRunFreshPuff() to __adminTest object. Add socket.on('runFreshPuff') handler in server index.ts that calls runEncounter(game, freshPuff).",
+    "steps_to_verify": [
+      "Open localhost:3000?debug=1",
+      "Button 'Run Fresh Puff' visible in admin panel",
+      "Button has id='run-fresh-puff-btn'",
+      "Clicking button or __adminTest.emitRunFreshPuff() starts encounter",
+      "Server handles 'runFreshPuff' socket event"
+    ],
+    "passes": false
+  },
+  {
+    "id": "FP-014",
     "category": "build",
-    "description": "Project builds without TypeScript errors after all arena skin changes",
+    "description": "Project builds without TypeScript errors after all fresh-puff changes",
     "steps_to_verify": [
       "Run npm run build",
       "Verify no TypeScript compilation errors",
       "Verify build completes successfully"
     ],
-    "passes": true
+    "passes": false
   },
   {
-    "id": "SKIN-012",
+    "id": "FP-015",
     "category": "e2e",
-    "description": "Full arena skin E2E validation: default state, quad-knock activation, draw order, and persistence",
+    "description": "Full fresh-puff E2E validation: orb spawning, tether creation, orb movement, chariot damage, and AOE firing",
     "steps_to_verify": [
-      "Use Playwright to navigate to localhost:3000?debug=1 and join game",
-      "Verify initial arenaSkin is 'default' via page.evaluate(() => __gameTest.getGameState().arenaSkin)",
-      "Take screenshot - arena should have plain blue floor with no gridlines",
-      "Run quad-knock via page.evaluate(() => __adminTest.emitRunQuadKnock())",
-      "Wait for skin change, verify arenaSkin is '4x4-grid'",
-      "Take screenshot - verify faint 4x4 gridlines at 200px intervals (3 vertical + 3 horizontal)",
-      "Spawn chariot via admin button to verify draw order - player and mechanic render on top of gridlines",
-      "Wait for quad-knock to complete, verify arenaSkin persists as '4x4-grid'",
-      "Take final screenshot confirming gridlines still visible after script ends"
+      "Navigate to localhost:3000?debug=1, join game",
+      "Click 'Run Fresh Puff' button",
+      "At T=0: verify 5 magic-orbs spawn (check .debug-mechanic or doodads)",
+      "At T=3s: verify 4 tethers appear connecting orbs to players",
+      "At T=8s: verify orbs start moving toward tethered players",
+      "At T=8.25s: verify chariots appear at destination positions",
+      "At T=8.75s: verify orbs stopped, chariots resolved, damage dealt if hit",
+      "At T=13.75s: verify AOEs fire from all orbs",
+      "At T=14.25s: verify AOEs resolved, damage dealt if hit"
     ],
-    "passes": true
+    "passes": false
   }
 ]
