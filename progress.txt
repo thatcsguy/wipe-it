@@ -50,3 +50,12 @@
 - Stores tetherAssignments in ctx for FP-009 (orb movement)
 - Validated via Playwright: 4 tethers spawn correctly
 - Files: src/server/encounters/scripts/combos/fresh-puff.ts
+
+## FP-009: Fresh-puff orb movement
+- After tether resolves (T=8s), each outer orb moves 200px toward tethered player
+- Uses waitForResolve(tetherId) to get player position at resolve time
+- Movement via moveDoodad(orbId, destX, destY, 750)
+- Stores movement angle in ctx.orbMovementAngles[orbIndex] for AOE phase
+- Stores destinations in ctx.orbDestinations[orbIndex] for chariot phase
+- Validated: NW orb (200,200)→(341,341) = 200px toward player@(400,400)
+- Files: src/server/encounters/scripts/combos/fresh-puff.ts

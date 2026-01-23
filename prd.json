@@ -104,7 +104,7 @@
       "Movement duration is 750ms",
       "Movement angle stored per orb for later use"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "id": "FP-010",
