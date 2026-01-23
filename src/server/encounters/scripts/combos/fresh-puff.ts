@@ -7,6 +7,10 @@ const TETHER_SPAWN_TIME = 3000;
 const TETHER_DURATION = 5000;
 const ORB_MOVE_DISTANCE = 200;
 const ORB_MOVE_DURATION = 750;
+const CHARIOT_DELAY_INTO_MOVE = 250; // Spawn 250ms into orb movement
+const CHARIOT_RADIUS = 50;
+const CHARIOT_DURATION = 500;
+const CHARIOT_DAMAGE = 100;
 
 // === Position Constants ===
 // Cardinal positions: N, E, S, W
@@ -180,6 +184,25 @@ export const freshPuff: Script = async (runner, ctx) => {
         // Move the orb
         const orbId = orbIds[assignment.orbIndex];
         runner.moveDoodad(orbId, destX, destY, ORB_MOVE_DURATION);
+
+        // Spawn chariot 250ms into movement at destination position
+        setTimeout(() => {
+          const chariotId = runner.spawn({
+            type: 'chariot',
+            x: destX,
+            y: destY,
+            radius: CHARIOT_RADIUS,
+            duration: CHARIOT_DURATION,
+          });
+
+          // Wait for chariot to resolve and apply damage
+          runner.waitForResolve(chariotId).then(chariotResult => {
+            const chariotData = chariotResult.data as { playersHit: string[] };
+            for (const playerId of chariotData.playersHit) {
+              runner.damage(playerId, CHARIOT_DAMAGE);
+            }
+          });
+        }, CHARIOT_DELAY_INTO_MOVE);
       });
     }
   });

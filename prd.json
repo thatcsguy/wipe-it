@@ -116,7 +116,7 @@
       "Chariots resolve at T=8.75s (same time orbs stop)",
       "Players hit by chariot receive runner.damage(playerId, 100)"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "id": "FP-011",

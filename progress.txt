@@ -59,3 +59,11 @@
 - Stores destinations in ctx.orbDestinations[orbIndex] for chariot phase
 - Validated: NW orb (200,200)→(341,341) = 200px toward player@(400,400)
 - Files: src/server/encounters/scripts/combos/fresh-puff.ts
+
+## FP-010: Fresh-puff chariot spawn
+- At T=8250ms (250ms into orb movement), spawns chariot at each outer orb destination
+- Uses setTimeout(250ms) inside waitForResolve callback to delay spawn
+- Chariot params: x=destX, y=destY, radius=50, duration=500
+- waitForResolve(chariotId) then damages each player hit via runner.damage(playerId, 100)
+- Validated: 4 chariots spawn at correct positions, deal 100 damage on hit
+- Files: src/server/encounters/scripts/combos/fresh-puff.ts
