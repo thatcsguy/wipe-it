@@ -78,3 +78,12 @@
 - Uses ctx.orbMovementAngles and ctx.orbDestinations from FP-009
 - Validated: 16 AOEs fire (4 orbs × 4 each), damage applied correctly
 - Files: src/server/encounters/scripts/combos/fresh-puff.ts
+
+## FP-012: Fresh-puff middle orb AOE
+- At T=13750ms, middle orb fires AOE based on element
+- Ice middle: 2 lineAoe (N-S at x=400, E-W at y=400), width=200, spans 0-800
+- Wind middle: dynamo at (400,400), innerRadius=100, outerRadius=600
+- AOE duration=500, deals 100 damage on resolve
+- Added DYNAMO_INNER_RADIUS=100, DYNAMO_OUTER_RADIUS=600 constants
+- Validated: 18 damage instances at AOE phase (16 outer + 2 middle ice lines)
+- Files: src/server/encounters/scripts/combos/fresh-puff.ts

@@ -17,6 +17,8 @@ const AOE_DAMAGE = 100;
 const LINE_AOE_WIDTH = 200;
 const CONE_AOE_ANGLE = Math.PI / 6; // 30 degrees
 const LINE_AOE_LENGTH = 800; // Long enough to span arena
+const DYNAMO_INNER_RADIUS = 100;
+const DYNAMO_OUTER_RADIUS = 600;
 
 // === Position Constants ===
 // Cardinal positions: N, E, S, W
@@ -280,6 +282,62 @@ export const freshPuff: Script = async (runner, ctx) => {
           });
         }
       }
+    }
+
+    // === Middle orb AOE ===
+    const middleElem = ctx.middleElement as OrbElement;
+
+    if (middleElem === 'ice') {
+      // Ice middle: 2 line AOEs crossing at center (N-S vertical + E-W horizontal)
+      // N-S line: vertical line at x=400, spanning arena
+      const nsLineId = runner.spawn({
+        type: 'lineAoe',
+        startX: MIDDLE_POSITION.x,
+        startY: 0,
+        endX: MIDDLE_POSITION.x,
+        endY: 800,
+        width: LINE_AOE_WIDTH,
+        duration: AOE_DURATION,
+      });
+      runner.waitForResolve(nsLineId).then(result => {
+        const data = result.data as { playersHit: string[] };
+        for (const playerId of data.playersHit) {
+          runner.damage(playerId, AOE_DAMAGE);
+        }
+      });
+
+      // E-W line: horizontal line at y=400, spanning arena
+      const ewLineId = runner.spawn({
+        type: 'lineAoe',
+        startX: 0,
+        startY: MIDDLE_POSITION.y,
+        endX: 800,
+        endY: MIDDLE_POSITION.y,
+        width: LINE_AOE_WIDTH,
+        duration: AOE_DURATION,
+      });
+      runner.waitForResolve(ewLineId).then(result => {
+        const data = result.data as { playersHit: string[] };
+        for (const playerId of data.playersHit) {
+          runner.damage(playerId, AOE_DAMAGE);
+        }
+      });
+    } else if (middleElem === 'wind') {
+      // Wind middle: dynamo at center
+      const dynamoId = runner.spawn({
+        type: 'dynamo',
+        x: MIDDLE_POSITION.x,
+        y: MIDDLE_POSITION.y,
+        innerRadius: DYNAMO_INNER_RADIUS,
+        outerRadius: DYNAMO_OUTER_RADIUS,
+        duration: AOE_DURATION,
+      });
+      runner.waitForResolve(dynamoId).then(result => {
+        const data = result.data as { playersHit: string[] };
+        for (const playerId of data.playersHit) {
+          runner.damage(playerId, AOE_DAMAGE);
+        }
+      });
     }
   });
 

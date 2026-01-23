@@ -141,7 +141,7 @@
       "AOE duration=500",
       "Players hit receive 100 damage"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "id": "FP-013",
@@ -165,7 +165,7 @@
       "Verify no TypeScript compilation errors",
       "Verify build completes successfully"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "id": "FP-015",
