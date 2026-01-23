@@ -32,7 +32,7 @@
       "Renders circular orb with glow",
       "Glow pulses using serverTime"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "id": "FP-004",
@@ -43,7 +43,7 @@
       "Verify import { renderMagicOrb } from './magic-orb'",
       "Verify case 'magic-orb': renderMagicOrb(ctx, doodad, pos, serverTime) in switch"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "id": "FP-005",

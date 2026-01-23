@@ -5,3 +5,12 @@
 ## FP-002: Added '8x8-grid' to ArenaSkinId
 - Added to union in src/shared/types.ts line 2
 - Files: src/shared/types.ts
+
+## FP-003 & FP-004: Magic-orb doodad renderer
+- Created src/client/doodads/magic-orb.ts with renderMagicOrb()
+- Element colors: wind=#00ff88, lightning=#ffff00, ice=#00ccff
+- Uses radial gradients: outer glow (2x radius), inner glow, core, bright center
+- Pulsing via serverTime % 1500 with sine wave (intensity 0.4-1.0)
+- Registered in src/client/doodads/index.ts switch
+- Build passes
+- Files: src/client/doodads/magic-orb.ts, src/client/doodads/index.ts

@@ -5,6 +5,7 @@ import { renderRect } from './rect';
 import { renderCircle } from './circle';
 import { renderCrystal } from './crystal';
 import { renderLimitCutMarker } from './limit-cut-marker';
+import { renderMagicOrb } from './magic-orb';
 
 // Position lookup data for doodad rendering (same pattern as mechanics)
 export interface DoodadPositionData {
@@ -106,6 +107,9 @@ export function renderDoodads(
         break;
       case 'limit-cut-marker':
         renderLimitCutMarker(ctx, doodad, pos, serverTime);
+        break;
+      case 'magic-orb':
+        renderMagicOrb(ctx, doodad, pos, serverTime);
         break;
     }
   }
