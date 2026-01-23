@@ -182,6 +182,6 @@
       "At T=13.75s: verify AOEs fire from all orbs",
       "At T=14.25s: verify AOEs resolved, damage dealt if hit"
     ],
-    "passes": false
+    "passes": true
   }
 ]

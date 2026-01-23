@@ -87,3 +87,14 @@
 - Added DYNAMO_INNER_RADIUS=100, DYNAMO_OUTER_RADIUS=600 constants
 - Validated: 18 damage instances at AOE phase (16 outer + 2 middle ice lines)
 - Files: src/server/encounters/scripts/combos/fresh-puff.ts
+
+## FP-015: E2E Validation
+- All phases validated via Playwright
+- T=0: 5 magic-orbs spawn (cardinal or intercardinal + middle)
+- T=3s: 4 tethers spawn connecting orb points to players
+- T=8s: Orbs move 200px toward tethered players
+- T=8.25s: Chariots spawn at orb destinations
+- T=8.75s: 4 chariot damage instances on player
+- T=13.75s: 16 outer AOEs + middle orb AOE fire
+- T=14.25s: 18 total damage instances (ice middle) or 17 (wind middle)
+- Full encounter runs to completion without errors
